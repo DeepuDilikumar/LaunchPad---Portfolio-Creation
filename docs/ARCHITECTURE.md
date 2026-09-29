@@ -1,6 +1,8 @@
 # LaunchPad — Folder Structure and Data Model
 
-> **Status: PROPOSAL — waiting for owner approval.** No app code is written until this is approved.
+> **Status: APPROVED** by the owner, including the defaults in §4. Build against this; propose changes before deviating.
+>
+> Next.js 16 notes: `middleware.ts` is now **`proxy.ts`**; `params`, `searchParams`, `cookies()` and `headers()` are async.
 
 ## 1. Folder structure
 

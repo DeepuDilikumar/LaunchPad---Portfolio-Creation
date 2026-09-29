@@ -1,0 +1,250 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/* Dark mode is class-based so the saved theme (launchpad_theme) wins over the OS. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Design tokens — source of truth: design/DESIGN_SYSTEM.md.
+ * Contrast ratios for every pair are listed there. Never use raw hex in components.
+ */
+:root {
+  --background: #ffffff;
+  --surface: #fafafa;
+  --foreground: #09090b;
+  --card: #ffffff;
+  --card-foreground: #09090b;
+  --popover: #ffffff;
+  --popover-foreground: #09090b;
+  --muted: #f4f4f5;
+  --muted-foreground: #52525b;
+  --secondary: #f4f4f5;
+  --secondary-foreground: #09090b;
+  --accent: #f4f4f5; /* shadcn "accent" = neutral hover fill */
+  --accent-foreground: #09090b;
+  --border: #e4e4e7;
+  --input: #71717a;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-foreground: #ffffff;
+  --accent-text: #1d4ed8;
+  --ring: #2563eb;
+  --success: #15803d;
+  --success-bg: #f0fdf4;
+  --warning: #b45309;
+  --warning-bg: #fffbeb;
+  --danger: #b91c1c;
+  --danger-bg: #fef2f2;
+  --destructive: var(--danger);
+  --overlay: rgb(9 9 11 / 0.4);
+
+  --radius: 0.75rem;
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+  --dur-slow: 320ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+
+  color-scheme: light;
+}
+
+.dark {
+  --background: #09090b;
+  --surface: #0f0f12;
+  --foreground: #fafafa;
+  --card: #18181b;
+  --card-foreground: #fafafa;
+  --popover: #18181b;
+  --popover-foreground: #fafafa;
+  --muted: #1f1f23;
+  --muted-foreground: #a1a1aa;
+  --secondary: #1f1f23;
+  --secondary-foreground: #fafafa;
+  --accent: #1f1f23;
+  --accent-foreground: #fafafa;
+  --border: #27272a;
+  --input: #71717a;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-foreground: #ffffff;
+  --accent-text: #60a5fa;
+  --ring: #60a5fa;
+  --success: #4ade80;
+  --success-bg: rgb(74 222 128 / 0.1);
+  --warning: #fbbf24;
+  --warning-bg: rgb(251 191 36 / 0.1);
+  --danger: #f87171;
+  --danger-bg: rgb(248 113 113 / 0.1);
+  --overlay: rgb(0 0 0 / 0.6);
+
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent-text: var(--accent-text);
+  --color-ring: var(--ring);
+  --color-success: var(--success);
+  --color-success-bg: var(--success-bg);
+  --color-warning: var(--warning);
+  --color-warning-bg: var(--warning-bg);
+  --color-danger: var(--danger);
+  --color-danger-bg: var(--danger-bg);
+  --color-destructive: var(--destructive);
+  --color-overlay: var(--overlay);
+
+  --font-sans: var(--font-geist-sans), Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-heading: var(--font-sans);
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+
+  --ease-out-expo: var(--ease-out);
+  --ease-in-expo: var(--ease-in);
+
+  /* Type scale (mobile values; desktop steps up via md: utilities) */
+  --text-display: 2.25rem;
+  --text-display--line-height: 1.05;
+  --text-display--letter-spacing: -0.03em;
+  --text-display-lg: 3.5rem;
+  --text-display-lg--line-height: 1.05;
+  --text-display-lg--letter-spacing: -0.035em;
+  --text-h1: 1.75rem;
+  --text-h1--line-height: 1.15;
+  --text-h1--letter-spacing: -0.02em;
+  --text-h1-lg: 2.5rem;
+  --text-h1-lg--line-height: 1.1;
+  --text-h1-lg--letter-spacing: -0.025em;
+  --text-h2: 1.375rem;
+  --text-h2--line-height: 1.25;
+  --text-h2--letter-spacing: -0.015em;
+  --text-h3: 1.125rem;
+  --text-h3--line-height: 1.35;
+  --text-h3--letter-spacing: -0.01em;
+  --text-caption: 0.8125rem;
+  --text-caption--line-height: 1.4;
+
+  /* Z-index scale */
+  --z-sticky: 10;
+  --z-header: 20;
+  --z-overlay: 40;
+  --z-sheet: 50;
+  --z-toast: 100;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    @apply font-sans;
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    scroll-padding-top: 5rem; /* anchor targets clear the sticky header */
+  }
+  /* Focused elements are never hidden behind the mobile sticky CTA (WCAG 2.4.11). */
+  @media (width < 48rem) {
+    html {
+      scroll-padding-bottom: 7rem;
+    }
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-size: 1rem;
+    line-height: 1.6;
+    min-height: 100dvh;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  /* One visible, consistent focus ring everywhere (WCAG 2.4.7 / 2.4.11) */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  a,
+  button,
+  [role="button"],
+  summary,
+  label[for] {
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--primary) 25%, transparent);
+  }
+}
+
+@layer utilities {
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  .pb-safe {
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  }
+}
+
+/* ---------- Motion ---------- */
+
+/* Applied for one frame while the theme switches, so colours change at once. */
+.theme-switching *,
+.theme-switching *::before,
+.theme-switching *::after {
+  transition: none !important;
+}
+
+@keyframes lp-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.animate-rise {
+  animation: lp-rise var(--dur-slow) var(--ease-out) both;
+}
+
+/* Honour reduced motion: show final states, no movement. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0s !important; /* staggered items appear immediately, in their final state */
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

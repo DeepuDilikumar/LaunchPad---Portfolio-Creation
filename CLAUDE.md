@@ -1,8 +1,15 @@
+@AGENTS.md
+
 # LaunchPad — Project Guide for Claude
 
 Read this first in every session. The visual rules live in
 `design/DESIGN_SYSTEM.md`. Follow it for every screen. Component sources are in
 `design/COMPONENT_SOURCING.md`.
+
+## Commands
+`pnpm dev` · `pnpm build` · `pnpm lint` · `pnpm typecheck` · `pnpm test` (Vitest) ·
+`pnpm test:e2e` (Playwright at 375px; run `pnpm build` first. In the cloud sandbox, set
+`CHROMIUM_PATH=/opt/pw-browsers/chromium`). Run all of them before every push.
 
 ## How we work
 - Build **one phase at a time** (see "Build phases"). After each phase, stop, summarise what was built, and wait for the owner's go-ahead.
