@@ -11,6 +11,12 @@ Read this first in every session. The visual rules live in
 `pnpm test:e2e` (Playwright at 375px; run `pnpm build` first. In the cloud sandbox, set
 `CHROMIUM_PATH=/opt/pw-browsers/chromium`). Run all of them before every push.
 
+## Demo mode
+Without service keys, every feature still runs in **demo mode** (on in development when Supabase
+isn't configured, or forced with `LAUNCHPAD_DEMO_MODE=1`): a local JSON database in `.data/`,
+a demo sign-in, clearly labelled test payments, rule-based analysis instead of AI, and a
+GitHub-less program. Demo behaviour must always be labelled in the UI. See `README.md` for keys.
+
 ## How we work
 - Build **one phase at a time** (see "Build phases"). After each phase, stop, summarise what was built, and wait for the owner's go-ahead.
 - Every screen ships with seed/demo data and designed **loading, empty and error** states. Every phase's PR description includes a short manual test checklist.
@@ -49,10 +55,10 @@ Read this first in every session. The visual rules live in
 
 ## 3. Design direction
 - **Mobile-first.** Design every screen at 375px first, then scale up. Most traffic comes from Instagram and Facebook ads.
-- **Feel:** a confident, modern developer tool, in the vein of Linear, Vercel and Raycast. Clean, dark-mode-friendly, sharp typography, subtle motion. Not "AI slop" gradients everywhere.
-- **Typography:** one strong sans (Geist Sans) and a mono (Geist Mono) for code and scores.
-- **Colour:** neutral base, one accent (electric blue). Semantic green, amber and red **only** for pillar statuses.
-- **Theme:** light / dark / system, saved in `localStorage` under `launchpad_theme`. An inline anti-flash script in the root layout applies the right theme before React renders. Desktop: a single icon toggle. Mobile menu: a 3-way segmented control.
+- **Feel:** Google-style (Material 3 inspired, like Google Sites): clean white pages, pill buttons, tonal blue fills, soft elevation, calm and trustworthy. Not "AI slop" gradients everywhere.
+- **Typography:** Google Sans Flex for UI and Google Sans Code for code and scores (both OFL, self-hosted in `app/fonts/`).
+- **Colour:** Google greys, one blue (`#1A73E8`). Semantic green, amber and red **only** for statuses.
+- **Theme:** **light by default**; light / dark / system, saved in `localStorage` under `launchpad_theme`. An inline anti-flash script in the root layout applies the right theme before React renders. Desktop: a single icon toggle. Mobile menu: a 3-way segmented control.
 - **Motion:** used to show progress and reward (score reveal, streak increments, portfolio going live). Under 400ms, and respects `prefers-reduced-motion`.
 - **Accessibility:** WCAG AA contrast in both themes, keyboard navigable, visible focus states, labelled inputs.
 
@@ -78,7 +84,7 @@ opening this from an Instagram ad at 11pm. If they have to think, we've lost the
 2. Is there exactly one primary action?
 3. Did we ask for anything we could have auto-filled or defaulted?
 4. Does it look and work well at 375px width?
-5. Would this screen look at home in Linear, Vercel or Stripe's product?
+5. Would this screen look at home in a Google product (Sites, Workspace) or Stripe?
 
 ## 4. Non-negotiable product rules
 1. **Honesty in the UI.** Loading states describe what's actually happening ("Reading your resume", "Checking your projects against SDE-1 job descriptions", "Scoring"). No fake technical telemetry.

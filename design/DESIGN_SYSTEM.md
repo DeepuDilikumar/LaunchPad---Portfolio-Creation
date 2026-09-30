@@ -11,7 +11,7 @@ From the results we kept **Minimalism & Swiss Style** (dark-mode ready, low
 performance cost, low accessibility risk) and the **Before-After Transformation**
 landing pattern. We rejected the suggested green "run" accent, the
 FAQ-documentation pattern and the all-mono type pairing. The brief asks for a
-Linear/Vercel/Raycast feel with one blue accent. Every colour pair below was
+Linear/Vercel/Raycast feel with one blue accent. **Update (Sept 2026):** the owner moved the visual style to a Google-style, light-first look; §2–4 below reflect that. Every colour pair below was
 checked for WCAG contrast (ratios listed).
 
 ---
@@ -29,64 +29,56 @@ checked for WCAG contrast (ratios listed).
 2. Is there exactly one primary action?
 3. Did we ask for anything we could have auto-filled or defaulted?
 4. Does it look and work well at 375px width (no horizontal scroll, 44px targets)?
-5. Would it look at home in Linear, Vercel or Stripe?
+5. Would it look at home in a Google product (Sites, Workspace) or Stripe?
 6. Are loading, empty and error states designed, not left as defaults?
 
 ---
 
 ## 2. Colour
 
-Neutral zinc base, **one accent (electric blue)**. Green, amber and red are
-**only** for pillar and status meaning, and always come with an icon and text.
+**Style: Google-style, Material 3 inspired** (owner decision, September 2026: "make
+daylight the default … styling similar to Google Sites"). A clean white page, Google
+greys, one blue (`#1A73E8`), tonal light-blue fills for selected and info states, soft
+elevation shadows. Green, amber and red are **only** for status meaning, and always come
+with an icon and text.
 
-Tokens are CSS variables on `:root` (light) and `.dark` (dark), exposed to
-Tailwind through shadcn/ui's `hsl(var(--token))` convention. **Never put raw hex
-in components.**
+Tokens are CSS variables on `:root` (light) and `.dark` (dark) in `app/globals.css`,
+exposed to Tailwind through `@theme inline`. **Never put raw hex in components.**
 
-### Light theme
+### Light theme (default)
 | Token | Hex | Use | Contrast |
 |---|---|---|---|
-| `--background` | `#FFFFFF` | Page | — |
-| `--surface` | `#FAFAFA` | Alternate section band | — |
-| `--card` | `#FFFFFF` | Cards (with border, not shadow) | — |
-| `--muted` | `#F4F4F5` | Chips, skeletons, code blocks | — |
-| `--foreground` | `#09090B` | Body and headings | 19.9 : 1 |
-| `--muted-foreground` | `#52525B` | Secondary text, captions | 7.7 : 1 (7.0 on muted) |
-| `--border` | `#E4E4E7` | Dividers, card outlines (decorative) | — |
-| `--input` | `#71717A` | Form control borders (needs 3:1) | 4.8 : 1 |
-| `--primary` | `#2563EB` | Primary button fill, progress, selected | white on it 5.2 : 1 |
-| `--primary-foreground` | `#FFFFFF` | Text on primary | — |
-| `--accent-text` | `#1D4ED8` | Links, accent text | 6.7 : 1 |
-| `--ring` | `#2563EB` | Focus ring | 5.2 : 1 |
-| `--success` / `--success-bg` | `#15803D` / `#F0FDF4` | Passing | 5.0 : 1 (4.8 on tint) |
-| `--warning` / `--warning-bg` | `#B45309` / `#FFFBEB` | Needs work | 5.0 : 1 (4.8 on tint) |
-| `--danger` / `--danger-bg` | `#B91C1C` / `#FEF2F2` | Critical, destructive | 6.5 : 1 (5.9 on tint) |
+| `--background` / `--card` | `#FFFFFF` | Page, cards | — |
+| `--surface` | `#F8F9FA` | Alternate bands, stat tiles | — |
+| `--muted` | `#F1F3F4` | Chips, skeletons, code | — |
+| `--foreground` | `#202124` | Body and headings | 16.1 : 1 |
+| `--muted-foreground` | `#5F6368` | Secondary text | 6.0 : 1 (5.4 on muted) |
+| `--border` | `#DADCE0` | Dividers, card outlines (decorative) | — |
+| `--input` | `#80868B` | Form control borders (needs 3:1) | 3.7 : 1 |
+| `--primary` / `--accent-text` / `--ring` | `#1A73E8` | Primary fill, links, focus | white on it 4.5 : 1 |
+| `--tonal` / `--tonal-foreground` | `#E8F0FE` / `#174EA6` | Selected chips, next-step card, info banners | 6.8 : 1 |
+| `--success` / `--success-bg` | `#137333` / `#E6F4EA` | Passing, done | 5.2 : 1 |
+| `--warning` / `--warning-bg` | `#9A5700` / `#FEF7E0` | Needs work | 5.2 : 1 |
+| `--danger` / `--danger-bg` | `#C5221F` / `#FCE8E6` | Critical, destructive | 4.9 : 1 |
 
-### Dark theme
+### Dark theme (Google dark)
 | Token | Hex | Contrast |
 |---|---|---|
-| `--background` | `#09090B` | — |
-| `--surface` | `#0F0F12` | — |
-| `--card` | `#18181B` | — |
-| `--muted` | `#1F1F23` | — |
-| `--foreground` | `#FAFAFA` | 19.1 : 1 |
-| `--muted-foreground` | `#A1A1AA` | 7.8 : 1 (6.9 on card) |
-| `--border` | `#27272A` | decorative |
-| `--input` | `#71717A` | 4.1 : 1 |
-| `--primary` | `#2563EB` | white on it 5.2 : 1 (same fill in both themes on purpose) |
-| `--accent-text` | `#60A5FA` | 7.8 : 1 (7.0 on card) |
-| `--ring` | `#60A5FA` | 7.8 : 1 |
-| `--success` / `--success-bg` | `#4ADE80` / `rgba(74,222,128,.10)` | 10.2 : 1 |
-| `--warning` / `--warning-bg` | `#FBBF24` / `rgba(251,191,36,.10)` | 10.6 : 1 |
-| `--danger` / `--danger-bg` | `#F87171` / `rgba(248,113,113,.10)` | 6.4 : 1 |
+| `--background` | `#202124` | — |
+| `--surface` / `--card` / `--muted` | `#28292C` / `#2D2E31` / `#35363A` | — |
+| `--foreground` | `#E8EAED` | 13.4 : 1 |
+| `--muted-foreground` | `#9AA0A6` | 6.1 : 1 (5.1 on card) |
+| `--input` | `#80868B` | 4.4 : 1 |
+| `--primary` / `--accent-text` | `#8AB4F8` (dark text on it) | 7.6 : 1 |
+| `--tonal` / `--tonal-foreground` | `#394457` / `#D2E3FC` | 7.5 : 1 |
+| `--success` / `--warning` / `--danger` | `#81C995` / `#FDD663` / `#F28B82` on 12% tints | 8.2 / 11.5 / 6.7 : 1 |
 
-Dark mode uses its own tonal values, not inverted light colours.
+`--brand` (`#1A73E8`) is the logo mark and stays the same in both themes.
 
 ### Colour rules
-- The accent is **only** for the primary action, progress, links, focus and the selected state. Never for decoration.
-- No gradient text, glow blobs or rainbow backgrounds. One exception: a single, very subtle radial wash behind the landing hero visual is allowed (≤ 6% opacity accent).
-- Status never relies on colour alone: always icon + label (`Passing ✓`, `Needs work !`, `Critical ✕`, drawn as Lucide icons, not emoji).
-- "Before" visuals (the messy resume) use greys. "After" (the portfolio) uses real UI. The contrast between them is the story.
+- Blue is **only** for the primary action, progress, links, focus and the selected state. Tonal blue is for "you are here" and "next step" surfaces.
+- No gradient text, glow blobs or glassmorphism.
+- Status never relies on colour alone: always icon + label.
 
 ---
 
@@ -94,47 +86,38 @@ Dark mode uses its own tonal values, not inverted light colours.
 
 | Role | Font | Notes |
 |---|---|---|
-| Sans (UI and headings) | **Geist Sans** (`geist` package via `next/font`, self-hosted) | Fallback: `Inter, system-ui, sans-serif` |
-| Mono (scores, code, day counters, prices) | **Geist Mono** | `font-variant-numeric: tabular-nums` for all changing numbers |
+| Sans (UI and headings) | **Google Sans Flex** (OFL, self-hosted woff2 via `next/font/local`, preloaded) | Fallback: `Roboto, system-ui, sans-serif` |
+| Mono (scores, code, day counters) | **Google Sans Code** (OFL, self-hosted, not preloaded) | `tabular-nums` for all changing numbers |
 
-The skill's closest match was an Inter single-family system (developer and
-premium mood). Geist is the same style, is Vercel's own face, self-hosts through
-`next/font` with no layout shift, and ships a matching mono.
-
-**Weights: only 400 and 600.** At most two weights per screen.
+**Weights: 400 and 500 only** (Google style: headings are 400 at large sizes, 500 for
+titles and emphasis). At most two weights per screen.
 
 ### Type scale (mobile → ≥768px)
-| Token | Mobile | Desktop | Line height | Weight | Tracking |
-|---|---|---|---|---|---|
-| `display` | 36px | 56px | 1.05 | 600 | -0.03em |
-| `h1` | 28px | 40px | 1.15 | 600 | -0.02em |
-| `h2` | 22px | 28px | 1.25 | 600 | -0.015em |
-| `h3` | 18px | 20px | 1.35 | 600 | -0.01em |
-| `body` | 16px | 16px | 1.6 | 400 | 0 |
-| `body-sm` | 14px | 14px | 1.5 | 400 | 0 |
-| `caption` | 13px | 13px | 1.4 | 400 | 0 |
-| `score-xl` (mono) | 56px | 72px | 1 | 600 | -0.02em |
+| Token | Mobile | Desktop | Line height | Weight |
+|---|---|---|---|---|
+| `display` | 36px | 56px | 1.1 | 400 |
+| `h1` | 28px | 40px | 1.2 | 400 |
+| `h2` | 22px | 28px | 1.3 | 400–500 |
+| `h3` | 18px | 20px | 1.35 | 500 |
+| `body` | 16px | 16px | 1.6 | 400 |
+| `caption` | 13px | 13px | 1.4 | 400 |
 
-- Body text is never under 16px on mobile. Inputs are 16px, which stops iOS zooming in.
-- Line length: 35–60 characters on mobile, ≤ 70 on desktop (`max-w-prose`).
-- Headings use `text-wrap: balance`. No forced `<br>`.
-- Label and overline style: 13px, 400, `muted-foreground`, sentence case. No shouty all-caps blocks.
+- Body text is never under 16px on mobile; inputs are 16px (stops iOS zoom).
+- Headings use `text-wrap: balance`. Sentence case everywhere.
 
 ---
 
 ## 4. Spacing, layout and shape
 
-- **4pt scale:** 4, 8, 12, 16, 20, 24, 32, 40, 48, 64, 80, 96 (Tailwind defaults).
-- **Page gutter:** 16px under 640px, 24px at 640–1023px, 32px at 1024px and up.
-- **Content widths:** reading and forms `max-w-xl` (576px). App pages `max-w-3xl`. Marketing `max-w-6xl`.
-- **Section rhythm (marketing):** 64px vertical padding on mobile, 96px on desktop.
-- **Breakpoints:** design at **375** first, then `sm 640`, `md 768`, `lg 1024`, `xl 1280`.
-- **Radius:** `sm 6px` (chips, inputs inside groups), `md 8px` (buttons, inputs), `lg 12px` (cards, sheets), `full` (pills, avatars).
-- **Elevation:** borders first. Shadows only on floating layers:
-  - `shadow-sm`: `0 1px 2px rgb(0 0 0 / .05)` (sticky bars)
-  - `shadow-lg`: `0 8px 24px rgb(0 0 0 / .12)` (sheets, popovers). In dark mode add a 1px `--border` outline.
+- **4pt scale** (Tailwind defaults). **Gutter:** 16px under 640px, 24px above.
+- **Content widths:** forms and practice pages `max-w-2xl`, app pages `max-w-3xl`, marketing `max-w-6xl`.
+- **Breakpoints:** design at **375** first, then `sm 640`, `md 768`, `lg 1024`.
+- **Radius:** 8 (chips) · 12 (inputs, small cards) · 16 (cards) · 20–28 (hero cards, sheets). **Buttons are pills** (`rounded-full`).
+- **Buttons (Material 3):** filled (primary), tonal, outlined (secondary), text (ghost), destructive. Heights 40 / 44 / 48px.
+- **Elevation:** borders for cards; Google shadows `shadow-e1` (resting raised), `shadow-e2` (hover), `shadow-e3` (sheets, sticky CTA, toasts).
+- **App navigation:** tabs in the top bar on desktop; a Material bottom navigation bar (4 destinations, tonal pill on the active icon) on phones.
 - **Z-index scale:** `base 0 · sticky 10 · header 20 · overlay 40 · sheet/modal 50 · toast 100`.
-- Use `min-h-dvh`, not `100vh`. Fixed bottom bars add `padding-bottom: env(safe-area-inset-bottom)` and reserve matching space under the page content.
+- Use `min-h-dvh`. Fixed bottom bars add `env(safe-area-inset-bottom)`.
 
 ---
 
@@ -205,13 +188,13 @@ the streak ticking over, the portfolio going live.
 
 ### Domain components
 - **Status pill:** `Passing` (success), `Needs work` (warning), `Critical` (danger), `Not assessed` (muted). Tinted background + icon + label, 28px tall, `full` radius.
-- **Score:** Geist Mono tabular numbers, `score-xl`, shown as `54` over `/100` in muted text. Always shown next to the **"LaunchPad Rubric Target: 85"** marker on a thin horizontal bar (not a gauge, which is harder to read at 375px). Tapping it opens "How this was scored".
+- **Score:** Google Sans Code tabular numbers, `score-xl`, shown as `54` over `/100` in muted text. Always shown next to the **"LaunchPad Rubric Target: 85"** marker on a thin horizontal bar (not a gauge, which is harder to read at 375px). Tapping it opens "How this was scored".
 - **Pillar card:** status pill → score bar vs target → "What a screener notices" → "How to fix it" → an expandable "How this was scored" checklist (✓ met / ✕ not met, per rubric item). Locked pillars show the title and status pill only, with the body blurred at 6px and `aria-hidden`, plus a screen-reader-only text saying it is locked.
 - **Stepper (onboarding flow):** a compact "Step 2 of 4 · ~1 min" text plus a thin segmented bar on mobile. Full labelled horizontal stepper on desktop.
 - **Streak grid:** 14 cells (2 rows × 7 on mobile, 1 × 14 on desktop). States: `done` (accent fill + check), `today` (accent ring), `missed` (muted + dash), `locked` (border only). Each cell has an accessible label ("Day 4, completed").
 - **Day / task card:** day number in mono, title, time estimate ("~45 min"), one primary action.
 - **Attached-file card:** file icon, name (wraps), size and format in mono caption, actions: View extracted text (collapsible), Replace, Remove (with undo).
-- **Price display:** `₹299` in Geist Mono. The line below reads "One-time · UPI, cards, netbanking". The refund line always sits next to the pay button.
+- **Price display:** `₹299` in the sans at weight 500. The line below reads "One-time · UPI, cards, netbanking". The refund line always sits next to the pay button.
 
 ---
 
@@ -239,7 +222,7 @@ the streak ticking over, the portfolio going live.
 ---
 
 ## 9. Theme system
-- `light | dark | system`, stored in `localStorage` under `launchpad_theme`. The default is `system`.
+- `light | dark | system`, stored in `localStorage` under `launchpad_theme`. The default is **light** (owner decision); dark and system remain one tap away.
 - An inline anti-flash script in `<head>` of the root layout reads the stored value (or `prefers-color-scheme`) and sets `class="dark"` and `style="color-scheme: dark|light"` on `<html>` before first paint. The whole thing sits in try/catch.
 - Desktop: a single icon toggle (sun/moon, with the `aria-label` reflecting the next state). Mobile menu: a 3-way segmented control (Light / Dark / System).
 

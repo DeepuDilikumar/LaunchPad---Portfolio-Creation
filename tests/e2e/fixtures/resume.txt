@@ -1,0 +1,26 @@
+Asha Rao
+asha.rao.dev@example.com | +91 98765 43210 | Bengaluru
+github.com/asha-rao-dev | linkedin.com/in/asha-rao-dev
+
+EDUCATION
+PES University, Bengaluru
+B.Tech in Computer Science, 2022 - 2026 | CGPA 8.4
+
+SKILLS
+Languages: Java, Python, JavaScript, SQL
+Frameworks: Spring Boot, React, Express
+Databases: MySQL, MongoDB, Redis
+Tools: Git, Docker, Postman
+
+PROJECTS
+Expense Tracker | React, Node.js, MongoDB
+- Built a web app to track daily expenses with charts
+- Added login with JWT authentication
+
+Weather App | JavaScript, OpenWeather API
+- Shows current weather for any city
+
+EXPERIENCE
+Software Intern, TechNova Solutions (May 2025 - Jul 2025)
+- Worked on REST APIs for the internal dashboard
+- Fixed bugs in the reporting module

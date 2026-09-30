@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next"
 
+import { MetaPixel } from "@/components/analytics/meta-pixel"
+import { Toaster } from "@/components/ui/toaster"
 import { SITE } from "@/config/site"
 import { THEME_INIT_SCRIPT } from "@/lib/theme"
 import { fontMono, fontSans } from "./fonts"
@@ -54,6 +56,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           Skip to main content
         </a>
         {children}
+        <Toaster />
+        <MetaPixel />
       </body>
     </html>
   )

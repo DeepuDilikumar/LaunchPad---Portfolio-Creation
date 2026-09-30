@@ -14,9 +14,11 @@ export default defineConfig({
       : undefined,
   },
   webServer: {
-    command: `pnpm start -p ${PORT}`,
+    // Demo mode with a throwaway database, so the full journey runs without external services.
+    command: `rm -rf test-results/e2e-data && pnpm start -p ${PORT}`,
+    env: { LAUNCHPAD_DEMO_MODE: "1", LAUNCHPAD_DATA_DIR: "test-results/e2e-data", ANTHROPIC_API_KEY: "" },
     url: `http://localhost:${PORT}`,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
     timeout: 60_000,
   },
 })

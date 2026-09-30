@@ -2,6 +2,7 @@ import "server-only"
 
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
+import { connection } from "next/server"
 
 import { isDemoMode } from "@/lib/env"
 import { getUser as getSupabaseUser } from "@/lib/supabase/server"
@@ -23,6 +24,8 @@ export type AppUser = {
 
 /** The signed-in user from Supabase, or the demo account in demo mode. */
 export async function getCurrentUser(): Promise<AppUser | null> {
+  // Always per-request: never let a build-time "signed out" answer get prerendered.
+  await connection()
   if (isDemoMode()) {
     const store = await cookies()
     const id = store.get(DEMO_COOKIE)?.value

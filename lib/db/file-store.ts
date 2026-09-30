@@ -15,22 +15,26 @@ const DB_FILE = path.join(DATA_DIR, "launchpad-demo.json")
 
 type Store = Record<TableName, Row[]>
 
-let cache: Store | null = null
-let queue: Promise<unknown> = Promise.resolve()
+/**
+ * Shared on globalThis: Next.js can load this module more than once per process (route
+ * handlers and pages are bundled separately), and every copy must see the same data.
+ */
+const shared = globalThis as unknown as { __launchpadFileStore?: { cache: Store | null; queue: Promise<unknown> } }
+const state = (shared.__launchpadFileStore ??= { cache: null, queue: Promise.resolve() })
 
 function emptyStore(): Store {
   return Object.fromEntries(TABLES.map((t) => [t, []])) as unknown as Store
 }
 
 async function load(): Promise<Store> {
-  if (cache) return cache
+  if (state.cache) return state.cache
   try {
     const parsed = JSON.parse(await readFile(DB_FILE, "utf8")) as Partial<Store>
-    cache = { ...emptyStore(), ...parsed }
+    state.cache = { ...emptyStore(), ...parsed }
   } catch {
-    cache = emptyStore()
+    state.cache = emptyStore()
   }
-  return cache
+  return state.cache
 }
 
 async function persist(store: Store) {
@@ -42,13 +46,13 @@ async function persist(store: Store) {
 
 /** Runs mutations one at a time so concurrent requests can't clobber each other. */
 function exclusive<T>(fn: (store: Store) => Promise<T> | T): Promise<T> {
-  const run = queue.then(async () => {
+  const run = state.queue.then(async () => {
     const store = await load()
     const result = await fn(store)
     await persist(store)
     return result
   })
-  queue = run.catch(() => undefined)
+  state.queue = run.catch(() => undefined)
   return run
 }
 

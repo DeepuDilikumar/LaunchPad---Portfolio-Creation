@@ -70,10 +70,10 @@ test("desktop theme toggle flips light and dark", async ({ page }) => {
   await expect(page.locator("html")).not.toHaveClass(/dark/)
 })
 
-test("login page works without Supabase configured", async ({ page }) => {
+test("login page offers a demo account when Supabase isn't configured", async ({ page }) => {
   await page.goto("/login")
   await expect(page.getByRole("heading", { name: "Sign in to LaunchPad" })).toBeVisible()
-  await expect(page.getByRole("button", { name: "Continue with Google" })).toBeVisible()
+  await expect(page.getByRole("button", { name: "Continue with a demo account" })).toBeVisible()
 })
 
 test("unknown routes show the friendly 404", async ({ page }) => {

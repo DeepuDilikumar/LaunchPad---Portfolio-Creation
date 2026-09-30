@@ -116,3 +116,36 @@ export type MentorMessageRow = {
   content: string
   created_at: string
 }
+
+export type DefenseAnswer = {
+  answer: string
+  covered: boolean[]
+  tip: string
+  followUp: string | null
+  source: "ai" | "rules"
+  at: string
+}
+
+export type DefenseSessionRow = {
+  id: string
+  program_id: string
+  user_id: string
+  questions: string[]
+  answers: Record<string, DefenseAnswer>
+  source: "ai" | "rules"
+  created_at: string
+}
+
+export type PitchKind = "linkedin" | "bullets" | "dm" | "profile"
+
+export type PitchDraftRow = {
+  id: string
+  user_id: string
+  program_id: string | null
+  kind: PitchKind
+  tone: string
+  content: string
+  source: "ai" | "rules"
+  created_at: string
+  updated_at: string
+}

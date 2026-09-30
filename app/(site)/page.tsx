@@ -1,3 +1,6 @@
+import { Suspense } from "react"
+
+import { DeletedNotice } from "@/components/marketing/deleted-notice"
 import { Faq } from "@/components/marketing/faq"
 import { FinalCta } from "@/components/marketing/final-cta"
 import { Hero } from "@/components/marketing/hero"
@@ -28,6 +31,9 @@ export default function HomePage() {
       <Faq />
       <FinalCta />
       <StickyCta />
+      <Suspense fallback={null}>
+        <DeletedNotice />
+      </Suspense>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd).replace(/</g, "\\u003c") }}
