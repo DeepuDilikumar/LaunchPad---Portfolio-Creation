@@ -1,6 +1,6 @@
 "use client"
 
-import { AlertCircle, Lock } from "lucide-react"
+import { AlertCircle } from "lucide-react"
 import { useState } from "react"
 
 import { GitHubIcon, GoogleIcon } from "@/components/icons/brand"
@@ -59,7 +59,7 @@ export function LoginPanel({
       {message ? (
         <p
           role="alert"
-          className="flex gap-2 rounded-lg border border-danger/30 bg-danger-bg p-3 text-sm text-danger"
+          className="flex gap-2 rounded-2xl bg-danger-bg p-3 text-sm text-danger"
         >
           <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden />
           <span>{message}</span>
@@ -67,7 +67,7 @@ export function LoginPanel({
       ) : null}
 
       <Button
-        variant="secondary"
+        variant="outline"
         size="lg"
         className="w-full"
         loading={pending === "google"}
@@ -78,7 +78,7 @@ export function LoginPanel({
         Continue with Google
       </Button>
       <Button
-        variant="secondary"
+        variant="outline"
         size="lg"
         className="w-full"
         loading={pending === "github"}
@@ -88,11 +88,6 @@ export function LoginPanel({
         {pending === "github" ? null : <GitHubIcon className="size-5" />}
         Continue with GitHub
       </Button>
-
-      <p className="mt-2 flex items-start gap-2 text-caption text-muted-foreground">
-        <Lock className="mt-0.5 size-3.5 shrink-0" aria-hidden />
-        We only use your name and email to save your work. We never post anything for you.
-      </p>
     </div>
   )
 }

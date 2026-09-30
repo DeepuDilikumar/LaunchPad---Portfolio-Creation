@@ -39,7 +39,7 @@ export function StickyCta() {
   return (
     <div
       className={cn(
-        "fixed inset-x-0 bottom-0 z-(--z-sticky) border-t border-border bg-background/95 px-4 pt-3 pb-safe backdrop-blur-md transition-[transform,opacity] duration-(--dur-slow) ease-out-expo md:hidden",
+        "fixed inset-x-0 bottom-0 z-(--z-sticky) bg-background px-4 pt-3 pb-safe shadow-e3 transition-[transform,opacity] duration-(--dur-slow) ease-out-expo md:hidden",
         visible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-full opacity-0"
       )}
       aria-hidden={!visible}

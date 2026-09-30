@@ -11,7 +11,7 @@ export function LogoMark({ className }: { className?: string }) {
       aria-hidden
       focusable="false"
     >
-      <rect width="32" height="32" rx="8" className="fill-primary" />
+      <rect width="32" height="32" rx="8" className="fill-brand" />
       <path
         d="M10 17.5 16 11.5l6 6"
         fill="none"
@@ -30,7 +30,7 @@ export function Logo({ className }: { className?: string }) {
     <Link
       href="/"
       className={cn(
-        "-m-2 inline-flex items-center gap-2 rounded-md p-2 text-[1.0625rem] font-semibold tracking-tight",
+        "-m-2 inline-flex items-center gap-2 rounded-full p-2 text-[1.1875rem] font-medium tracking-tight",
         className
       )}
     >

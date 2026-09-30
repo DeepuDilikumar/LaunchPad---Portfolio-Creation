@@ -38,7 +38,7 @@ export function StatePanel({
       >
         <Icon className="size-6" aria-hidden />
       </span>
-      <Heading className="mt-5 text-h2 font-semibold">{title}</Heading>
+      <Heading className="mt-5 text-h2 font-medium">{title}</Heading>
       {children ? <div className="mt-2 text-muted-foreground">{children}</div> : null}
       {action ? <div className="mt-6 flex w-full flex-col gap-2 sm:w-auto">{action}</div> : null}
     </div>

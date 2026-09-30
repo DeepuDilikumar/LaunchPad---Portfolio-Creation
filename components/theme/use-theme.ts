@@ -3,6 +3,7 @@
 import { useSyncExternalStore } from "react"
 
 import {
+  DEFAULT_THEME,
   THEME_STORAGE_KEY,
   isTheme,
   resolveTheme,
@@ -16,9 +17,9 @@ const DARK_QUERY = "(prefers-color-scheme: dark)"
 function readTheme(): Theme {
   try {
     const stored = window.localStorage.getItem(THEME_STORAGE_KEY)
-    return isTheme(stored) ? stored : "system"
+    return isTheme(stored) ? stored : DEFAULT_THEME
   } catch {
-    return "system"
+    return DEFAULT_THEME
   }
 }
 
@@ -78,7 +79,7 @@ function getResolved(): ResolvedTheme {
 }
 
 export function useTheme() {
-  const theme = useSyncExternalStore(subscribe, readTheme, () => "system" as Theme)
+  const theme = useSyncExternalStore(subscribe, readTheme, () => DEFAULT_THEME)
   const resolvedTheme = useSyncExternalStore(
     subscribe,
     getResolved,

@@ -1,4 +1,4 @@
-export const DEFAULT_AFTER_LOGIN = "/account"
+export const DEFAULT_AFTER_LOGIN = "/home"
 
 /**
  * Only allow same-site relative paths as post-login destinations,

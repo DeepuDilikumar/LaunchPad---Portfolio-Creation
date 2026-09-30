@@ -5,30 +5,30 @@ import { Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 /**
- * Buttons follow design/DESIGN_SYSTEM.md §7:
- * - `default` is THE primary action — one per screen.
- * - Tap targets are ≥ 44px (`lg` = 48px for the mobile primary action).
+ * Google / Material 3 style buttons (design/DESIGN_SYSTEM.md §7):
+ * - `default` (filled) is THE primary action — one per screen.
+ * - `tonal` for a strong secondary, `outline` for neutral secondary, `ghost` / `link` for tertiary.
+ * - Pill shaped; tap targets ≥ 44px (`lg` = 48px for the mobile primary action).
  * Use `buttonVariants()` on <Link> for navigational buttons.
  */
 const buttonVariants = cva(
-  "group/button relative inline-flex shrink-0 items-center justify-center gap-2 rounded-md border border-transparent font-semibold whitespace-nowrap select-none transition-[background-color,color,border-color,transform] duration-(--dur-fast) ease-out-expo active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button relative inline-flex shrink-0 items-center justify-center gap-2 rounded-full border border-transparent font-medium whitespace-nowrap select-none transition-[background-color,color,border-color,box-shadow,transform] duration-(--dur-fast) ease-out-expo active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-[1.125rem]",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary-hover",
-        secondary:
-          "border-border bg-card text-foreground hover:border-input hover:bg-muted",
-        outline:
-          "border-border bg-transparent text-foreground hover:border-input hover:bg-muted",
+        default: "bg-primary text-primary-foreground hover:bg-primary-hover hover:shadow-e1",
+        tonal: "bg-tonal text-tonal-foreground hover:shadow-e1",
+        secondary: "border-border bg-card text-accent-text hover:bg-tonal/60",
+        outline: "border-border bg-transparent text-foreground hover:bg-muted",
         ghost: "text-muted-foreground hover:bg-muted hover:text-foreground",
-        destructive:
-          "border-danger/40 bg-transparent text-danger hover:bg-danger-bg",
-        link: "h-auto px-0 font-normal text-accent-text underline-offset-4 hover:underline active:scale-100",
+        destructive: "border-border bg-transparent text-danger hover:bg-danger-bg",
+        "destructive-solid": "bg-danger text-white hover:shadow-e1 dark:text-background",
+        link: "h-auto rounded-sm px-0 text-accent-text underline-offset-4 hover:underline active:scale-100",
       },
       size: {
-        default: "h-11 px-4 text-sm",
-        sm: "h-10 px-3 text-sm",
-        lg: "h-12 px-5 text-base",
+        default: "h-11 px-5 text-sm",
+        sm: "h-10 px-4 text-sm",
+        lg: "h-12 px-6 text-base",
         icon: "size-11",
       },
     },

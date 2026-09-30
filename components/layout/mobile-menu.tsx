@@ -32,7 +32,7 @@ export function MobileMenu() {
       </SheetTrigger>
       <SheetContent
         side="bottom"
-        className="max-h-[85dvh] gap-0 overflow-y-auto rounded-t-2xl px-4 pt-3 pb-safe"
+        className="max-h-[85dvh] gap-0 overflow-y-auto rounded-t-[28px] px-4 pt-3 pb-safe"
       >
         <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-border" aria-hidden />
         <SheetTitle className="pr-12 text-h3">Menu</SheetTitle>
@@ -41,13 +41,13 @@ export function MobileMenu() {
         </SheetDescription>
 
         <nav aria-label="Main" className="mt-2">
-          <ul className="divide-y divide-border">
+          <ul>
             {NAV_LINKS.map((link) => (
               <li key={link.href}>
                 <Link
                   href={link.href}
                   onClick={close}
-                  className="flex h-12 items-center text-base text-foreground"
+                  className="-mx-2 flex h-12 items-center rounded-full px-2 text-base text-foreground hover:bg-muted"
                 >
                   {link.label}
                 </Link>

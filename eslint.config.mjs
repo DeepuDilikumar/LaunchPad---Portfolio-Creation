@@ -16,6 +16,9 @@ const eslintConfig = defineConfig([
     ".claude/**",
     "test-results/**",
     "playwright-report/**",
+    // Copied from pdfjs-dist at install time.
+    "public/pdf.worker.min.mjs",
+    ".data/**",
   ]),
 ]);
 

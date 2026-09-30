@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server"
 
 import { safeNextPath } from "@/lib/auth/redirect"
+import { SESSION_HINT_COOKIE, SESSION_HINT_OPTIONS } from "@/lib/auth/session"
 import { createClient } from "@/lib/supabase/server"
 
 /** OAuth (Google / GitHub) lands here with a one-time code, which we swap for a session. */
@@ -26,5 +27,7 @@ export async function GET(request: NextRequest) {
   const { error } = await supabase.auth.exchangeCodeForSession(code)
   if (error) return failure("exchange_failed")
 
-  return NextResponse.redirect(new URL(next, origin))
+  const response = NextResponse.redirect(new URL(next, origin))
+  response.cookies.set(SESSION_HINT_COOKIE, "1", SESSION_HINT_OPTIONS)
+  return response
 }

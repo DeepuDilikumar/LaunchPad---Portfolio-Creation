@@ -8,6 +8,15 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   // Only routes that read or need auth. The landing page and public portfolios
-  // stay fully static and skip this round-trip.
-  matcher: ["/account/:path*", "/login", "/auth/:path*"],
+  // stay static and skip this round-trip.
+  matcher: [
+    "/home/:path*",
+    "/portfolio/:path*",
+    "/report/:path*",
+    "/program/:path*",
+    "/settings/:path*",
+    "/account/:path*",
+    "/login",
+    "/auth/:path*",
+  ],
 }

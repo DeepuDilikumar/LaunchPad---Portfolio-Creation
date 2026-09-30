@@ -9,7 +9,7 @@ import { MobileMenu } from "./mobile-menu"
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-(--z-header) border-b border-border bg-background">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Logo />
 
         <nav aria-label="Main" className="hidden md:block">
@@ -18,7 +18,7 @@ export function SiteHeader() {
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className="rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors duration-(--dur-fast) hover:text-foreground"
+                  className="rounded-full px-4 py-2 text-sm text-muted-foreground transition-colors duration-(--dur-fast) hover:bg-muted hover:text-foreground"
                 >
                   {link.label}
                 </Link>
@@ -29,7 +29,7 @@ export function SiteHeader() {
 
         <div className="hidden items-center gap-1 md:flex">
           <ThemeToggle />
-          <AuthLink />
+          <AuthLink variant="secondary" />
         </div>
 
         <div className="md:hidden">

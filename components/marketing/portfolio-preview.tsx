@@ -64,25 +64,25 @@ export function PortfolioPreview({
   const hero =
     template === "bold" ? (
       <div {...r(0)} className={cn("bg-primary px-3 pt-4 pb-3 text-primary-foreground", r(0).className)}>
-        <p className="text-[15px] leading-tight font-semibold tracking-tight">{profile.name}</p>
+        <p className="text-[15px] leading-tight font-medium tracking-tight">{profile.name}</p>
         <p className="mt-0.5 text-[10px]">{profile.role}</p>
       </div>
     ) : template === "developer" ? (
       <div {...r(0)} className={cn("px-3 pt-3", r(0).className)}>
         <p className="font-mono text-[9px] text-muted-foreground">~/{profile.slug.replace("sample-", "")}</p>
-        <p className="mt-1 text-[14px] leading-tight font-semibold tracking-tight">{profile.name}</p>
+        <p className="mt-1 text-[14px] leading-tight font-medium tracking-tight">{profile.name}</p>
         <p className="font-mono text-[10px] text-accent-text">{`> ${profile.role}`}</p>
       </div>
     ) : (
       <div {...r(0)} className={cn("flex items-center gap-2 px-3 pt-3", r(0).className)}>
         <span
-          className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted text-[10px] font-semibold"
+          className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted text-[10px] font-medium"
           aria-hidden
         >
           {profile.initials}
         </span>
         <div className="min-w-0">
-          <p className="truncate text-[13px] leading-tight font-semibold tracking-tight">{profile.name}</p>
+          <p className="truncate text-[13px] leading-tight font-medium tracking-tight">{profile.name}</p>
           <p className="truncate text-[10px] text-muted-foreground">{profile.role}</p>
         </div>
       </div>
@@ -115,14 +115,14 @@ export function PortfolioPreview({
         className={cn("mx-3 rounded-lg border border-border bg-surface p-2", r(3).className)}
       >
         <p className="text-[8px] text-muted-foreground">Featured project</p>
-        <p className="mt-0.5 text-[11px] leading-tight font-semibold">{profile.project.title}</p>
+        <p className="mt-0.5 text-[11px] leading-tight font-medium">{profile.project.title}</p>
         <p className="mt-0.5 font-mono text-[8.5px] text-muted-foreground">
           {profile.project.stack.join(" · ")}
         </p>
         {progress ? (
           <div className="mt-1.5">
             <div className="flex items-center justify-between text-[8px]">
-              <span className="font-semibold text-accent-text">
+              <span className="font-medium text-accent-text">
                 {progress.day === progress.of ? "Built in 14 days" : "Building · 14-day program"}
               </span>
               <span className="tabular font-mono text-muted-foreground">

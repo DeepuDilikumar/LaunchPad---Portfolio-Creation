@@ -19,14 +19,14 @@ export function ThemeSegmented({ className }: { className?: string }) {
   return (
     <fieldset className={cn("min-w-0", className)}>
       <legend className="mb-2 text-caption text-muted-foreground">Theme</legend>
-      <div className="grid grid-cols-3 gap-1 rounded-lg border border-border bg-muted p-1">
+      <div className="grid grid-cols-3 gap-1 rounded-full border border-border p-1">
         {OPTIONS.map(({ value, label, Icon }) => (
           <label
             key={value}
             className={cn(
-              "flex h-11 items-center justify-center gap-1.5 rounded-md text-sm transition-colors duration-(--dur-fast) has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-ring",
+              "flex h-11 items-center justify-center gap-1.5 rounded-full text-sm transition-colors duration-(--dur-fast) has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-ring",
               theme === value
-                ? "bg-background font-semibold text-foreground shadow-sm"
+                ? "bg-tonal font-medium text-tonal-foreground"
                 : "text-muted-foreground hover:text-foreground"
             )}
           >

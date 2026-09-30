@@ -26,7 +26,7 @@ function ResumeSketch() {
   const bar = "h-[3px] rounded-full bg-muted-foreground/25"
   return (
     <div className="w-full -rotate-2 rounded-md border border-border bg-card p-2.5 shadow-sm">
-      <p className="text-[9px] leading-none font-semibold tracking-wide text-muted-foreground uppercase">
+      <p className="text-[9px] leading-none font-medium tracking-wide text-muted-foreground uppercase">
         Priya Nair — Resume
       </p>
       <p className="mt-1 text-[6.5px] leading-tight text-muted-foreground/80">
@@ -86,7 +86,7 @@ export function BeforeAfter() {
           <PhoneFrame url="launchpad.app/p/priya-nair" className="w-full">
             <PortfolioPreview profile={PRIYA} template="minimal" animate />
           </PhoneFrame>
-          <p className="text-caption font-semibold text-foreground">Live portfolio</p>
+          <p className="text-caption font-medium text-foreground">Live portfolio</p>
         </div>
       </div>
     </figure>

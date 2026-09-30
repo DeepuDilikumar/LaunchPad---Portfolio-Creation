@@ -2,12 +2,7 @@ import { FileUp, Gauge, GitCommitHorizontal, type LucideIcon } from "lucide-reac
 
 import { Section } from "./section"
 
-const STEPS: {
-  title: string
-  body: string
-  time: string
-  Icon: LucideIcon
-}[] = [
+const STEPS: { title: string; body: string; time: string; Icon: LucideIcon }[] = [
   {
     title: "Portfolio in minutes",
     body: "Upload your resume. We fill in everything and publish a clean portfolio site you can share on WhatsApp and LinkedIn.",
@@ -32,33 +27,21 @@ export function HowItWorks() {
   return (
     <Section
       id="how-it-works"
-      title="How it works"
-      lead="Three steps. Start free, pay only if you want to go further."
+      eyebrow="How it works"
+      title="From resume to a project you can defend"
+      lead="Three steps. Start free, and pay only if you want to go further."
     >
       <ol className="grid gap-4 md:grid-cols-3 md:gap-6">
         {STEPS.map(({ title, body, time, Icon }, index) => (
-          <li
-            key={title}
-            className="relative flex gap-4 rounded-xl border border-border bg-card p-5 md:flex-col md:p-6"
-          >
-            <div className="flex shrink-0 flex-col items-center md:flex-row md:justify-between">
-              <span className="flex size-10 items-center justify-center rounded-lg bg-muted text-foreground">
-                <Icon className="size-5" aria-hidden />
-              </span>
-              <span
-                className="tabular hidden font-mono text-sm text-muted-foreground md:block"
-                aria-hidden
-              >
-                0{index + 1}
-              </span>
-            </div>
+          <li key={title} className="flex gap-4 rounded-2xl bg-surface p-5 md:flex-col md:p-7">
+            <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-tonal text-tonal-foreground">
+              <Icon className="size-6" aria-hidden />
+            </span>
             <div className="min-w-0">
-              <h3 className="text-h3 font-semibold">
-                <span className="sr-only">Step {index + 1}: </span>
-                {title}
-              </h3>
+              <p className="text-caption font-medium text-muted-foreground">Step {index + 1}</p>
+              <h3 className="mt-0.5 text-h3 font-medium">{title}</h3>
               <p className="mt-1.5 text-sm text-muted-foreground md:text-base">{body}</p>
-              <p className="mt-3 inline-flex rounded-full bg-muted px-2.5 py-1 font-mono text-caption text-foreground">
+              <p className="mt-4 inline-flex rounded-full border border-border bg-card px-3 py-1 text-caption text-foreground">
                 {time}
               </p>
             </div>

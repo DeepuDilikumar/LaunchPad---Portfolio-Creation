@@ -40,9 +40,16 @@ describe("theme", () => {
     expect(classes.has("dark")).toBe(true)
     expect(root.dataset.theme).toBe("dark")
 
-    run(() => "garbage", false)
+    // Unknown or missing values fall back to light, even when the OS prefers dark.
+    run(() => "garbage", true)
     expect(classes.has("dark")).toBe(false)
-    expect(root.dataset.theme).toBe("system")
+    expect(root.dataset.theme).toBe("light")
+
+    run(() => null, true)
+    expect(classes.has("dark")).toBe(false)
+
+    run(() => "system", true)
+    expect(classes.has("dark")).toBe(true)
 
     expect(() =>
       run(() => {

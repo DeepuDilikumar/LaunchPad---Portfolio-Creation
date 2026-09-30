@@ -31,14 +31,14 @@ const POINTS: { title: string; body: string }[] = [
 export default function PrivacyPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6 md:py-20">
-      <h1 className="text-h1 font-semibold md:text-h1-lg">Privacy, in plain words</h1>
+      <h1 className="text-h1 font-medium md:text-h1-lg">Privacy, in plain words</h1>
       <p className="mt-3 text-muted-foreground">
         Your resume contains personal details. Here&apos;s exactly how we treat it.
       </p>
       <ul className="mt-10 flex flex-col gap-8">
         {POINTS.map((point) => (
           <li key={point.title}>
-            <h2 className="text-h3 font-semibold">{point.title}</h2>
+            <h2 className="text-h3 font-medium">{point.title}</h2>
             <p className="mt-1.5 text-muted-foreground">{point.body}</p>
           </li>
         ))}
