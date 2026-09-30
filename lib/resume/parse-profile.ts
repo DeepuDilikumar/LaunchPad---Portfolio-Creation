@@ -179,7 +179,7 @@ function extractEducation(lines: string[], fullText: string) {
     .trim()
   const degreeLine = pool.find((l) => DEGREE_HINT.test(l)) ?? ""
   const degree = degreeLine
-    ? degreeLine.replace(DATE_RANGE, "").replace(/\b(19|20)\d{2}\b/g, "").split(/\s[|–—]\s|,\s(?=[A-Z])/)[0].trim().slice(0, 80)
+    ? degreeLine.replace(DATE_RANGE, "").replace(/\b(19|20)\d{2}\b/g, "").split(/\s[|–—]\s|,\s(?=[A-Z])/)[0].replace(/[\s,;:|–—-]+$/, "").trim().slice(0, 80)
     : ""
 
   const now = new Date().getFullYear()
@@ -293,7 +293,11 @@ function extractExperience(lines: string[]): ExperienceEntry[] {
   lines.forEach((line, i) => {
     if (isEntryHeader(line, lines[i + 1])) {
       const period = line.match(DATE_RANGE)?.[0] ?? ""
-      const rest = line.replace(DATE_RANGE, "").replace(/[|,–—-]\s*$/, "").trim()
+      const rest = line
+        .replace(DATE_RANGE, "")
+        .replace(/\(\s*\)|\[\s*\]/g, "") // brackets left empty once the dates are taken out
+        .replace(/[|,–—-]\s*$/, "")
+        .trim()
       const at = rest.split(/\s+at\s+|\s*[|–—@]\s*|,\s+/)
       const roleFirst = /(intern|engineer|developer|analyst|trainee|associate|lead|member|consultant|designer)/i.test(at[0] ?? "")
       const role = (roleFirst ? at[0] : at[1] ?? "") ?? ""

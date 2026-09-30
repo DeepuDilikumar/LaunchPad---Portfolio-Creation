@@ -107,3 +107,22 @@ describe("extractResumeProfile", () => {
     expect(extractResumeProfile("Ananya Rao CV\nananya@example.com").profile.fullName).toBe("Ananya Rao")
   })
 })
+
+describe("experience with dates in brackets", () => {
+  it("leaves no empty brackets in the company name", () => {
+    const { profile } = extractResumeProfile(
+      "Asha Rao\nasha@example.com\n\nEXPERIENCE\nSoftware Intern, TechNova Solutions (May 2025 - Jul 2025)\n- Worked on REST APIs\n"
+    )
+    expect(profile.experience[0].company).toBe("TechNova Solutions")
+    expect(profile.experience[0].period).toMatch(/May 2025/)
+  })
+})
+
+describe("degree line with dates after a comma", () => {
+  it("drops trailing punctuation", () => {
+    const { profile } = extractResumeProfile(
+      "Asha Rao\nasha@example.com\n\nEDUCATION\nPES University, Bengaluru\nB.Tech in Computer Science, 2022 - 2026 | CGPA 8.4\n"
+    )
+    expect(profile.degree).toBe("B.Tech in Computer Science")
+  })
+})

@@ -7,15 +7,24 @@ import { expect, test, type Page } from "@playwright/test"
  * upload → auto-filled profile → template → sign in → publish → report → pay (test) →
  * resume rewrite → program → Day 1 → defend → announce → settings → delete.
  */
-test.use({ viewport: { width: 375, height: 800 } })
-test.describe.configure({ mode: "serial", timeout: 120_000 })
-
+/** Optional screen tour: set E2E_SCREENSHOTS to a folder. Sticky bars are flattened so full-page shots read naturally. */
 const shots = process.env.E2E_SCREENSHOTS
+
+test.use({ viewport: { width: 375, height: 800 }, deviceScaleFactor: shots ? 2 : 1 })
+test.describe.configure({ mode: "serial", timeout: 120_000 })
 async function snap(page: Page, name: string) {
-  if (shots) await page.screenshot({ path: path.join(shots, `${name}.png`), fullPage: true })
+  if (!shots) return
+  await page.waitForTimeout(450) // let entrance motion settle
+  const style = await page.addStyleTag({ content: ".sticky,.fixed{position:static!important}" })
+  await page.screenshot({ path: path.join(shots, `${name}.jpg`), fullPage: true, type: "jpeg", quality: 82 })
+  await style.evaluate((el) => (el as Element).remove())
 }
 
 test("a student goes from resume to a live portfolio, report and program", async ({ page }) => {
+  if (shots) await page.emulateMedia({ reducedMotion: "reduce" }) // stable screenshots
+  await page.goto("/")
+  await snap(page, "00-landing")
+
   // 1. Upload
   await page.goto("/start")
   await expect(page.getByRole("heading", { name: "Upload your resume" })).toBeVisible()
