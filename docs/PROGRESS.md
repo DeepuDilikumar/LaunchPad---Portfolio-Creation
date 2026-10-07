@@ -60,3 +60,17 @@ Each phase appends: what was done, what is mocked, what is left.
   sequence-gap bug on retries that the module now teaches. Agent replies and file trees are labelled "Example output".
   Codex outputs could not be captured here (Codex isn't installed): see TODO(verify-codex) in the MDX.
 - Database (pulled forward from P4): Drizzle schema + migration, PGlite locally, idempotent seed.
+
+## P4 — Accounts
+
+- Auth: Supabase (GitHub, Google, magic link) via `@supabase/ssr` with session refresh in `proxy.ts` and
+  `/auth/callback`; mock auth (HMAC-signed `bp_session` cookie) when keys are missing. Mock login page offers GitHub/Google
+  (each creates a fresh account, to simulate OAuth sign-up), email, demo learner and admin.
+- Onboarding: 3 taps (experience, target role, agent), then back to the stored `next`.
+- Progress persistence: `/api/progress` (touch + checkpoint), `/api/decisions` (upsert + journal toggles), access checked
+  with `canAccess`, cells validated against the module. Module/project completion recorded once (milestones), with email.
+- Dashboard (one Continue card, project grid, streak, recent decisions, empty state), journal (filters, public toggle,
+  link to cell), settings (handle, headline, GitHub username, public profile, preferred agent, progress emails).
+- Tests: unit (progress rules, streak, session tokens, return-to safety, content parsing); e2e J1 (6 clicks to a passed
+  checkpoint), J2 (logged-out free module, sign-in modal returns to the same cell, paywall teaser, FAQ), J4 (resume).
+- Mocked: auth (when Supabase keys are absent), welcome emails print to the console.

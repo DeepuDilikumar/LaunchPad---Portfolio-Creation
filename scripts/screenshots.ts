@@ -25,7 +25,13 @@ async function main() {
       const [name, value] = process.env.COOKIE.split("=");
       await ctx.addCookies([{ name: name!, value: value!, url: base }]);
     }
+    await ctx.addCookies([{ name: "bp_consent", value: "essential", url: base }]);
     const page = await ctx.newPage();
+    if (process.env.SIGNIN) {
+      const res = await page.request.post(base + "/api/auth/mock", { data: { method: process.env.SIGNIN, next: "/dashboard" } });
+      if (!res.ok()) throw new Error("sign-in failed " + res.status());
+      await page.request.post(base + "/api/onboarding", { data: { experienceLevel: "0-2", targetRole: "backend", preferredTool: "claude" } });
+    }
     for (const p of paths) {
       await page.goto(base + p, { waitUntil: "networkidle" });
       await page.waitForTimeout(Number(process.env.WAIT ?? 1200));
