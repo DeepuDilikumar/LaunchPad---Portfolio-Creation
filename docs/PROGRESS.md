@@ -74,3 +74,23 @@ Each phase appends: what was done, what is mocked, what is left.
 - Tests: unit (progress rules, streak, session tokens, return-to safety, content parsing); e2e J1 (6 clicks to a passed
   checkpoint), J2 (logged-out free module, sign-in modal returns to the same cell, paywall teaser, FAQ), J4 (resume).
 - Mocked: auth (when Supabase keys are absent), welcome emails print to the console.
+
+## P5 — Payments
+
+- `PaymentProvider` interface (`lib/payments/provider.ts`) with Razorpay (orders API, `order_id|payment_id` HMAC
+  verification, webhook signature + event id, refunds) and a mock provider (non-production only, same signature scheme
+  with a local secret).
+- `/api/checkout` computes the amount from `config/pricing.ts` (+ server-validated coupon), creates the order and a
+  pending purchase; 100%-discount orders grant directly. `/api/checkout/verify` checks the signature and the order owner.
+  `grantPurchase()` runs in a transaction: paid once (unique payment id), entitlements with `ON CONFLICT DO NOTHING`,
+  coupon redemption counted once, receipt email + `purchase_completed` only on the first transition.
+- Webhooks stored in `webhook_events` before processing (unique event id; failed events retry), `payment.captured`
+  grants, `refund.processed` revokes; a late duplicate capture after a refund does not restore access.
+- Coupons: percent, flat, and grant codes (bulk, seat limit, expiry, one redemption per user), admin creation API.
+- Pages: `/pricing` (INR/USD by geo cookie + manual toggle, redeem code), `/checkout` (plan toggle, project picker,
+  discount code, Razorpay widget or mock dialog), `/checkout/success` (receipt toast, back to the stored module),
+  `/contact` (leads + notification email, honeypot, rate limit).
+- Tests: unit idempotency suite (double submit, verify + duplicate webhooks, foreign payment, refund then late capture,
+  unknown order, coupon limits); e2e J3 (INR paywall → checkout → double-clicked payment → back unlocked, duplicate and
+  forged webhooks) and J8 (contact → admin codes → redemption limits and expiry).
+- Mocked: payments (mock provider) until Razorpay keys are set; receipt emails print to the console.

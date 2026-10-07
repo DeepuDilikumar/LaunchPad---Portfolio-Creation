@@ -5,9 +5,9 @@ import { site } from "@/config/site";
 import { eq } from "drizzle-orm";
 import { getDb, schema } from "@/lib/db";
 
-export type EmailTemplate = "welcome" | "first_checkpoint_nudge" | "receipt" | "module_complete" | "proof_published" | "magic_link";
+export type EmailTemplate = "welcome" | "first_checkpoint_nudge" | "receipt" | "module_complete" | "proof_published" | "magic_link" | "lead";
 
-const transactional = new Set<EmailTemplate>(["receipt", "magic_link"]);
+const transactional = new Set<EmailTemplate>(["receipt", "magic_link", "lead"]);
 
 export function unsubscribeToken(userId: string) {
   return createHmac("sha256", env.authSecret).update(`unsub:${userId}`).digest("base64url").slice(0, 32);
@@ -46,6 +46,11 @@ export function renderEmail(template: EmailTemplate, d: Record<string, string | 
       return {
         subject: `Your ${d.project} proof page is live`,
         text: `${hi}\n\nYour proof page is published:\n${d.url}\n\nShare it on LinkedIn or link it from your resume.\n\n— ${site.name}`,
+      };
+    case "lead":
+      return {
+        subject: `New ${d.kind} enquiry: ${d.organization}`,
+        text: `Name: ${d.name}\nEmail: ${d.email}\nOrganization: ${d.organization}\nType: ${d.kind}\nSeats: ${d.seats ?? "not given"}\n\n${d.message ?? ""}`,
       };
     case "magic_link":
       return {
