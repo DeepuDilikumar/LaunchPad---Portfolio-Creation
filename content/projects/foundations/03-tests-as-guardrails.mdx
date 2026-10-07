@@ -1,0 +1,182 @@
+---
+title: "Tests as guardrails"
+slug: tests-as-guardrails
+project: foundations
+order: 3
+minutes: 25
+summary: "Ask for failing tests first, read the diff, and know when to take the wheel."
+objectives:
+  - "Ask the agent for failing tests before the implementation"
+  - "Read a diff for intent, not just syntax"
+  - "Know the signals that mean you should take over"
+status: published
+free: true
+---
+
+<Explain id="intro">
+An agent will tell you it's done. Tests are how you find out whether that's true.
+
+In this module you'll make the agent write **failing tests first**, watch them fail for the right reason, and only then let it write the code. It feels slower. It's the single habit that most separates engineers who ship with agents from engineers who get burned by them.
+</Explain>
+
+<Explain id="why-red-first">
+Why the test has to fail first:
+
+- **A test that never failed proves nothing.** It might not even run.
+- **The failure message tells you the test checks what you meant.** "Cannot find module" means it's wired up; "expected false to be true" means it's asserting behaviour.
+- **It pins the agent to the spec.** The implementation has to satisfy tests you approved, not tests it wrote afterwards to match its own code.
+</Explain>
+
+<Prompt
+  id="failing-tests"
+  mode="build"
+  claude={`Work through PLAN.md. Start with the tests only.
+
+Write test/rate-limit.test.ts and test/shorten.test.ts for the store and the token-bucket rate limiter, mapped to the acceptance criteria in SPEC.md. The rate limiter must take an injected clock (now: () => number) so tests never sleep.
+
+Don't create the implementation files. Run pnpm test and show me the failure output.`}
+  codex={`Work through PLAN.md. Start with the tests only.
+
+Write test/rate-limit.test.ts and test/shorten.test.ts for the store and the token-bucket rate limiter, mapped to the acceptance criteria in SPEC.md. The rate limiter must take an injected clock (now: () => number) so tests never sleep.
+
+Do not create the implementation files yet. Run pnpm test and show me the failure output.`}
+/>
+
+<Expect id="red-output" kind="terminal" caption="Captured from the reference build, trimmed. Both files fail because the modules don't exist yet. That's the right first failure.">
+
+```bash
+$ pnpm test
+
+ FAIL  test/rate-limit.test.ts [ test/rate-limit.test.ts ]
+Error: Cannot find module '../src/rate-limit' imported from test/rate-limit.test.ts
+ ❯ test/rate-limit.test.ts:2:1
+      1| import { describe, expect, it } from "vitest";
+      2| import { createRateLimiter } from "../src/rate-limit";
+       | ^
+
+ FAIL  test/shorten.test.ts [ test/shorten.test.ts ]
+Error: Cannot find module '../src/store' imported from test/shorten.test.ts
+
+ Test Files  2 failed (2)
+      Tests  no tests
+```
+
+</Expect>
+
+<Explain id="read-the-tests">
+Before you let it implement, read the tests. You're checking intent, not style:
+
+- Does each acceptance criterion have at least one test?
+- Do the tests check **behaviour** ("the 4th request is blocked") rather than internals ("the map has 3 entries")?
+- Is time injected, so a "refills after 20 seconds" test runs instantly?
+- Is there one test for the thing most likely to break? For a rate limiter, that's refill and the cap.
+</Explain>
+
+<Expect id="test-example" kind="diff" caption="From the reference build: one of the five rate limiter tests.">
+
+```ts
+it("refills over time", () => {
+  let now = 0;
+  const rl = createRateLimiter({ limit: 3, windowMs: 60_000, now: () => now });
+  rl.take("a"); rl.take("a"); rl.take("a");
+  now += 20_000; // one token per 20s
+  expect(rl.take("a")).toBe(true);
+  expect(rl.take("a")).toBe(false);
+});
+```
+
+</Expect>
+
+<Prompt
+  id="implement"
+  mode="build"
+  claude={`The tests look right. Now implement src/store.ts and src/rate-limit.ts to make them pass. Don't change any test. If you think a test is wrong, stop and tell me why instead of editing it. Run pnpm test when you're done.`}
+  codex={`The tests look right. Now implement src/store.ts and src/rate-limit.ts to make them pass. Do not modify any test file. If you think a test is wrong, stop and explain instead of editing it. Run pnpm test when you're done.`}
+/>
+
+<Expect id="assertion-failure" kind="terminal" caption="Captured from the reference build with the refill line removed, trimmed. This is the kind of failure you want to be able to read at a glance.">
+
+```bash
+$ pnpm vitest run test/rate-limit.test.ts
+
+ ❯ test/rate-limit.test.ts (5 tests | 1 failed) 15ms
+   ❯ token bucket rate limiter (5)
+     × refills over time 8ms
+
+ FAIL  test/rate-limit.test.ts > token bucket rate limiter > refills over time
+AssertionError: expected false to be true // Object.is equality
+ ❯ test/rate-limit.test.ts:23:26
+     22|     now += 20_000; // one token per 20s
+     23|     expect(rl.take("a")).toBe(true);
+       |                          ^
+
+      Tests  1 failed | 4 passed (5)
+```
+
+</Expect>
+
+<Pitfall
+  id="pitfall-edits-tests"
+  title="edits the tests to make them pass"
+  recovery={`You changed a test file. Revert every change under test/ with git checkout -- test/. The tests are the spec. Make the implementation pass the original tests. If you believe a test is wrong, explain which assertion and why, and wait for me.`}
+>
+This is the most common way agents "finish" early. Check with `git diff --stat test/` after every implementation step. Add "never edit tests to make them pass" to your instructions file if it isn't there yet.
+</Pitfall>
+
+<Checkpoint id="green" cmd="pnpm test" pass="Test Files 2 passed and 0 failed (the reference build shows 9 passed)" required />
+
+<Expect id="green-output" kind="terminal" caption="Captured from the reference build, trimmed.">
+
+```bash
+$ pnpm test
+
+ Test Files  2 passed (2)
+      Tests  9 passed (9)
+   Duration  310ms
+```
+
+</Expect>
+
+<Explain id="read-the-diff">
+Green tests aren't the end of the review. Read the diff:
+
+```bash
+git diff --stat
+git diff src/
+```
+
+Read it for **intent**: does the code do what the plan said, in the files the plan said? Then look for the things tests rarely catch: a new dependency, a swallowed error, a hard-coded value, a `TODO` it left behind, or code nobody asked for.
+</Explain>
+
+<Explain id="take-the-wheel">
+Signals that it's time to stop prompting and take the wheel:
+
+- **The same fix three times.** The agent is looping. Read the error yourself.
+- **It's making the test weaker** to pass, or adding special cases for test inputs.
+- **The diff keeps growing** while the failure stays the same.
+- **You can't explain the change** it just made. Don't commit code you can't explain.
+
+Taking the wheel can be small: write the one line yourself, or write a sharper test that pins the bug, then hand it back.
+</Explain>
+
+<Decision id="decision-tests" question="Look at the tests the agent wrote. Which one would you have missed, or which did you change, and why?" />
+
+<Interview q="How do you stop an AI agent from writing tests that just confirm its own code?">
+I make it write the tests first, from the spec, and run them to see them fail before any implementation exists. I review the tests for behaviour against the acceptance criteria. Then the implementation has to satisfy tests I approved, and I check git diff on the test folder after every step so it can't quietly weaken them. Time and randomness get injected so tests are deterministic.
+</Interview>
+
+<Interview q="When do you stop delegating to the agent and write the code yourself?">
+When it's looping: the same fix repeatedly, a growing diff with the same failure, or tests getting weaker. Also when I can't explain its last change. Usually taking over is small: I read the actual error, write a sharper failing test or the one tricky line, and hand it back. The goal is to keep the loop moving, not to prove the agent can do everything.
+</Interview>
+
+<Quiz
+  id="check-red"
+  question="You run the new tests and they all pass immediately, before any implementation exists. What does that tell you?"
+  options={["Great, less work", "The tests probably aren't testing anything real", "The agent is very good", "You should increase the timeout"]}
+  answer={1}
+  why="A test that passes without the code it tests is checking nothing. Find out why before moving on."
+/>
+
+<Explain id="next">
+You have a tested store and rate limiter. Next: keeping sessions focused, keeping costs sane, and making some checks run every time, whether the agent remembers or not.
+</Explain>

@@ -1,0 +1,166 @@
+---
+title: "Plan before you build"
+slug: the-loop
+project: foundations
+order: 2
+minutes: 20
+summary: "Write a spec, have the agent plan in plan mode, review the plan like a tech lead, then build."
+objectives:
+  - "Write a short spec the agent can follow"
+  - "Use plan mode and review the plan before any code is written"
+  - "Recognise a bad plan and redirect it"
+status: published
+free: true
+---
+
+<Explain id="intro">
+Every module in this course runs the same loop: **spec → plan → build → verify → decide**. This module is about the first two steps, because that's where most agent sessions go wrong.
+
+An agent that starts typing straight away will build *something*. Often it's a reasonable answer to a question you didn't ask. A five-minute plan review is the cheapest place to catch that.
+</Explain>
+
+<Diagram
+  id="loop"
+  caption="The loop you'll run in every module"
+  chart={`flowchart LR
+  S[Spec: what done looks like] --> P[Plan: agent proposes, you review]
+  P --> B[Build: agent edits, tests first]
+  B --> V[Verify: run the checkpoint]
+  V --> D[Decide: keep, change or reject]
+  D -->|next slice| S`}
+/>
+
+<Explain id="what-a-spec-is">
+A spec for an agent is short and concrete. It answers four questions:
+
+1. **What are we building?** One paragraph.
+2. **What's in and what's out?** The out list matters more. It stops scope creep.
+3. **How will we know it works?** Acceptance criteria you could turn into tests.
+4. **What are the constraints?** Language, dependencies, performance, things not to touch.
+
+Half a page is plenty. If the spec runs longer, the task is probably two tasks.
+</Explain>
+
+<Prompt
+  id="draft-spec"
+  mode="plan"
+  claude={`Help me write SPEC.md for shortly, our URL shortener. Interview me first: ask one question at a time, at most six questions, about what it should do, what it must not do, and how we'll know it works.
+
+Then write SPEC.md with four sections: Goal (one paragraph), In scope / Out of scope, Acceptance criteria (a numbered list, each one testable), Constraints. Keep it under 50 lines. Don't write any code.`}
+  codex={`Help me write SPEC.md for shortly, our URL shortener. Ask me one question at a time, at most six, about what it should do, what it must not do, and how we'll know it works. Wait for each answer.
+
+Then create SPEC.md with four sections: Goal (one paragraph), In scope / Out of scope, Acceptance criteria (a numbered list, each one testable), Constraints. Keep it under 50 lines. Don't write any code.`}
+/>
+
+<Expect id="spec-example" kind="tree" example>
+
+```md
+# shortly — spec
+
+## Goal
+A tiny HTTP service that turns long URLs into 6-character codes and redirects.
+
+## In scope
+- POST /shorten with a JSON body { "url": "..." } returns 201 and a code
+- GET /:code redirects with 301
+- Rate limit POST /shorten to 10 requests per minute per IP
+
+## Out of scope
+- Accounts, custom codes, analytics, a database (in-memory is fine for now)
+
+## Acceptance criteria
+1. Only http and https URLs are accepted; anything else returns 400
+2. Codes are 6 characters, [a-zA-Z0-9], and never repeat
+3. Unknown codes return 404
+4. The 11th POST in a minute from one IP returns 429 with Retry-After
+5. The rate limiter is tested without real waiting (inject the clock)
+
+## Constraints
+- Node + TypeScript, no web framework, Vitest for tests
+- No new dependencies without asking
+```
+
+</Expect>
+
+<Explain id="plan-mode">
+Now ask for a plan, not code.
+
+- **Claude Code:** press **Shift+Tab** until the footer says plan mode. In plan mode it can read files and think, but it won't edit anything until you approve.
+- **Codex:** there's no separate plan switch in every version, so say it in the prompt: plan only, no edits, wait for approval. If your version supports a read-only approval mode, turn it on.
+</Explain>
+
+{/* TODO(verify-codex): confirm the current Codex read-only / approval mode command and name it here. */}
+
+<Prompt
+  id="ask-for-plan"
+  mode="plan"
+  claude={`Read SPEC.md and CLAUDE.md. Propose an implementation plan for shortly.
+
+The plan must include: the files you'll create and what each one is for, the tests you'll write first (one line each, mapped to acceptance criteria by number), the order you'll work in, and anything in the spec that's ambiguous. Don't write code yet.`}
+  codex={`Read SPEC.md and AGENTS.md. Propose an implementation plan for shortly. Don't edit any files until I approve.
+
+The plan must include: the files you'll create and what each one is for, the tests you'll write first (one line each, mapped to acceptance criteria by number), the order you'll work in, and anything in the spec that's ambiguous.`}
+/>
+
+<Explain id="review-checklist">
+Review the plan the way a tech lead reviews a design doc. Read it once, then check:
+
+- **Does every acceptance criterion map to a test?** If criterion 4 has no test, it won't be done.
+- **Is anything in the plan that's out of scope?** Agents like adding databases, auth and config files.
+- **Are the files small and named for what they do?** `utils.ts` is a smell.
+- **Did it raise real ambiguities,** or invent answers silently?
+- **Is the order sensible?** Pure logic first (store, rate limiter), then the HTTP layer.
+
+Reply with your changes in one message. Then save the agreed plan, so the next session can read it.
+</Explain>
+
+<Pitfall
+  id="pitfall-overbuilt-plan"
+  title="plans a database, a framework and a config system for a 100-line service"
+  recovery={`This plan is bigger than the spec. Remove everything that isn't needed for the acceptance criteria in SPEC.md: no database, no web framework, no config library. Keep the data in memory behind a small interface so we can swap it later. Show me the revised plan, still without code.`}
+>
+Agents pattern-match to "production app" and reach for the full stack. Point it back at the out-of-scope list. The spec is your leverage, which is why you wrote one.
+</Pitfall>
+
+<Pitfall
+  id="pitfall-starts-coding"
+  title="starts writing code before you approved the plan"
+  recovery={`Stop. Revert any files you created in this session. I want a plan first, with no edits. Re-read SPEC.md and give me the plan in the format I asked for.`}
+>
+In Claude Code, check that plan mode is on (Shift+Tab). In Codex, say "don't edit any files until I approve" in the same message as the request.
+</Pitfall>
+
+<Prompt
+  id="save-plan"
+  mode="build"
+  claude={`Apply my review comments to the plan, then save the final plan to PLAN.md as a checklist. Don't implement anything yet.`}
+  codex={`Apply my review comments to the plan, then save the final plan to PLAN.md as a checklist. Don't implement anything yet.`}
+/>
+
+<Checkpoint id="spec-and-plan" cmd="ls SPEC.md PLAN.md && grep -c '^[0-9]' SPEC.md" pass="both files listed, then a count of 3 or more acceptance criteria" required />
+
+<Decision id="decision-plan-review" question="What did the agent's first plan get wrong or overbuild, and what did you change before approving it?" />
+
+<Callout id="interview-angle" kind="interview">
+"Tell me how you work with AI tools" is now a standard interview question. "I write a spec, make it plan first and review the plan before it writes code" is a much stronger answer than "I use Copilot".
+</Callout>
+
+<Interview q="Why review an agent's plan instead of just reviewing the code it writes?">
+Because a plan is cheap to change and code isn't. Reviewing a plan takes a few minutes and catches the expensive mistakes: wrong scope, wrong architecture, missing requirements. Once a few hundred lines exist, the agent and I both anchor on them, and the review turns into patching. I still review the code, but by then I'm checking execution, not direction.
+</Interview>
+
+<Interview q="What makes a spec good enough for an agent to follow?">
+It's short, it has an explicit out-of-scope list, and its acceptance criteria are testable: each one could become a test with a clear pass or fail. It names constraints the agent can't infer, like no new dependencies or an injected clock. I keep it under a page; if it grows past that, I split the task.
+</Interview>
+
+<Quiz
+  id="check-plan"
+  question="The plan covers acceptance criteria 1, 2, 3 and 5, but there's no test for criterion 4 (the 429 response). What do you do?"
+  options={["Approve it; the agent will probably remember", "Ask for a test mapped to criterion 4 before approving", "Delete criterion 4 from the spec", "Write the rate limiter yourself"]}
+  answer={1}
+  why="Unmapped criteria are the ones that quietly don't get built. Fix the plan while it's cheap."
+/>
+
+<Explain id="next">
+You have a spec and an approved plan. Next, you'll make the agent write failing tests first, read its diffs, and learn the signals that mean it's time to take the wheel.
+</Explain>

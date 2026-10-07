@@ -1,0 +1,180 @@
+---
+title: "Set up your agents"
+slug: setup-agents
+project: foundations
+order: 1
+minutes: 10
+summary: "Install Claude Code and Codex, see how agents read your repo, and write your first CLAUDE.md and AGENTS.md."
+objectives:
+  - "Install and sign in to Claude Code or Codex"
+  - "Understand what an agent reads when it opens your repo"
+  - "Write a CLAUDE.md and AGENTS.md and pass your first checkpoint"
+status: published
+free: true
+---
+
+<Explain id="intro">
+In the next ten minutes you'll install a coding agent, point it at a fresh repo, and write the one file that decides how well it works for you: the instructions file.
+
+You only need one agent. Every prompt in this course has a **Claude Code** version and a **Codex** version. Pick the tool you already pay for, and switch the tabs at the top of the page to match. Your choice is remembered.
+</Explain>
+
+<Explain id="what-an-agent-is">
+A coding agent is a loop. It reads files, runs commands, edits code, and looks at the result, then decides what to do next. You stay in charge of three things the agent can't do for you:
+
+- **Say what done looks like.** A spec, a test, a number.
+- **Approve the plan** before code gets written.
+- **Decide** when a change is good enough to keep.
+
+The rest of this course is practice at those three things on systems that are hard enough to matter.
+</Explain>
+
+<Callout id="cost-note" kind="cost">
+Both tools work on a subscription (a flat monthly fee with usage limits) or on pay-as-you-go API keys. A subscription is the predictable choice while you're learning. Check current prices on the [Claude pricing page](https://claude.com/pricing) and the [ChatGPT pricing page](https://openai.com/chatgpt/pricing).
+</Callout>
+
+<Explain id="install">
+Install the agent you picked. Installers change, so if a command fails, follow the official setup page: [Claude Code docs](https://docs.claude.com/en/docs/claude-code/overview) or [Codex docs](https://developers.openai.com/codex).
+
+```bash
+# Claude Code (needs Node.js 18 or newer)
+npm install -g @anthropic-ai/claude-code
+
+# Codex
+npm install -g @openai/codex
+```
+
+Then run `claude` or `codex` once in any folder. It will ask you to sign in.
+</Explain>
+
+<Checkpoint id="cli-installed" cmd="claude --version" pass="a version number, like 2.1.292 (Claude Code)" required>
+Using Codex? Run `codex --version` instead. Any version number passes.
+</Checkpoint>
+
+<Expect id="cli-installed-output" kind="terminal" caption="Captured from a real run. Your version number will differ.">
+
+```bash
+$ claude --version
+2.1.292 (Claude Code)
+```
+
+</Expect>
+
+{/* TODO(verify-codex): capture real `codex --version` output. */}
+
+<Explain id="how-agents-read">
+When you start a session, the agent knows nothing about your project. It doesn't remember yesterday's session either. Here is what happens instead:
+
+1. It loads an **instructions file** from the repo root: `CLAUDE.md` for Claude Code, `AGENTS.md` for Codex.
+2. It explores: lists folders, searches for names, reads the files it thinks matter.
+3. Everything it read sits in its **context window**, a fixed budget of text. When the budget fills up, older details get summarised or dropped.
+
+So the instructions file is the agent's memory of your project. It is read at the start of every session, which makes it the highest-leverage file in the repo.
+</Explain>
+
+<Diagram
+  id="session-start"
+  caption="What an agent does at the start of every session"
+  chart={`flowchart LR
+  A[You start a session] --> B[Load CLAUDE.md or AGENTS.md]
+  B --> C[Explore: list, search, read files]
+  C --> D[Plan]
+  D --> E[Edit and run commands]
+  E --> F[You review the result]
+  F -->|next task| D`}
+/>
+
+<Explain id="practice-repo">
+Make a practice repo. You'll grow it into a deployed URL shortener by the end of Foundations.
+
+```bash
+mkdir shortly && cd shortly
+git init
+npm init -y
+```
+
+Now start your agent inside `shortly`.
+</Explain>
+
+<Prompt
+  id="write-instructions"
+  mode="plan"
+  claude={`We're starting a small TypeScript project called shortly: a URL shortener with a rate limiter, tested with Vitest, deployed as a Node service.
+
+Before you write anything, ask me up to five questions about how I want to work (package manager, test style, how much you should do without asking).
+
+Then draft a CLAUDE.md under 40 lines with these sections: what this project is, commands, conventions, and things you must never do. Only include things specific to this repo that you would get wrong without being told. Don't create any other files.`}
+  codex={`We're starting a small TypeScript project called shortly: a URL shortener with a rate limiter, tested with Vitest, deployed as a Node service.
+
+First, ask me up to five questions about how I want to work (package manager, test style, how much you should do without asking). Wait for my answers.
+
+Then create AGENTS.md, under 40 lines, with these sections: what this project is, commands, conventions, and things you must never do. Only include things specific to this repo that you would get wrong without being told. Don't create any other files.`}
+/>
+
+<Expect id="instructions-example" kind="tree" example>
+
+```md
+# shortly
+
+A URL shortener with a token-bucket rate limiter. Node + TypeScript, no framework.
+
+## Commands
+- pnpm test        run Vitest once
+- pnpm typecheck   tsc --noEmit
+- pnpm dev         run the server with reload
+
+## Conventions
+- Write the failing test first, then the code.
+- Keep modules small: src/store.ts, src/rate-limit.ts, src/server.ts.
+- Inject the clock (now: () => number) so time-based code is testable.
+
+## Never
+- Never add a dependency without asking.
+- Never edit tests to make them pass. Fix the code, or tell me the test is wrong.
+```
+
+</Expect>
+
+<Pitfall
+  id="pitfall-long-instructions"
+  title="writes a 200-line instructions file full of generic advice"
+  recovery={`Cut the instructions file to under 40 lines. Keep only rules that are specific to this repo and that you would get wrong without being told. Delete generic advice like "write clean code" or "follow best practices". Show me the result before saving.`}
+>
+Long files dilute the rules that matter, and they cost context on every session. A good test for each line: would the agent do the wrong thing without it? If not, delete it.
+</Pitfall>
+
+<Explain id="both-files">
+If you use both tools, or your teammates do, keep one source of truth. Put the content in `AGENTS.md`, and make `CLAUDE.md` a one-line import that Claude Code understands:
+
+```md
+@AGENTS.md
+```
+
+Now both agents read the same rules.
+</Explain>
+
+<Checkpoint id="instructions-file" cmd="cat CLAUDE.md AGENTS.md 2>/dev/null | wc -l" pass="a number between 5 and 60" required>
+This checks that at least one instructions file exists and that it stayed short.
+</Checkpoint>
+
+<Decision id="decision-instructions" question="What did you put in your instructions file that the agent would have gotten wrong without it, and what did you cut?" />
+
+<Interview q="How do you get an AI coding agent to follow your team's conventions?">
+Put the conventions where the agent reads them every session: a short instructions file at the repo root (CLAUDE.md or AGENTS.md). Keep it to rules that are specific and checkable, like commands, file layout, test-first, and things never to do. Then back the important rules with something deterministic: tests, a linter, a typecheck in CI or a hook. Instructions steer the agent; checks catch it when it drifts. I review the file like code, because a vague rule costs context every session and still gets ignored.
+</Interview>
+
+<Interview q="Agents forget everything between sessions. How do you work with that?">
+I treat the repo as the memory. Decisions go into the instructions file, ADRs and the spec; progress goes into commits and a short task list. A new session starts by reading those, so it doesn't depend on a chat history. I also keep sessions small: one task per session, with the plan written down, so nothing important lives only in the context window.
+</Interview>
+
+<Quiz
+  id="check-memory"
+  question="You told the agent yesterday to always use pnpm. Today it runs npm install. What's the most reliable fix?"
+  options={["Remind it at the start of every chat", "Add the rule to CLAUDE.md or AGENTS.md", "Switch to a bigger model", "Delete package-lock.json and hope"]}
+  answer={1}
+  why="The instructions file is loaded at the start of every session. Chat history isn't."
+/>
+
+<Explain id="next">
+You have an agent, a repo, and an instructions file. Next you'll use the loop that every module in this course follows: write a short spec, have the agent plan in plan mode, review the plan like a tech lead, and only then let it build.
+</Explain>

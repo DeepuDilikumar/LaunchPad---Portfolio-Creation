@@ -1,0 +1,127 @@
+---
+title: "Context and cost"
+slug: context-and-cost
+project: foundations
+order: 4
+minutes: 20
+summary: "Keep sessions focused, and use skills, subagents and hooks for the checks that must always run."
+objectives:
+  - "Keep sessions small and focused"
+  - "Use subagents for exploration and review"
+  - "Add a hook that runs checks deterministically"
+status: published
+free: true
+---
+
+<Explain id="intro">
+Agents get worse as sessions get longer. Old details crowd the context window, earlier mistakes get repeated, and every message costs more because the whole history is sent again.
+
+This module covers four tools for keeping sessions sharp: **small sessions**, **subagents**, **skills**, and **hooks**. The last one matters most. It's how you make a check run every time, instead of hoping the agent remembers.
+</Explain>
+
+<Explain id="small-sessions">
+One task per session. A good session looks like this:
+
+1. Start fresh. The agent reads the instructions file, `SPEC.md` and `PLAN.md`.
+2. Do one checklist item from the plan.
+3. Verify it, commit it, tick it off in `PLAN.md`.
+4. End the session (`/clear` in Claude Code, or a new session in Codex).
+
+The repo carries the state between sessions, not the chat. That's why you wrote the spec and the plan down.
+</Explain>
+
+<Callout id="cost-tokens" kind="cost">
+Each message sends the whole conversation so far. A long session isn't only less accurate, it costs more per message. On a subscription that means hitting usage limits sooner; on API keys it means a bigger bill. Clearing between tasks is the cheapest optimisation you'll ever make.
+</Callout>
+
+<Explain id="subagents">
+A **subagent** is a separate agent with its own fresh context, started by your main session for one job. It does the job and reports back a summary, so the main session's context stays clean.
+
+Use them for:
+
+- **Exploration:** "find every place we read the clock" across a big codebase.
+- **Independent review:** a reviewer that didn't write the code is more willing to find problems in it.
+
+Claude Code has subagents built in. In Codex, get the same effect by running a second session with a review-only prompt.
+</Explain>
+
+{/* TODO(verify-codex): check whether the current Codex release has a built-in subagent or parallel task feature, and name it. */}
+
+<Prompt
+  id="review-subagent"
+  mode="review"
+  claude={`Use a subagent to review the current diff (git diff main) as a skeptical senior engineer. It should not edit anything. Ask it to report: bugs, missing tests for the acceptance criteria in SPEC.md, anything out of scope, and anything it can't explain. Give me its findings as a short list, most serious first.`}
+  codex={`Act as a skeptical senior engineer reviewing the current diff (git diff main). Don't edit anything. Report: bugs, missing tests for the acceptance criteria in SPEC.md, anything out of scope, and anything you can't explain. Short list, most serious first.`}
+/>
+
+<Explain id="skills">
+A **skill** is a reusable instruction pack: a folder with a `SKILL.md` that describes a procedure, plus any scripts it needs. The agent loads it only when the task matches, so it doesn't cost context the rest of the time.
+
+Good candidates are procedures you repeat: "how we write a migration", "how we cut a release", "our code review checklist". You won't need one for shortly, but you'll write one in the projects.
+</Explain>
+
+<Explain id="hooks">
+Instructions are suggestions. **Hooks are guarantees.** A hook is a command the tool runs automatically at a set moment, for example after every file edit, whether the agent remembers or not.
+
+The classic use: run the typecheck after every edit, so type errors surface immediately instead of five changes later.
+</Explain>
+
+<Prompt
+  id="add-hook"
+  mode="build"
+  claude={`Add a Claude Code hook to this project's .claude/settings.json: after any Edit or Write tool call, run pnpm -s typecheck. Show me the JSON before writing it, and keep any settings that are already there.`}
+  codex={`Codex doesn't run hooks after edits the way Claude Code does. Add a "Checks" section to AGENTS.md that says: after editing any TypeScript file, run pnpm -s typecheck and fix errors before continuing. Then add a typecheck step to package.json's test script so it also runs with every test run.`}
+/>
+
+<Expect id="hook-json" kind="diff" caption="The hook configuration for Claude Code, in .claude/settings.json.">
+
+```json
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [{ "type": "command", "command": "pnpm -s typecheck" }]
+      }
+    ]
+  }
+}
+```
+
+</Expect>
+
+{/* TODO(verify-codex): confirm Codex has no post-edit hook; if a newer release adds one, replace the AGENTS.md workaround. */}
+
+<Pitfall
+  id="pitfall-slow-hook"
+  title="adds a hook that runs the whole test suite after every edit, and everything crawls"
+  recovery={`The hook is too slow to run after every edit. Change it to run only pnpm -s typecheck after edits. We'll run the full test suite at the end of each task and in CI instead.`}
+>
+Hooks run constantly, so keep them fast: typecheck or lint, a few seconds at most. Slow checks belong at the end of the task and in CI.
+</Pitfall>
+
+<Checkpoint id="typecheck-clean" cmd="pnpm -s typecheck && echo typecheck ok" pass="typecheck ok" required />
+
+<Checkpoint id="hook-configured" cmd="grep -c PostToolUse .claude/settings.json" pass="1 (Codex users: skip this one)" />
+
+<Decision id="decision-hooks" question="Which check did you make deterministic (hook, CI or test script), and what did you decide to leave out because it would be too slow or noisy?" />
+
+<Interview q="Your AI agent keeps forgetting to run the linter. How do you fix that?">
+I stop relying on it remembering. I make the check deterministic: a post-edit hook for fast checks like the typecheck, and CI for everything slower. The instructions file still mentions the check, but the hook and CI are what guarantee it. I keep hooks fast so they don't slow every edit.
+</Interview>
+
+<Interview q="How do you manage cost and quality in long agent sessions?">
+I keep sessions to one task: start fresh, read the spec and plan from the repo, do one item, verify, commit, clear. Long sessions resend the whole history with every message, so they cost more and drift more. For broad searches or reviews I use a subagent with its own context and keep only its summary. And I pick the smaller model for mechanical work when the tool lets me.
+</Interview>
+
+<Quiz
+  id="check-hooks"
+  question="Which of these belongs in a post-edit hook?"
+  options={["A 4-minute end-to-end test suite", "A 2-second typecheck", "A production deploy", "Opening a pull request"]}
+  answer={1}
+  why="Hooks run after every edit. Keep them to fast, deterministic checks."
+/>
+
+<Explain id="next">
+You've got the habits. Next, put them together: build the HTTP layer for shortly, add CI, and deploy it to a live URL.
+</Explain>

@@ -38,3 +38,25 @@ Each phase appends: what was done, what is mocked, what is left.
 - Verified: screenshots at 390/1440 per section, reduced-motion final states, no console errors or hydration warnings.
 - Lighthouse: deferred to P9 (run against the production build).
 - Mocked: `/api/events` accepts and drops events until the database lands in P4.
+
+## P3 — Notebook
+
+- Content layer (ADR-001): `lib/content/{schema,parse,index,render}` — gray-matter + zod frontmatter, MDX AST cell
+  extraction (stable ids, required checkpoints, decisions, per-cell source for tutor context), server-side MDX render,
+  teaser extraction (paid content is never sent to unentitled visitors). `pnpm content:check` enforces catalog
+  agreement and authoring minimums.
+- Cells: Explain, Prompt (tool tabs, copy, mode hints, `prompt_copied`), Expect (Shiki with a token theme, "Example
+  output" label for anything not captured from a real run), Checkpoint (mark passed / paste output / skip optional),
+  Pitfall (recovery prompt + "ask the tutor"), Decision (800ms autosave, public toggle, 40-char minimum), Interview,
+  Quiz, Diagram (lazy Mermaid, dark theme), Callout.
+- Notebook shell: rail with progress rings and locks, top bar (breadcrumb, tool switcher, progress, Ask tutor), drawer
+  (Tutor / Journal / Notes), mobile bottom sheet + sticky "Next cell", keyboard j/k/c/p and `/`, resume to last cell,
+  sign-in modal on interaction while logged out, first-checkpoint and module-complete celebrations.
+- `/projects` and `/projects/[slug]` (SSG, Course JSON-LD). Paid modules show the first Explain cell + upgrade card;
+  outline modules show "Releasing soon" + Notify me.
+- Content: Foundations M1–M5 and Pulse M0–M2 published; 63 outlines generated from the catalog.
+  Real outputs: `claude --version`, the shortly reference build (`reference/foundations-shortly`, 11 tests, red/green
+  runs, curl), and the Pulse M2 schema run against PGlite (`reference/pulse-data-model`), which surfaced a real
+  sequence-gap bug on retries that the module now teaches. Agent replies and file trees are labelled "Example output".
+  Codex outputs could not be captured here (Codex isn't installed): see TODO(verify-codex) in the MDX.
+- Database (pulled forward from P4): Drizzle schema + migration, PGlite locally, idempotent seed.

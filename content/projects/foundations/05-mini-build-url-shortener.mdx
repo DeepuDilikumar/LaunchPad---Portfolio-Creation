@@ -1,0 +1,171 @@
+---
+title: "Mini-build: a URL shortener"
+slug: mini-build-url-shortener
+project: foundations
+order: 5
+minutes: 45
+summary: "Build a URL shortener with a rate limiter, tests and CI, and deploy it live."
+objectives:
+  - "Spec, plan and build a small service end to end"
+  - "Add a token-bucket rate limiter with tests"
+  - "Ship it with CI and a live URL"
+status: published
+free: true
+---
+
+<Explain id="intro">
+Time to finish shortly. You already have a spec, a plan, a tested store and a tested rate limiter. In this module you'll add the HTTP layer, put CI in front of it, and deploy it to a URL anyone can open.
+
+It's small on purpose. Every project after this one uses the same moves at a bigger scale: a slice at a time, tests first, CI always green, and a real deploy you can point to.
+</Explain>
+
+<Diagram
+  id="shortly-shape"
+  caption="shortly: one process, three small modules"
+  chart={`flowchart LR
+  C[Client] -->|POST /shorten| S[server.ts]
+  C -->|GET /:code| S
+  S --> R[rate-limit.ts: token bucket per IP]
+  S --> T[store.ts: code to URL]
+  R -->|over limit| X[429 + Retry-After]`}
+/>
+
+<Prompt
+  id="http-tests"
+  mode="build"
+  claude={`Next item in PLAN.md: the HTTP layer. Tests first.
+
+Write test/server.test.ts that starts the server on a random port (listen(0)) and uses fetch to check: POST /shorten returns 201 with a code, GET /:code returns 301 with the right Location header, and the request after the limit returns 429 with Retry-After: 60. Build the server with a createApp(options) function so the test can use a limit of 3. Run the tests and show me they fail.`}
+  codex={`Next item in PLAN.md: the HTTP layer. Write the tests first.
+
+Create test/server.test.ts that starts the server on a random port (listen(0)) and uses fetch to check: POST /shorten returns 201 with a code, GET /:code returns 301 with the right Location header, and the request after the limit returns 429 with Retry-After: 60. The server should expose createApp(options) so the test can use a limit of 3. Run the tests and show me they fail.`}
+/>
+
+<Prompt
+  id="http-implement"
+  mode="build"
+  claude={`Implement src/server.ts with node:http (no framework) to make the server tests pass. Read PORT from the environment and default to 3000. Add a GET /health route that returns 200. Don't change the tests. Run pnpm test and pnpm typecheck.`}
+  codex={`Implement src/server.ts using node:http (no framework) so the server tests pass. Read PORT from the environment, default 3000. Add GET /health returning 200. Do not modify the tests. Run pnpm test and pnpm typecheck.`}
+/>
+
+<Expect id="all-green" kind="terminal" caption="Captured from the reference build with the verbose reporter, trimmed.">
+
+```bash
+$ pnpm vitest run --reporter=verbose
+
+ ✓ test/rate-limit.test.ts > token bucket rate limiter > allows up to the limit within a window
+ ✓ test/rate-limit.test.ts > token bucket rate limiter > blocks the request after the limit
+ ✓ test/rate-limit.test.ts > token bucket rate limiter > refills over time
+ ✓ test/rate-limit.test.ts > token bucket rate limiter > tracks keys independently
+ ✓ test/rate-limit.test.ts > token bucket rate limiter > never refills above the limit
+ ✓ test/shorten.test.ts > link store > creates a short code for a valid URL
+ ✓ test/shorten.test.ts > link store > rejects URLs that aren't http or https
+ ✓ test/shorten.test.ts > link store > returns undefined for unknown codes
+ ✓ test/shorten.test.ts > link store > never returns the same code twice
+ ✓ test/server.test.ts > http api > shortens and redirects
+ ✓ test/server.test.ts > http api > returns 429 after the limit
+
+ Test Files  3 passed (3)
+      Tests  11 passed (11)
+```
+
+</Expect>
+
+<Checkpoint id="local-run" cmd={`curl -s -X POST localhost:3000/shorten -H 'content-type: application/json' -d '{"url":"https://example.com"}'`} pass={`a JSON body with a 6-character code, like {"code":"rpn9z0","short":"/rpn9z0"}`} required>
+Start the server first with `pnpm start` in another terminal.
+</Checkpoint>
+
+<Expect id="curl-output" kind="terminal" caption="Captured from the reference build, response headers trimmed.">
+
+```bash
+$ curl -i -X POST localhost:4123/shorten -H 'content-type: application/json' \
+    -d '{"url":"https://example.com/a/very/long/path"}'
+HTTP/1.1 201 Created
+content-type: application/json
+
+{"code":"rpn9z0","short":"/rpn9z0"}
+```
+
+</Expect>
+
+<Pitfall
+  id="pitfall-ip-behind-proxy"
+  title="rate-limits everyone together once it's deployed"
+  recovery={`On the host, every request comes through a proxy, so req.socket.remoteAddress is the proxy's IP and all users share one bucket. Read the client IP from the first value of the x-forwarded-for header when it's present, fall back to remoteAddress, and add a test for both cases. Only trust x-forwarded-for because our host sets it; note that in a comment.`}
+>
+It works on your machine and breaks in production, which is exactly why you deploy early. Most hosts put a proxy in front of your process.
+</Pitfall>
+
+<Explain id="ci">
+CI is the guardrail that doesn't depend on anyone's memory: not yours, not the agent's. Every push runs the typecheck and the tests, and a red build blocks the merge.
+</Explain>
+
+<Prompt
+  id="add-ci"
+  mode="build"
+  claude={`Add a GitHub Actions workflow at .github/workflows/ci.yml that runs on push and pull_request: check out the code, set up pnpm and Node 22, install with a frozen lockfile, then run pnpm typecheck and pnpm test. Keep it to one job. Show me the YAML before writing it.`}
+  codex={`Create .github/workflows/ci.yml: on push and pull_request, check out the code, set up pnpm and Node 22, install with a frozen lockfile, run pnpm typecheck and pnpm test. One job only. Show me the YAML before writing it.`}
+/>
+
+<Expect id="ci-yaml" kind="diff" caption="A minimal workflow. Check the setup actions' current major versions when you add it.">
+
+```yaml
+name: ci
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm test
+```
+
+</Expect>
+
+<Checkpoint id="ci-green" cmd="git push" pass="a green check next to your latest commit on GitHub" required>
+Create a GitHub repo, add it as `origin`, and push. Open the Actions tab and wait for the run to finish.
+</Checkpoint>
+
+<Explain id="deploy">
+Now deploy. shortly is a long-running Node process, so pick a host that runs one: Render, Railway and Fly.io all have free or low-cost tiers. The steps are the same everywhere:
+
+1. Connect your GitHub repo.
+2. Build command: `pnpm install`. Start command: `pnpm start`.
+3. The host sets `PORT`; your server already reads it.
+4. Set the health check path to `/health`.
+
+Remember: the store is in memory, so links disappear on every deploy. That's fine for now, and it's in your spec's out-of-scope list.
+</Explain>
+
+<Checkpoint id="live" cmd={`curl -s -o /dev/null -w "%{http_code}" https://YOUR-APP-URL/health`} pass="200" required />
+
+<Decision id="decision-deploy" question="What broke or surprised you between it working locally and it working live, and how did you fix it?" />
+
+<Interview q="Design a URL shortener. What changes when it has to handle a lot of traffic?">
+Start with the core: generate a short unique code, store code to URL, redirect with a 301 or 302. Reads vastly outnumber writes, so the redirect path should hit a cache, like Redis or the CDN, before the database. Codes come from random bytes with a uniqueness check, or from a counter encoded in base62 if I need them short and collision-free across nodes. Rate-limit creation per user or IP at the edge, validate URLs, and block abusive targets. Analytics should be counted asynchronously so the redirect stays fast.
+</Interview>
+
+<Interview q="Why use a token bucket for rate limiting, and where does the state live when you run more than one server?">
+A token bucket allows short bursts up to the bucket size while enforcing an average rate, which matches how real clients behave. On one process, the state can live in memory, which is what shortly does. With multiple instances, each would have its own buckets and the real limit would multiply, so the state moves to a shared store like Redis, using an atomic increment or a small Lua script so concurrent requests can't both take the last token.
+</Interview>
+
+<Quiz
+  id="check-deploy"
+  question="After deploying, every user gets 429 after a handful of requests in total. What's the most likely cause?"
+  options={["The limit is too low", "All requests appear to come from the proxy's IP", "The tests are wrong", "The host is slow"]}
+  answer={1}
+  why="Behind a proxy, the socket address is the proxy. Use x-forwarded-for when your host sets it."
+/>
+
+<Explain id="done">
+That's Foundations. You've run the full loop: spec, plan, tests first, a reviewed diff, a deterministic check, CI and a live deploy, with your decisions saved in your build journal along the way.
+
+Next up is **Pulse**, a real-time messenger. Its first three modules are free: spec and system design, repo setup, and a data model that keeps messages in order.
+</Explain>

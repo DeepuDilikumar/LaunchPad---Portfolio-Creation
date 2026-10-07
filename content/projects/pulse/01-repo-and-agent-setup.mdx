@@ -1,0 +1,181 @@
+---
+title: "Repo and agent setup"
+slug: repo-and-agent-setup
+project: pulse
+order: 1
+minutes: 60
+summary: "Scaffold the monorepo, write CLAUDE.md and AGENTS.md, and get CI running before any feature exists."
+objectives:
+  - "Scaffold the repo with the agent from your spec, in plan mode first"
+  - "Write CLAUDE.md and AGENTS.md so both agents follow the same conventions"
+  - "Add a CI skeleton and a pre-commit hook that runs typecheck and tests"
+status: published
+free: true
+---
+
+<Explain id="intro">
+A good repo setup is invisible. Commands are obvious, the agent knows the conventions, and CI catches mistakes before they land. A bad one costs you a little on every single session for the rest of the project.
+
+In this module you'll scaffold Pulse as a small monorepo: a web client, a WebSocket gateway and a shared package for the types both sides agree on. No features yet. Just a skeleton where `pnpm test` and CI are green from the first commit.
+</Explain>
+
+<Explain id="why-monorepo">
+Why one repo with three packages instead of three repos?
+
+- **One source of truth for the protocol.** The message types the client sends and the gateway accepts live in `packages/shared`. Change a field and both sides fail to compile until they agree.
+- **One agent session can see everything.** The agent can follow a message from the client into the gateway without you pasting code between repos.
+- **One CI pipeline.** Every change is tested against both sides.
+
+The cost is a little workspace tooling. pnpm workspaces keep that small.
+</Explain>
+
+<Diagram
+  id="repo-shape"
+  caption="Three packages; shared is imported by both apps"
+  chart={`flowchart TB
+  subgraph repo[pulse]
+    web[apps/web: Next.js client]
+    gw[apps/gateway: Fastify + ws]
+    shared[packages/shared: protocol types + zod schemas]
+  end
+  web --> shared
+  gw --> shared`}
+/>
+
+<Prompt
+  id="scaffold-plan"
+  mode="plan"
+  claude={`Read docs/PRD.md and docs/ARCHITECTURE.md. Plan the repo scaffold for Pulse as a pnpm workspace:
+
+- apps/web: Next.js (App Router, TypeScript strict)
+- apps/gateway: Fastify with the ws library, TypeScript, run with tsx in dev
+- packages/shared: protocol message types as zod schemas, exported for both apps
+
+Each package needs typecheck and test scripts (Vitest). The root needs scripts that run them across the workspace. List every file you'll create and the exact versions you'd pin, checking the current stable versions rather than guessing. No features: the gateway only needs a /health route and a WebSocket endpoint that echoes a validated ping. Don't create files yet.`}
+  codex={`Read docs/PRD.md and docs/ARCHITECTURE.md. Plan the repo scaffold for Pulse as a pnpm workspace. Don't create any files until I approve.
+
+- apps/web: Next.js (App Router, TypeScript strict)
+- apps/gateway: Fastify with the ws library, TypeScript, run with tsx in dev
+- packages/shared: protocol message types as zod schemas, exported for both apps
+
+Each package needs typecheck and test scripts (Vitest). The root needs scripts that run them across the workspace. List every file you'll create and the exact versions you'd pin, checking current stable versions rather than guessing. No features: the gateway only needs a /health route and a WebSocket endpoint that echoes a validated ping.`}
+/>
+
+<Pitfall
+  id="pitfall-stale-versions"
+  title="pins library versions from its training data instead of current ones"
+  recovery={`Before installing anything, check the current stable version of each dependency with npm view <package> version and use those. List any package where the latest major version has breaking changes from what you planned, and read its migration notes before writing code against it.`}
+>
+Agents learn from a snapshot of the internet. Frameworks like Next.js change their APIs between majors. Ask it to check, and read the release notes for anything major.
+</Pitfall>
+
+<Prompt
+  id="scaffold-build"
+  mode="build"
+  claude={`The plan is approved. Create the scaffold. Install with pnpm. After each package is created, run its typecheck and tests before moving on. Finish by running pnpm -r typecheck and pnpm -r test from the root, and show me the output.`}
+  codex={`The plan is approved. Create the scaffold and install with pnpm. After each package, run its typecheck and tests before moving on. Finish by running pnpm -r typecheck and pnpm -r test from the root and show me the output.`}
+/>
+
+<Expect id="tree" kind="tree" example>
+
+```text
+pulse/
+├── apps/
+│   ├── gateway/
+│   │   ├── src/server.ts
+│   │   ├── test/ping.test.ts
+│   │   └── package.json
+│   └── web/
+│       ├── app/page.tsx
+│       └── package.json
+├── packages/
+│   └── shared/
+│       ├── src/protocol.ts
+│       ├── test/protocol.test.ts
+│       └── package.json
+├── docs/
+├── package.json
+└── pnpm-workspace.yaml
+```
+
+</Expect>
+
+<Explain id="protocol">
+The one piece of real code in this module is the protocol. Every message on the socket is a JSON object with a `type`, validated with zod on the way in. Unknown or malformed messages are rejected, never trusted. Starting with `ping` makes the whole path testable before chat exists.
+</Explain>
+
+<Expect id="protocol-example" kind="diff" example>
+
+```ts
+import { z } from "zod";
+
+export const ClientMessage = z.discriminatedUnion("type", [
+  z.object({ type: z.literal("ping"), id: z.string().uuid() }),
+]);
+export type ClientMessage = z.infer<typeof ClientMessage>;
+
+export const ServerMessage = z.discriminatedUnion("type", [
+  z.object({ type: z.literal("pong"), id: z.string().uuid() }),
+  z.object({ type: z.literal("error"), code: z.string(), message: z.string() }),
+]);
+export type ServerMessage = z.infer<typeof ServerMessage>;
+```
+
+</Expect>
+
+<Prompt
+  id="instructions"
+  mode="build"
+  claude={`Write AGENTS.md at the repo root, under 60 lines, and make CLAUDE.md a single line: @AGENTS.md
+
+AGENTS.md should cover: what Pulse is (two sentences), the workspace layout, commands (root and per package), conventions (protocol changes start in packages/shared; every socket message is validated with zod; ordering comes from database sequence numbers, never timestamps; tests first), and a "never" list (never trust client timestamps, never edit tests to pass, never add a dependency without asking). Link to docs/ARCHITECTURE.md and docs/adr/ rather than repeating them.`}
+  codex={`Write AGENTS.md at the repo root, under 60 lines, and create CLAUDE.md containing the single line: @AGENTS.md
+
+AGENTS.md should cover: what Pulse is (two sentences), the workspace layout, commands (root and per package), conventions (protocol changes start in packages/shared; every socket message is validated with zod; ordering comes from database sequence numbers, never timestamps; tests first), and a "never" list (never trust client timestamps, never edit tests to pass, never add a dependency without asking). Link to docs/ARCHITECTURE.md and docs/adr/ instead of repeating them.`}
+/>
+
+<Explain id="ci-and-hooks">
+Two guardrails before any feature:
+
+- **CI** runs typecheck and tests for the whole workspace on every push and pull request.
+- **A pre-commit hook** runs the same checks locally, so a red commit never leaves your machine. Keep it fast; the full suite can stay in CI if it gets slow.
+</Explain>
+
+<Prompt
+  id="ci-prompt"
+  mode="build"
+  claude={`Add .github/workflows/ci.yml: on push and pull_request, set up pnpm and Node 22 with caching, install with a frozen lockfile, then run pnpm -r typecheck and pnpm -r test. Then add a pre-commit hook with simple-git-hooks that runs pnpm -r typecheck. Ask before adding the dependency. Show me both files before writing.`}
+  codex={`Add .github/workflows/ci.yml: on push and pull_request, set up pnpm and Node 22 with caching, install with a frozen lockfile, then run pnpm -r typecheck and pnpm -r test. Then add a pre-commit hook with simple-git-hooks that runs pnpm -r typecheck. Ask me before adding the dependency, and show me both files before writing them.`}
+/>
+
+<Pitfall
+  id="pitfall-ci-red"
+  title="pushes and CI fails on a step that passed locally"
+  recovery={`CI failed. Read the failing step's log and tell me the root cause before changing anything. Common causes: a lockfile out of date (CI uses --frozen-lockfile), a script that only exists in one package, or a Node version mismatch. Fix the cause, not the symptom, and don't disable the step.`}
+/>
+
+<Checkpoint id="workspace-green" cmd="pnpm -r typecheck && pnpm -r test" pass="every package passes, and the command exits with code 0" required />
+
+<Checkpoint id="ci-green" cmd="git push" pass="a green CI check on your latest commit" required />
+
+<Decision id="decision-repo" question="What did you decide to put in packages/shared, and what did you deliberately keep out of it?" />
+
+<Interview q="How would you structure a codebase where a web client and a real-time server share a protocol?">
+A monorepo with a shared package that owns the protocol: message types defined once, as runtime schemas like zod, so both sides get static types and the server can validate untrusted input at runtime. The client and server import from it, so a protocol change breaks compilation on both sides until they agree. I'd version messages with a type field and add new types rather than change existing ones, so old clients keep working during a deploy.
+</Interview>
+
+<Interview q="What do you put in CI on day one of a project, before there are features?">
+Install with a frozen lockfile, typecheck, and the test suite, even if there's one test. The point is that the pipeline exists and is green, so every later change is measured against it. It also proves the build works on a clean machine, not only mine. Lint and formatting come next; slower stages like end-to-end tests and load tests come later, once there's something to test.
+</Interview>
+
+<Quiz
+  id="check-shared"
+  question="The gateway starts accepting a new 'typing' message. Where should that change start?"
+  options={["apps/gateway/src/server.ts", "apps/web, where the button is", "packages/shared, in the protocol schemas", "A comment in AGENTS.md"]}
+  answer={2}
+  why="The protocol is the contract. Change it first, and the compiler shows you every side that needs updating."
+/>
+
+<Explain id="next">
+The skeleton is green on your machine and in CI. Next you'll design the data model, with database constraints that make duplicate and out-of-order messages impossible, not just unlikely.
+</Explain>

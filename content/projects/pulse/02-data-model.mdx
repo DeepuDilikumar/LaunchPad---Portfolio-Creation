@@ -1,0 +1,231 @@
+---
+title: "Data model"
+slug: data-model
+project: pulse
+order: 2
+minutes: 60
+summary: "Model users, conversations, members and messages so ordering and idempotency are enforced by the database."
+objectives:
+  - "Design the schema and migrations with constraints that protect correctness"
+  - "Seed realistic data and write tests that prove the constraints hold"
+  - "Decide what the database guarantees and what the application must"
+status: published
+free: true
+---
+
+<Explain id="intro">
+The data model is where a chat system's promises get kept or broken. If ordering and duplicate protection live only in application code, they'll fail the first time two gateway nodes race. If they live in the database as constraints, they hold no matter which node, which retry or which bug.
+
+In this module you'll design four tables, prove their guarantees with tests against a real Postgres, and find a subtle bug the agent's first version is likely to have.
+</Explain>
+
+<Diagram
+  id="erd"
+  caption="Four tables. The interesting columns are seq, client_id and last_read_seq."
+  chart={`erDiagram
+  users ||--o{ conversation_members : joins
+  conversations ||--o{ conversation_members : has
+  conversations ||--o{ messages : contains
+  users ||--o{ messages : sends
+  conversations {
+    uuid id
+    text kind
+    bigint last_seq
+  }
+  conversation_members {
+    uuid conversation_id
+    uuid user_id
+    bigint last_read_seq
+  }
+  messages {
+    uuid id
+    uuid conversation_id
+    bigint seq
+    uuid sender_id
+    text client_id
+    text body
+  }`}
+/>
+
+<Explain id="three-guarantees">
+The schema has to guarantee three things:
+
+1. **Order:** within a conversation, every message has a unique, increasing `seq`. Enforced by `unique (conversation_id, seq)`, and by assigning `seq` from a counter on the conversation row in the same statement as the insert.
+2. **No duplicates:** a retried send never creates a second message. Enforced by `unique (sender_id, client_id)`, where `client_id` is a UUID the client generated before the first attempt.
+3. **Cheap read receipts:** each member stores one number, `last_read_seq`. "Read up to 57" is one write, however many messages that covers, and in a group it's one row per member instead of one row per member per message.
+</Explain>
+
+<Prompt
+  id="schema-plan"
+  mode="plan"
+  claude={`Read docs/ARCHITECTURE.md and docs/adr/0002-message-ordering.md. Propose the Postgres schema for users, conversations, conversation_members and messages.
+
+Requirements: per-conversation seq numbers assigned by the database; idempotent sends using a client-generated client_id; read receipts as last_read_seq per member; check constraints on obvious invariants (non-empty body, max length, valid kinds). Show the SQL and, for each constraint, one sentence on what bug it prevents. Then write the single SQL statement that sends a message: assign the next seq and insert, returning the seq. Don't create files yet.`}
+  codex={`Read docs/ARCHITECTURE.md and docs/adr/0002-message-ordering.md. Propose the Postgres schema for users, conversations, conversation_members and messages. Don't create files until I approve.
+
+Requirements: per-conversation seq numbers assigned by the database; idempotent sends using a client-generated client_id; read receipts as last_read_seq per member; check constraints on obvious invariants (non-empty body, max length, valid kinds). Show the SQL and, for each constraint, one sentence on what bug it prevents. Then write the single SQL statement that sends a message: assign the next seq and insert, returning the seq.`}
+/>
+
+<Expect id="schema" kind="diff" caption="The reference schema. It was run against Postgres (PGlite) to capture the outputs below.">
+
+```sql
+create table conversations (
+  id uuid primary key default gen_random_uuid(),
+  kind text not null check (kind in ('direct', 'group')),
+  title text,
+  last_seq bigint not null default 0,
+  created_at timestamptz not null default now()
+);
+
+create table conversation_members (
+  conversation_id uuid not null references conversations(id) on delete cascade,
+  user_id uuid not null references users(id) on delete cascade,
+  role text not null default 'member' check (role in ('owner', 'member')),
+  last_read_seq bigint not null default 0,
+  joined_at timestamptz not null default now(),
+  primary key (conversation_id, user_id)
+);
+
+create table messages (
+  id uuid primary key default gen_random_uuid(),
+  conversation_id uuid not null references conversations(id) on delete cascade,
+  seq bigint not null,
+  sender_id uuid not null references users(id),
+  client_id text not null,
+  body text not null check (length(body) between 1 and 4000),
+  created_at timestamptz not null default now(),
+  unique (conversation_id, seq),
+  unique (sender_id, client_id)
+);
+
+create index messages_conversation_seq_idx on messages (conversation_id, seq desc);
+```
+
+</Expect>
+
+<Explain id="first-send-query">
+Here's the send statement most agents propose first. The `update ... returning` takes a row lock on the conversation, so concurrent sends to the same conversation are serialised and each gets the next number:
+
+```sql
+with next as (
+  update conversations set last_seq = last_seq + 1 where id = $1 returning last_seq
+)
+insert into messages (conversation_id, seq, sender_id, client_id, body)
+select $1, next.last_seq, $2, $3, $4 from next
+on conflict (sender_id, client_id) do nothing
+returning seq, client_id;
+```
+
+It looks right. Now test what happens on a retry.
+</Explain>
+
+<Expect id="gap-output" kind="terminal" caption="Captured by running the statement above against PGlite: send, a second sender, then a retry of the first send.">
+
+```bash
+send 1: [ { seq: 1, client_id: 'c-1' } ]
+send 2: [ { seq: 2, client_id: 'c-9' } ]
+retry 1: []
+dup seq: duplicate key value violates unique constraint "messages_conversation_id_seq_key"
+empty body: new row for relation "messages" violates check constraint "messages_body_check"
+last_seq: [ { last_seq: 3 } ]
+```
+
+</Expect>
+
+<Explain id="two-bugs">
+The constraints work: a duplicate `seq` and an empty body are both rejected. But look at the retry:
+
+- **It returned nothing.** The client retried because it never got an ack. Now it gets an empty result and still doesn't know the message's `seq`.
+- **It burned a sequence number.** `last_seq` is 3 but only two messages exist. The `update` ran even though the insert was skipped.
+
+Gaps are survivable if clients treat a gap as "go fetch what I missed", but every retry would cause a pointless fetch, and in a busy group they add up. Both bugs have the same fix: check for the existing message first, and return it.
+</Explain>
+
+<Prompt
+  id="fix-retry"
+  mode="build"
+  claude={`Our send statement has two bugs on retry: it returns no row, so the client never learns the seq, and it increments last_seq even when the insert is skipped, leaving a gap. Rewrite it as one statement that: returns the existing message's seq with duplicate = true when (sender_id, client_id) already exists, and otherwise increments last_seq and inserts, returning seq with duplicate = false. Write a test first that sends, retries, sends again, and asserts seqs 1, 1, 2 and last_seq = 2.`}
+  codex={`Our send statement has two bugs on retry: it returns no row, so the client never learns the seq, and it increments last_seq even when the insert is skipped, leaving a gap. Rewrite it as one statement that returns the existing message's seq with duplicate = true when (sender_id, client_id) already exists, and otherwise increments last_seq and inserts, returning seq with duplicate = false. Write the test first: send, retry, send again, and assert seqs 1, 1, 2 and last_seq = 2.`}
+/>
+
+<Expect id="fixed-query" kind="diff" caption="The reference fix.">
+
+```sql
+with existing as (
+  select seq from messages where sender_id = $2 and client_id = $3
+),
+next as (
+  update conversations set last_seq = last_seq + 1
+  where id = $1 and not exists (select 1 from existing)
+  returning last_seq
+),
+inserted as (
+  insert into messages (conversation_id, seq, sender_id, client_id, body)
+  select $1, next.last_seq, $2, $3, $4 from next
+  on conflict (sender_id, client_id) do nothing
+  returning seq
+)
+select seq, false as duplicate from inserted
+union all
+select seq, true as duplicate from existing;
+```
+
+</Expect>
+
+<Expect id="fixed-output" kind="terminal" caption="Captured by running the fixed statement against PGlite.">
+
+```bash
+send: [ { seq: 1, duplicate: false } ]
+retry: [ { seq: 1, duplicate: true } ]
+next: [ { seq: 2, duplicate: false } ]
+last_seq: [ { last_seq: 2 } ]
+```
+
+</Expect>
+
+<Callout id="race-note" kind="interview">
+There's still a narrow race: two retries of the same message arriving at the same instant can both see "no existing row". One insert wins, the other hits the unique constraint and does nothing, and a gap appears. The constraint keeps the data correct; the gap is rare and clients already handle gaps. Saying this out loud, unprompted, is what senior answers sound like.
+</Callout>
+
+<Pitfall
+  id="pitfall-app-level-check"
+  title="checks for duplicates in application code instead of with a constraint"
+  recovery={`A select-then-insert in application code isn't safe: two gateway nodes can both check, both see nothing, and both insert. Add unique (sender_id, client_id) to the messages table so the database rejects the second insert, and make the send statement handle the conflict. Add a test that inserts the same (sender_id, client_id) twice and expects exactly one row.`}
+>
+Application checks are fine for friendly error messages. Correctness has to come from the database, because it's the only component that sees every write.
+</Pitfall>
+
+<Prompt
+  id="migrations-and-seed"
+  mode="build"
+  claude={`Turn the approved schema into a migration in apps/gateway using our migration tool, plus a seed script that creates 5 users, 2 direct conversations and 1 group of 4, with about 30 messages sent through the fixed send statement so seqs are realistic. Add integration tests against a real Postgres (Docker or PGlite) for: unique seq per conversation, idempotent retry, body length checks, and that last_read_seq can't go backwards (enforce that in the update with greatest()).`}
+  codex={`Turn the approved schema into a migration in apps/gateway using our migration tool, plus a seed script that creates 5 users, 2 direct conversations and 1 group of 4, with about 30 messages sent through the fixed send statement so seqs are realistic. Add integration tests against a real Postgres (Docker or PGlite) for: unique seq per conversation, idempotent retry, body length checks, and that last_read_seq can't go backwards (enforce it in the update with greatest()).`}
+/>
+
+<Checkpoint id="constraints-tested" cmd="pnpm --filter gateway test" pass="all tests pass, including the retry test that asserts seqs 1, 1, 2" required />
+
+<Decision id="decision-receipts" question="Per-message receipt rows or a per-member last_read_seq: which did you choose, and what does your choice make harder?" />
+
+<Decision id="decision-gaps" question="How will your client react when it sees a gap in seq numbers, and why is that the right behaviour?" />
+
+<Interview q="How do you make message sends idempotent when mobile clients retry?">
+The client generates a unique ID, a UUID, for each message before the first attempt and reuses it on every retry. The server has a unique constraint on sender plus client ID, so a second insert can't create a duplicate, and the send path looks up an existing message with that ID and returns it, including its sequence number. So a retry gets the same ack as the original. The constraint is what makes it correct under concurrency; the lookup is what makes the response useful.
+</Interview>
+
+<Interview q="How would you store read receipts for group chats efficiently?">
+Per member, not per message: each membership row has a last-read sequence number. Marking messages read is one update, and I use greatest() so it can never move backwards if acks arrive out of order. To show "read by 3" on a message, count members whose last-read sequence is at least that message's sequence. That's one row per member instead of one row per member per message, which matters a lot in big, busy groups. The trade-off: you lose per-message read timestamps, which most products don't need.
+</Interview>
+
+<Quiz
+  id="check-constraint"
+  question="Two gateway nodes receive the same retried message at the same moment. What guarantees only one row is stored?"
+  options={["A select before the insert in the gateway", "The unique constraint on (sender_id, client_id)", "Redis locks", "The client waiting longer before retrying"]}
+  answer={1}
+  why="Only the database sees every write. The constraint holds regardless of timing."
+/>
+
+<Explain id="next">
+That's the free part of Pulse. You have a design, a green repo, and a data model whose guarantees you've proved with tests.
+
+Module 3 builds the first real feature on top of it: sending messages over the socket with delivery and read receipts, in 1:1 and group chats.
+</Explain>

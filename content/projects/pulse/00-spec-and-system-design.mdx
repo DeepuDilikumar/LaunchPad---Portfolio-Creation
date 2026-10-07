@@ -1,0 +1,162 @@
+---
+title: "Spec and system design"
+slug: spec-and-system-design
+project: pulse
+order: 0
+minutes: 45
+summary: "Write the PRD and architecture for a real-time messenger with the agent, and decide what v1 does not do."
+objectives:
+  - "Write a one-page PRD for Pulse with the agent, then cut it to what ships in v1"
+  - "Draw the architecture and name every component's job in one sentence"
+  - "Record the first two architecture decisions as ADRs"
+status: published
+free: true
+---
+
+<Explain id="intro">
+Pulse is a real-time messenger: 1:1 and group chat, presence, typing indicators, delivery and read receipts, offline sync and media. By module 9 it will hold thousands of concurrent connections under a load test.
+
+Before any code, you'll do what a senior engineer does on day one of a new system: write down what it does, what it doesn't, and how the pieces fit. The agent is a fast, tireless partner for this. It's also very willing to design a system for a billion users when you need one for a thousand. Your job is to keep it honest.
+</Explain>
+
+<Explain id="what-makes-chat-hard">
+Chat looks simple and isn't. The hard parts, which you'll meet one module at a time:
+
+- **Ordering.** Two people send at the same moment, from different servers. Everyone must see the same order.
+- **Exactly-once, from the user's point of view.** Phones retry on bad networks. A retry must never show a message twice.
+- **Fan-out.** One message to a 200-person group is 200 deliveries, to users connected to different servers.
+- **Presence.** "Online" is a guess built from heartbeats. Get it wrong and people flicker on and off.
+- **Offline.** A phone that was in a tunnel for ten minutes has to catch up, in order, without missing anything.
+</Explain>
+
+<Prompt
+  id="prd"
+  mode="plan"
+  claude={`We're building Pulse, a real-time messenger, as a portfolio-grade project. Help me write docs/PRD.md.
+
+Interview me first, one question at a time, at most eight questions: who it's for, 1:1 vs groups, max group size, message types, what "delivered" and "read" mean, offline expectations, platforms, and scale targets for v1.
+
+Then write the PRD with: Problem, Users, Goals, Non-goals (at least five), Functional requirements (numbered), Non-functional requirements with numbers (latency, concurrent connections, message retention), and Open questions. Keep it to one page. Don't design the architecture yet.`}
+  codex={`We're building Pulse, a real-time messenger, as a portfolio-grade project. Help me write docs/PRD.md.
+
+Ask me one question at a time, at most eight, and wait for each answer: who it's for, 1:1 vs groups, max group size, message types, what "delivered" and "read" mean, offline expectations, platforms, and scale targets for v1.
+
+Then create docs/PRD.md with: Problem, Users, Goals, Non-goals (at least five), Functional requirements (numbered), Non-functional requirements with numbers (latency, concurrent connections, message retention), and Open questions. One page. No architecture yet.`}
+/>
+
+<Explain id="cut-scope">
+Now cut. Read the PRD's requirements and ask of each one: *does v1 need this to demonstrate the hard parts?* Good v1 non-goals for Pulse:
+
+- End-to-end encryption (a big topic of its own; mention it as future work)
+- Voice and video calls
+- Message editing and reactions
+- Federation or bots
+- Groups over 256 members
+
+Fewer features, built properly, make a far better portfolio piece than many features built shallowly.
+</Explain>
+
+<Prompt
+  id="architecture"
+  mode="plan"
+  claude={`Read docs/PRD.md. Propose an architecture for Pulse v1 in docs/ARCHITECTURE.md.
+
+Constraints: TypeScript everywhere; a Next.js web client; a Node WebSocket gateway (Fastify + ws); Postgres for durable data; Redis for presence and pub/sub between gateway nodes; S3-compatible storage for media via presigned uploads. Assume 2+ gateway nodes behind a load balancer.
+
+Include: a component list with one sentence per component's job, a mermaid diagram, the path of one message from sender to recipient (numbered steps), where ordering is decided, how retries are made idempotent, and what happens when a gateway node dies. Mark anything you're unsure about. Don't write code.`}
+  codex={`Read docs/PRD.md. Propose an architecture for Pulse v1 and write it to docs/ARCHITECTURE.md. Don't write application code.
+
+Constraints: TypeScript everywhere; a Next.js web client; a Node WebSocket gateway (Fastify + ws); Postgres for durable data; Redis for presence and pub/sub between gateway nodes; S3-compatible storage for media via presigned uploads. Assume 2+ gateway nodes behind a load balancer.
+
+Include: a component list with one sentence per component's job, a mermaid diagram, the path of one message from sender to recipient (numbered steps), where ordering is decided, how retries are made idempotent, and what happens when a gateway node dies. Mark anything you're unsure about.`}
+/>
+
+<Diagram
+  id="pulse-architecture"
+  caption="The shape you're aiming for. Yours may differ in the details, as long as you can defend them."
+  chart={`flowchart LR
+  W[Web client] -- WebSocket --> LB[Load balancer]
+  LB --> G1[Gateway node 1]
+  LB --> G2[Gateway node 2]
+  G1 -- insert + seq --> PG[(Postgres)]
+  G2 -- insert + seq --> PG
+  G1 <-- pub/sub --> R[(Redis)]
+  G2 <-- pub/sub --> R
+  W -- presigned PUT --> S3[(Object storage)]
+  API[HTTP API] --> PG
+  W -- HTTPS --> API`}
+/>
+
+<Explain id="message-path">
+Check the agent's message path against this one. Every step should be in its document:
+
+1. The client creates a **client ID** (a UUID) for the message and sends it over the socket.
+2. The gateway checks the sender is a member of the conversation.
+3. In one database statement, the gateway assigns the next **sequence number** for that conversation and inserts the message. A retry with the same client ID returns the original message instead of creating a new one.
+4. The gateway acknowledges the sender with the sequence number: the "sent" tick.
+5. The gateway publishes the message to a Redis channel for the conversation.
+6. Every gateway node with a member connected receives it and pushes it down those sockets.
+7. Each recipient's client acknowledges: the "delivered" tick.
+
+Ordering is decided in step 3, by the database, not by anyone's clock.
+</Explain>
+
+<Pitfall
+  id="pitfall-overscaled"
+  title="designs Kafka, Cassandra and a service mesh for v1"
+  recovery={`This design is sized for a much bigger product than our PRD. Our v1 targets are in docs/PRD.md. Redesign with only Postgres, Redis and object storage. For each component you removed, add one line under "When we'd need more" saying what metric would make us add it back.`}
+>
+Big-company architectures are a pattern agents have read a lot about. A design is good when it meets the stated requirements simply, and you can say what would make you change it.
+</Pitfall>
+
+<Pitfall
+  id="pitfall-timestamps"
+  title="orders messages by created_at timestamps"
+  recovery={`Ordering by timestamps breaks with clock skew between gateway nodes and with two messages in the same millisecond. Change the design so Postgres assigns a per-conversation sequence number when the message is inserted, and clients order and sync by that number. Update the message path section.`}
+/>
+
+<Explain id="adrs">
+An **ADR** (architecture decision record) is a short file that captures one decision: the context, the options, what you chose and the consequences. They're how a team remembers *why*. They're also excellent interview material, because they're your reasoning, written down at the time.
+
+Write two now:
+
+- **ADR 0001:** WebSockets vs Server-Sent Events vs long polling for real-time delivery.
+- **ADR 0002:** How messages are ordered (sequence numbers vs timestamps).
+</Explain>
+
+<Prompt
+  id="adrs-prompt"
+  mode="build"
+  claude={`Create docs/adr/0001-realtime-transport.md and docs/adr/0002-message-ordering.md using this template: Title, Status (Accepted), Context, Options considered (at least three for 0001, two for 0002, each with pros and cons), Decision, Consequences (including the downsides we accept). Base them on docs/ARCHITECTURE.md. Keep each under 50 lines and write in plain language.`}
+  codex={`Create docs/adr/0001-realtime-transport.md and docs/adr/0002-message-ordering.md with this template: Title, Status (Accepted), Context, Options considered (at least three for 0001, two for 0002, each with pros and cons), Decision, Consequences (including the downsides we accept). Base them on docs/ARCHITECTURE.md. Under 50 lines each, plain language.`}
+/>
+
+<Checkpoint id="design-docs" cmd="ls docs/PRD.md docs/ARCHITECTURE.md docs/adr/0001-*.md docs/adr/0002-*.md" pass="four files listed, with no errors" required />
+
+<Decision id="decision-architecture" question="What did the agent's first architecture include that you removed or changed, and why is your version better for v1?" />
+
+<Decision id="decision-transport" question="Which real-time transport did you choose in ADR 0001, and what downside are you accepting?" />
+
+<Callout id="interview-design" kind="interview">
+"Design WhatsApp" or "design Slack" is one of the most common system design questions. You'll answer it from experience: you'll have built the ordering, fan-out and presence yourself, with numbers from your own load test.
+</Callout>
+
+<Interview q="Design a chat system for 1:1 and group messages. How do you guarantee message order?">
+I'd order per conversation, not globally. When the server accepts a message, it assigns the next sequence number for that conversation inside the same database write, for example by incrementing a counter on the conversation row and inserting the message in one statement, so the database serialises concurrent sends. Clients render and sync by sequence number, never by timestamps, because clocks skew between servers and devices. If a client sees seq 41 then 43, it knows it missed 42 and fetches it.
+</Interview>
+
+<Interview q="Why WebSockets instead of polling or Server-Sent Events for chat?">
+Chat is bidirectional and latency-sensitive: clients send messages, typing events and acks constantly, and receive pushes. WebSockets give one persistent full-duplex connection for both. SSE is server-to-client only, so sends need separate HTTP requests; that's workable, but typing and acks get chatty. Long polling adds latency and overhead per message. The cost of WebSockets is stateful connections: you need sticky routing or a pub/sub layer between nodes, and you have to handle reconnects. For chat that trade-off is worth it.
+</Interview>
+
+<Quiz
+  id="check-ordering"
+  question="Two users in the same group send a message at the same instant, through different gateway nodes. What should decide which message comes first?"
+  options={["The sender's device clock", "Each gateway node's clock", "The order the database assigns sequence numbers", "Alphabetical order of user IDs"]}
+  answer={2}
+  why="One authority, the database, serialises the writes and assigns the sequence. Clocks disagree."
+/>
+
+<Explain id="next">
+You have a PRD, an architecture and two ADRs. Next you'll scaffold the repo from them: the web app, the gateway and a shared package, with CLAUDE.md, AGENTS.md and CI in place before the first feature.
+</Explain>
