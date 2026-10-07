@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useReducedMotion } from "motion/react";
+import { useReduced } from "@/lib/hooks/use-in-view-loop";
 
 /**
  * Caret, the mascot: a soft vertical block like a text cursor, with two square pixel eyes.
@@ -26,16 +26,20 @@ export function Caret({
   className?: string;
   title?: string;
 }) {
-  const reduced = useReducedMotion() ?? false;
+  const reduced = useReduced();
   const ref = useRef<SVGSVGElement>(null);
-  const [phase, setPhase] = useState<"caret" | "awake">(intro && !reduced ? "caret" : "awake");
+  const [phase, setPhase] = useState<"caret" | "awake">(intro ? "caret" : "awake");
   const [caretVisible, setCaretVisible] = useState(true);
   const [closed, setClosed] = useState(false);
   const [look, setLook] = useState({ x: 0, y: 0 });
 
-  // Intro: blink like a text caret twice, then open the eyes.
+  // Intro: blink like a text caret twice, then open the eyes (skipped for reduced motion).
   useEffect(() => {
     if (phase !== "caret") return;
+    if (reduced) {
+      const id = window.setTimeout(() => setPhase("awake"), 0);
+      return () => clearTimeout(id);
+    }
     const steps = [false, true, false, true];
     const timers = steps.map((v, i) => window.setTimeout(() => setCaretVisible(v), 450 * (i + 1)));
     const done = window.setTimeout(() => setPhase("awake"), 450 * (steps.length + 1));
@@ -43,7 +47,7 @@ export function Caret({
       timers.forEach(clearTimeout);
       clearTimeout(done);
     };
-  }, [phase]);
+  }, [phase, reduced]);
 
   // Random blinks every 4–7s.
   useEffect(() => {

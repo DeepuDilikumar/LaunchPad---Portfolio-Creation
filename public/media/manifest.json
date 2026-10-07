@@ -1,0 +1,38 @@
+{
+  "note": "Image slots for the site. Neutral gradient placeholders ship until real images exist. Replace the file at `path` keeping the same size.",
+  "images": [
+    {
+      "id": "feature-backdrop-1",
+      "path": "/media/backdrop-1.svg",
+      "size": "1600x1000",
+      "usedIn": "Landing S3, 'Checkpoints that prove it runs' card",
+      "prompt": "Long-exposure photograph of a coastal highway at dusk in Kerala, heavy horizontal motion blur, painterly, deep greens and amber, soft film grain, no people, no text."
+    },
+    {
+      "id": "feature-backdrop-2",
+      "path": "/media/backdrop-2.svg",
+      "size": "1600x1000",
+      "usedIn": "Reserved for a second feature card backdrop",
+      "prompt": "Rain on a night window overlooking city lights, out-of-focus bokeh, cool blues with one warm streak, painterly, film grain, no text."
+    },
+    {
+      "id": "video-poster",
+      "path": "/media/video-poster.svg",
+      "size": "1920x1080",
+      "usedIn": "Landing S6 video card poster",
+      "prompt": "Cinematic photo of a developer's desk at night, laptop glow, warm desk lamp, shallow depth of field, plants in foreground blur, moody, no logos, no readable screens."
+    },
+    {
+      "id": "og-background",
+      "path": "/media/og-bg.svg",
+      "size": "1200x630",
+      "usedIn": "Reference for OG images (rendered in code with next/og)",
+      "prompt": "Pure black with a faint film-grain texture and a soft white vignette glow at the bottom center."
+    }
+  ],
+  "video": {
+    "id": "module-walkthrough",
+    "configKey": "site.video.src",
+    "spec": "Record a 60–90s screen capture of one module (prompt → agent runs → tests pass → decision saved), sped up, with captions (WebVTT required)."
+  }
+}

@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState, type RefObject } from "react";
-import { useReducedMotion } from "motion/react";
+import { useEffect, useState, useSyncExternalStore, type RefObject } from "react";
 
 /**
  * True when the element is at least `threshold` visible AND the tab is visible.
@@ -34,7 +33,20 @@ export function useInViewLoop(ref: RefObject<Element | null>, threshold = 0.5): 
   return inView && tabVisible;
 }
 
-/** Reduced-motion preference (SSR-safe: false on server). */
+const QUERY = "(prefers-reduced-motion: reduce)";
+
+/**
+ * Reduced-motion preference. Hydration-safe: renders `false` on the server and during
+ * hydration, then switches to the real value.
+ */
 export function useReduced(): boolean {
-  return useReducedMotion() ?? false;
+  return useSyncExternalStore(
+    (cb) => {
+      const mq = window.matchMedia(QUERY);
+      mq.addEventListener("change", cb);
+      return () => mq.removeEventListener("change", cb);
+    },
+    () => window.matchMedia(QUERY).matches,
+    () => false,
+  );
 }
