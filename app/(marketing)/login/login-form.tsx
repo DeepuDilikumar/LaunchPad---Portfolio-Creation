@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/inputs";
@@ -149,8 +150,8 @@ export function LoginForm({
       ) : null}
 
       <p className="mt-8 text-center t-small text-text-3">
-        By continuing you agree to the <a className="underline underline-offset-2 hover:text-text-1" href="/legal/terms">terms</a> and{" "}
-        <a className="underline underline-offset-2 hover:text-text-1" href="/legal/privacy">privacy policy</a>.
+        By continuing you agree to the <Link className="underline underline-offset-2 hover:text-text-1" href="/legal/terms">terms</Link> and{" "}
+        <Link className="underline underline-offset-2 hover:text-text-1" href="/legal/privacy">privacy policy</Link>.
       </p>
     </div>
   );

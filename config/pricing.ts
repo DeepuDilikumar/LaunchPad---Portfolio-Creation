@@ -100,6 +100,8 @@ export const pricingConfig = {
     remainingSeats: null as number | null,
   },
   tutor: {
+    /** USD per million tokens for the admin cost estimate. Update when ANTHROPIC_MODEL changes. */
+    costPerMTok: { input: 4, output: 20 },
     dailyLimit: { free: 10, pro: 60 },
     maxOutputTokens: 1200,
     maxInputChars: 8000,

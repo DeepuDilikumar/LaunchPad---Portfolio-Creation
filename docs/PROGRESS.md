@@ -131,3 +131,19 @@ Each phase appends: what was done, what is mocked, what is left.
 - Mocked: canned streamed reply that echoes the module, cell and first line of the pasted error.
 - Tests: e2e J5 (Pitfall → "Ask the tutor" with the cell attached → request carries module + cell → reply with a
   recovery prompt → daily limit message after 10).
+
+## P8 — Ops
+
+- `/admin` (role-gated, 404 for everyone else): 30-day funnel (landing views → sign-ups → first checkpoint → paywall
+  views → purchases, counted server-side without cookies), purchases with revenue and a Refund action (provider refund
+  + immediate revoke; the later refund webhook is idempotent), unprocessed webhook count, manual grant/revoke by handle
+  or email, bulk coupon creation (grant / percent / flat, seat limit, expiry), coupon list, tutor usage and estimated
+  cost per day, team/college leads, learner search.
+- Emails (Resend, console in mock mode, all logged in `email_log`): welcome, first-checkpoint nudge (Vercel Cron →
+  `/api/cron/nudges`, once per learner, 24–48h after sign-up, `CRON_SECRET`), receipt, module complete, proof published,
+  lead notification. Non-transactional mail carries a signed one-click unsubscribe link and respects the setting.
+- Analytics: PostHog loads only after "Accept all" and only when a key is set; reject opts out. Funnel events are also
+  recorded server-side.
+- Legal: `/legal/terms`, `/legal/privacy`, `/legal/refunds` with a visible "Draft: review with a lawyer" notice.
+- Tests: e2e J9 (non-admin gets 404; funnel numbers; refund revokes access; manual grant restores it; bulk codes).
+- Note: Vercel's Hobby plan runs crons once a day; the schedule in `vercel.json` is hourly (Pro).
