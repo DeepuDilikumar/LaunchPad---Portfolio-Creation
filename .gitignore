@@ -10,5 +10,5 @@ next-env.d.ts
 .env*.local
 test-results
 playwright-report
-screenshots
+/screenshots
 .vercel

@@ -18,7 +18,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx scripts/migrate.ts",
     "db:seed": "tsx scripts/seed.ts",
-    "screenshots": "tsx scripts/screenshots.ts"
+    "screenshots": "tsx scripts/screenshots.ts",
+    "screenshots:journeys": "tsx scripts/journey-screenshots.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.131.0",
