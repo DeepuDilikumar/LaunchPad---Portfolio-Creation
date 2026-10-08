@@ -183,4 +183,4 @@ Two independent subagent reviews (security, accessibility), then fixes:
     170 KB target. Open item: motion's layout-projection code stays in the initial chunk even with `LazyMotion`; the fix
     is to replace the shared-layout pill highlights and `AnimatePresence` in always-loaded components with CSS
     transitions, or hydrate below-the-fold sections lazily.
-  - Unit: 40 passed. E2E: J1–J9, 9 passed.
+  - Unit: 37 passed. E2E: J1–J9, 9 passed.
