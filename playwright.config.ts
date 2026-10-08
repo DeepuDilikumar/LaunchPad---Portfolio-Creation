@@ -27,6 +27,6 @@ export default defineConfig({
         url: `${baseURL}/api/health`,
         timeout: 300_000,
         reuseExistingServer: !process.env.CI,
-        env: { PGLITE_DIR: ".data/e2e", MOCK_MODE: "true", NEXT_PUBLIC_SITE_URL: baseURL, DEV_COUNTRY: "US" },
+        env: { PGLITE_DIR: ".data/e2e", MOCK_MODE: "true", TUTOR_BURST_PER_MINUTE: "100", NEXT_PUBLIC_SITE_URL: baseURL, DEV_COUNTRY: "US" },
       },
 });

@@ -117,3 +117,17 @@ Each phase appends: what was done, what is mocked, what is left.
   and `/api/mock/deploy/[token]` serves a page with the tag; the generator uses a deterministic template.
 - Known limit: DNS is resolved before the fetch, so a rebinding attack between lookup and connect isn't fully excluded.
   Pinning the resolved IP with a custom undici dispatcher is listed as a follow-up.
+
+## P7 — Tutor
+
+- Drawer tutor (`components/notebook/tutor-panel.tsx`) streams from `/api/tutor`. Context sent: project + module
+  frontmatter, the current cell's MDX and the two cells before it, the learner's tool, and what they pasted (wrapped as
+  data, with the system prompt from `lib/ai/prompts.ts`). Fenced blocks in replies render as copyable recovery prompts.
+- Limits from `config/pricing.ts`: free 10 / Pro 60 messages per UTC day, per-message input cap, output token cap,
+  plus a per-minute burst limit. The limit message gives the reset time and points to the Pitfall cells.
+- Every user and assistant message is logged with input/output tokens for the admin cost view.
+- Anthropic SDK streaming with `output_config.effort: "low"`, refusal handling, typed rate-limit errors, model from
+  `ANTHROPIC_MODEL` (default `claude-opus-5-5`). Server-side refusal fallbacks are not enabled yet (follow-up).
+- Mocked: canned streamed reply that echoes the module, cell and first line of the pasted error.
+- Tests: e2e J5 (Pitfall → "Ask the tutor" with the cell attached → request carries module + cell → reply with a
+  recovery prompt → daily limit message after 10).
