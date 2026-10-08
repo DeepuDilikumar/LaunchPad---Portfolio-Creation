@@ -94,3 +94,26 @@ Each phase appends: what was done, what is mocked, what is left.
   unknown order, coupon limits); e2e J3 (INR paywall → checkout → double-clicked payment → back unlocked, duplicate and
   forged webhooks) and J8 (contact → admin codes → redemption limits and expiry).
 - Mocked: payments (mock provider) until Razorpay keys are set; receipt emails print to the console.
+
+## P6 — Proof
+
+- Proof pack builder `/proof/[project]` (unlocks when every published module in the project is complete): repo + live
+  URL with a per-pack verification token and copyable meta tag, re-runnable verification with per-check results and
+  dates, learner-entered metrics (no defaults), up to 3 featured public decisions, AI draft of case study + bullets
+  (editable), optional Mermaid architecture diagram, publish → toast "Published", LinkedIn share link, copy bullets.
+- Verification (`lib/verify`): GitHub REST (public, owner = linked GitHub username, ≥20 commits via the Link header,
+  `.github/workflows/*.yml`, test files from the git tree; optional token, rate-limit message) and the live URL through
+  `safeFetchText` (http/https only, standard ports, DNS-resolved public addresses only, manual redirects re-validated,
+  5s timeout, 1MB cap). Changing the repo or URL clears earlier checks. The badge renders only when every check passed.
+- Generator rule enforced twice: in the prompt, and after generation (`lib/ai/numbers.ts` drops bullets and case-study
+  sentences that contain numbers the learner didn't enter).
+- Public profile `/u/[handle]` and project page `/u/[handle]/[project]` (server-rendered, no auth prompts, safe markdown
+  renderer for learner text, verification summary), `profile_viewed`, sample profile clearly labelled and never verified.
+- Dynamic OG images (`next/og`, Geist) for the site, project syllabi, profiles and project proof pages.
+- Tests: unit (SSRF ranges and URL rules, repo parsing, meta tag, badge rule, numbers rule); e2e J6 (locked → finish →
+  failing checks show no badge → all checks pass → metrics → generate → publish → public badge → badge removed after a
+  failing re-run → OG image) and J7 (mobile, throttled network + 4× CPU: LCP 608ms, no dialogs or redirects).
+- Mocked in local mode: GitHub facts (repos named `*-verify-pass` pass), the app's own origin is allowed as a live URL
+  and `/api/mock/deploy/[token]` serves a page with the tag; the generator uses a deterministic template.
+- Known limit: DNS is resolved before the fetch, so a rebinding attack between lookup and connect isn't fully excluded.
+  Pinning the resolved IP with a custom undici dispatcher is listed as a follow-up.

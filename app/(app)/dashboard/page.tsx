@@ -124,6 +124,24 @@ export default async function DashboardPage() {
           </section>
 
           <aside className="space-y-8">
+            {projectsView.some((v) => v.p.kind === "project" && v.total > 0 && v.done === v.total) ? (
+              <section aria-labelledby="proof-title" className="rounded-[18px] border border-line-strong bg-surface-1 p-4">
+                <h2 id="proof-title" className="t-small text-text-2">
+                  Ready for a proof pack
+                </h2>
+                <ul className="mt-2 space-y-2">
+                  {projectsView
+                    .filter((v) => v.p.kind === "project" && v.total > 0 && v.done === v.total)
+                    .map((v) => (
+                      <li key={v.p.slug}>
+                        <LinkButton href={`/proof/${v.p.slug}`} size="sm" data-proof-link={v.p.slug}>
+                          Build your {v.p.name} proof pack
+                        </LinkButton>
+                      </li>
+                    ))}
+                </ul>
+              </section>
+            ) : null}
             {features.streaks ? (
               <section aria-labelledby="streak-title" className="rounded-[18px] border border-line bg-surface-1 p-4">
                 <h2 id="streak-title" className="t-small text-text-2">

@@ -1,0 +1,1 @@
+ALTER TABLE "proof_packs" ADD COLUMN "architecture" text;

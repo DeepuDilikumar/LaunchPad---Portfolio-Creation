@@ -190,6 +190,8 @@ export const proofPacks = pgTable(
     metrics: jsonb().$type<{ label: string; value: string }[]>().notNull().default(sql`'[]'::jsonb`),
     featuredDecisionIds: jsonb("featured_decision_ids").$type<string[]>().notNull().default(sql`'[]'::jsonb`),
     caseStudyMd: text("case_study_md"),
+    /** Optional mermaid source for the architecture diagram on the public page. */
+    architecture: text(),
     bullets: jsonb().$type<string[]>().notNull().default(sql`'[]'::jsonb`),
     publishedAt: timestamp("published_at", { withTimezone: true }),
     updatedAt: now(),
