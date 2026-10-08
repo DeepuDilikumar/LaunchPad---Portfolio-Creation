@@ -11,7 +11,7 @@ const ease = [0.22, 1, 0.36, 1] as const;
 
 function DemoFrame({ children, paused, onToggle, label }: { children: React.ReactNode; paused: boolean; onToggle: () => void; label: string }) {
   return (
-    <div className="relative h-[220px] overflow-hidden rounded-[16px] border border-line bg-black/40 md:h-[240px]">
+    <div className="theme-dark relative h-[220px] overflow-hidden rounded-[16px] border border-line bg-bg md:h-[240px]">
       <div aria-hidden className="h-full">
         {children}
       </div>

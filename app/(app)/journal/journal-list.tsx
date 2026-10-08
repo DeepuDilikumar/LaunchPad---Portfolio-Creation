@@ -68,7 +68,7 @@ export function JournalList({ entries, projects }: { entries: Entry[]; projects:
                 </span>
               </div>
               <label className="inline-flex cursor-pointer items-center gap-2 t-small text-text-2">
-                <input type="checkbox" className="accent-white" checked={!!state[e.id]} onChange={() => void toggle(e.id)} />
+                <input type="checkbox" className="accent-[var(--text-1)]" checked={!!state[e.id]} onChange={() => void toggle(e.id)} />
                 Public<span className="sr-only">: {e.projectName}, {e.moduleTitle}</span>
               </label>
             </div>

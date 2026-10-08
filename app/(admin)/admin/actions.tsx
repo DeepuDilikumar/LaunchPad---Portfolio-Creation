@@ -144,7 +144,7 @@ export function CouponForm() {
         </p>
       ) : null}
       {codes.length ? (
-        <pre className="max-h-40 overflow-auto rounded-[10px] bg-black p-3 font-mono text-[12px] text-text-1" data-new-codes>
+        <pre className="max-h-40 overflow-auto theme-dark rounded-[10px] bg-bg p-3 font-mono text-[12px] text-text-1" data-new-codes>
           {codes.join("\n")}
         </pre>
       ) : null}

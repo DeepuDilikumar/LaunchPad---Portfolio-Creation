@@ -9,6 +9,7 @@ import { cn } from "@/lib/cn";
 import { LinkButton } from "@/components/ui/button";
 import { Caret } from "@/components/ui/caret";
 import { IconClose, IconMenu } from "@/components/ui/icons";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useSignedIn } from "@/lib/auth/signed-in-flag";
 
 export function Logo({ className }: { className?: string }) {
@@ -84,7 +85,7 @@ export function Header() {
     <header
       className={cn(
         "fixed inset-x-0 top-0 z-50 transition-[background-color,backdrop-filter,border-color] duration-300",
-        solid || open ? "bg-black/80 backdrop-blur-md border-b border-line" : "bg-transparent border-b border-transparent",
+        solid || open ? "bg-bg/80 backdrop-blur-md border-b border-line" : "bg-transparent border-b border-transparent",
       )}
     >
       <div className="container-bp flex h-14 items-center justify-between">
@@ -104,6 +105,7 @@ export function Header() {
               </m.div>
             ) : null}
           </AnimatePresence>
+          <ThemeToggle className="size-8" />
           <button
             ref={btnRef}
             type="button"
@@ -131,7 +133,7 @@ export function Header() {
             transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
             className={cn(
               // Mobile: full-screen overlay. Desktop: dropdown panel.
-              "fixed inset-x-0 top-14 bottom-0 overflow-y-auto bg-black px-5 pb-10 pt-6",
+              "fixed inset-x-0 top-14 bottom-0 overflow-y-auto bg-bg px-5 pb-10 pt-6",
               "md:absolute md:inset-auto md:right-8 md:top-[60px] md:bottom-auto md:w-[560px] md:rounded-[20px] md:border md:border-line md:bg-surface-1 md:p-6",
             )}
           >

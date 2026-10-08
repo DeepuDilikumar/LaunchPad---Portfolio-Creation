@@ -4,6 +4,7 @@ import { GeistMono } from "geist/font/mono";
 import { site } from "@/config/site";
 import { Providers } from "@/components/providers";
 import { AnalyticsLoader } from "@/components/analytics-loader";
+import { themeScript } from "@/lib/theme-script";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -17,13 +18,18 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#000000",
-  colorScheme: "dark",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
+  ],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`}>
+    <html lang="en" data-theme="dark" suppressHydrationWarning className={`${GeistSans.variable} ${GeistMono.variable}`}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body>
         <a
           href="#main"

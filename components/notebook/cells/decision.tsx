@@ -72,7 +72,7 @@ export function Decision({ id, question, children }: { id: string; question: str
             <label className="inline-flex cursor-pointer items-center gap-2 t-small text-text-2">
               <input
                 type="checkbox"
-                className="accent-white"
+                className="accent-[var(--text-1)]"
                 checked={isPublic}
                 onChange={(e) => {
                   if (!nb?.requireAuth(id)) return;

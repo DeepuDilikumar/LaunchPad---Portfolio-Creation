@@ -11,6 +11,7 @@ import { SegmentedToggle } from "@/components/ui/segmented";
 import { Tabs } from "@/components/ui/tabs";
 import { IconArrowRight, IconClose, IconLock, IconMenu } from "@/components/ui/icons";
 import { Caret } from "@/components/ui/caret";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { track } from "@/lib/analytics/client";
 import { useNotebook, type Tool } from "./context";
 import { TutorPanel } from "./tutor-panel";
@@ -248,7 +249,7 @@ export function NotebookShell({
     <div className="min-h-dvh">
       <div ref={pageRef}>
       {/* Top bar */}
-      <header className="sticky top-0 z-40 border-b border-line bg-black/85 backdrop-blur-md">
+      <header className="sticky top-0 z-40 border-b border-line bg-bg/85 backdrop-blur-md">
         <div className="flex h-14 items-center gap-3 px-4 md:px-6">
           <button
             type="button"
@@ -284,6 +285,7 @@ export function NotebookShell({
               </li>
             </ol>
           </nav>
+          <ThemeToggle className="size-8 shrink-0" />
           <div className="hidden md:block">
             <SegmentedToggle size="sm" label="Agent" value={nb.tool} onChange={nb.setTool} options={toolOptions} />
           </div>
@@ -385,7 +387,7 @@ export function NotebookShell({
                   {nb.decisionIds.map((id) => {
                     const d = nb.decisions[id];
                     return (
-                      <a key={id} href={`#cell-${id}`} className="block rounded-[14px] border border-line bg-black/30 p-3 hover:bg-surface-2">
+                      <a key={id} href={`#cell-${id}`} className="block rounded-[14px] border border-line bg-bg/30 p-3 hover:bg-surface-2">
                         <p className="t-small text-text-2">{d?.isPublic ? "Public" : "Private"}</p>
                         <p className="mt-1 t-small text-text-1 whitespace-pre-wrap">{d?.text || "Not written yet."}</p>
                       </a>
@@ -410,7 +412,7 @@ export function NotebookShell({
                         window.localStorage.setItem(notesKey, e.target.value);
                       } catch {}
                     }}
-                    className="mt-2 h-[60vh] w-full resize-none rounded-[12px] border border-line bg-black/40 p-3 text-[14px] leading-6 text-text-1 focus:outline-none focus-visible:outline-2 focus-visible:outline-text-1"
+                    className="mt-2 h-[60vh] w-full resize-none rounded-[12px] border border-line bg-bg/40 p-3 text-[14px] leading-6 text-text-1 focus:outline-none focus-visible:outline-2 focus-visible:outline-text-1"
                   />
                 </div>
               ) : null}

@@ -130,7 +130,7 @@ export function TutorPanel() {
     <div className="flex h-full flex-col">
       <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4" role="log" aria-live="polite" aria-busy={busy}>
         {messages.length === 0 ? (
-          <div className="rounded-[14px] border border-line bg-black/30 p-3.5">
+          <div className="rounded-[14px] border border-line bg-bg/40 p-3.5">
             <p className="t-small text-text-1">Paste the error or the diff you&apos;re stuck on.</p>
             <p className="mt-1 t-small text-text-2">The tutor sees this module and the step below. It answers with a diagnosis and a recovery prompt you can give your agent.</p>
           </div>
@@ -145,7 +145,7 @@ export function TutorPanel() {
               {m.content ? (
                 splitBlocks(m.content).map((p, j) =>
                   p.type === "code" ? (
-                    <div key={j} className="rounded-[12px] border border-line bg-black">
+                    <div key={j} className="rounded-[12px] theme-dark border border-line bg-bg">
                       <div className="flex items-center justify-between border-b border-line px-3 py-1.5">
                         <span className="t-small text-text-2">Recovery prompt</span>
                         <CopyButton text={p.value} />

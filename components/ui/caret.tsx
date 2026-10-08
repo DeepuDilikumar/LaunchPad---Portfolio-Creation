@@ -144,8 +144,8 @@ export function Caret({
           opacity: awake ? 1 : 0,
         }}
       >
-        <rect x={w / 2 - 4 - eye} y={22} width={eye} height={eye} rx="1" fill="#0A0A0A" />
-        <rect x={w / 2 + 4} y={22} width={eye} height={eye} rx="1" fill="#0A0A0A" />
+        <rect x={w / 2 - 4 - eye} y={22} width={eye} height={eye} rx="1" fill="var(--invert-text)" />
+        <rect x={w / 2 + 4} y={22} width={eye} height={eye} rx="1" fill="var(--invert-text)" />
       </g>
     </svg>
   );

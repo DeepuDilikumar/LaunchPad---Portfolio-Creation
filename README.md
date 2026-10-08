@@ -101,6 +101,17 @@ Funnel, manual access, bulk codes, purchases with refunds, tutor usage and cost,
 |---|---|
 | ![Admin funnel, manual access and coupon creation](docs/screenshots/j9-1-admin-funnel.jpg) | ![Admin purchases with refund, tutor usage, coupons and leads](docs/screenshots/j9-2-admin-purchases.jpg) |
 
+### Light theme
+
+Dark is the default. The sun/moon button in every header switches to light; Settings → Appearance also has System.
+Terminals, code and diagrams stay dark in both themes.
+
+| Landing | Dashboard |
+|---|---|
+| ![Landing page in the light theme](docs/screenshots/light-landing.jpg) | ![Dashboard in the light theme](docs/screenshots/light-dashboard.jpg) |
+| **Notebook** | **Code cells stay dark** |
+| ![Notebook module in the light theme](docs/screenshots/light-module.jpg) | ![Code block in a light-theme notebook](docs/screenshots/light-module-cells.jpg) |
+
 ## Run it locally (no keys needed)
 
 Requirements: Node 22+, pnpm 10.

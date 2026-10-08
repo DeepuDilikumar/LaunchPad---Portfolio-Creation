@@ -1,6 +1,23 @@
 @import "tailwindcss";
 
 :root {
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --accent-pulse: #3ccfb4;
+  --accent-ledger: #e7c04a;
+  --accent-reel: #ef5a4c;
+  --accent-dispatch: #f28c38;
+  --accent-scribe: #8b6cf0;
+  --accent-atlas: #3b82f6;
+}
+
+/*
+ * Themes. Dark is the default (the brand look); light is opt-in or follows the OS with "system".
+ * The theme is set on <html data-theme> by an inline script before first paint (app/layout.tsx).
+ * `.theme-dark` re-applies the dark tokens to a subtree: terminals, code, diagrams and device
+ * mockups stay dark in both themes.
+ */
+:root,
+.theme-dark {
   color-scheme: dark;
   --bg: #000000;
   --surface-1: #121212;
@@ -13,20 +30,59 @@
   --text-3: #858585; /* raised from #5F5F5F for WCAG AA contrast on surfaces (see docs/DESIGN.md) */
   --invert-bg: #ffffff;
   --invert-text: #0a0a0a;
-
   --accent-foundations: #e7e7e7;
-  --accent-pulse: #3ccfb4;
-  --accent-ledger: #e7c04a;
-  --accent-reel: #ef5a4c;
-  --accent-dispatch: #f28c38;
-  --accent-scribe: #8b6cf0;
-  --accent-atlas: #3b82f6;
-
   --status-working: #e7a13a;
   --status-passed: #3ccfb4;
   --status-failed: #ef5a4c;
+  --selection: rgba(255, 255, 255, 0.22);
+}
 
-  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+/* Light tokens: every text/background pair is >= 4.5:1 (see docs/DESIGN.md). */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #ffffff;
+  --surface-1: #f5f5f4;
+  --surface-2: #ededec;
+  --surface-3: #e3e3e2;
+  --line: rgba(0, 0, 0, 0.09);
+  --line-strong: rgba(0, 0, 0, 0.16);
+  --text-1: #0a0a0a;
+  --text-2: #5a5a5a;
+  --text-3: #6b6b6b;
+  --invert-bg: #0a0a0a;
+  --invert-text: #ffffff;
+  --accent-foundations: #bdbdbd;
+  --status-working: #8f5100;
+  --status-passed: #0b6e5f;
+  --status-failed: #b03226;
+  --selection: rgba(0, 0, 0, 0.14);
+}
+
+@media (prefers-color-scheme: light) {
+  :root[data-theme="system"] {
+    color-scheme: light;
+    --bg: #ffffff;
+    --surface-1: #f5f5f4;
+    --surface-2: #ededec;
+    --surface-3: #e3e3e2;
+    --line: rgba(0, 0, 0, 0.09);
+    --line-strong: rgba(0, 0, 0, 0.16);
+    --text-1: #0a0a0a;
+    --text-2: #5a5a5a;
+    --text-3: #6b6b6b;
+    --invert-bg: #0a0a0a;
+    --invert-text: #ffffff;
+    --accent-foundations: #bdbdbd;
+    --status-working: #8f5100;
+    --status-passed: #0b6e5f;
+    --status-failed: #b03226;
+    --selection: rgba(0, 0, 0, 0.14);
+  }
+}
+
+/* Dark islands render on their own background and text colour. */
+.theme-dark {
+  color: var(--text-1);
 }
 
 @theme inline {
@@ -87,7 +143,7 @@ body {
 }
 
 ::selection {
-  background: rgba(255, 255, 255, 0.22);
+  background: var(--selection);
 }
 
 :focus-visible {

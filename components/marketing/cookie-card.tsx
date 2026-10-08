@@ -84,14 +84,14 @@ export function CookieCard() {
               <span className="block t-small font-medium text-text-1">Essential</span>
               <span className="block t-small text-text-2">Sign-in, security and your cookie choice. Always on.</span>
             </span>
-            <input type="checkbox" checked disabled className="mt-1 accent-white" aria-label="Essential cookies (always on)" />
+            <input type="checkbox" checked disabled className="mt-1 accent-[var(--text-1)]" aria-label="Essential cookies (always on)" />
           </label>
           <label className="flex items-start justify-between gap-4 rounded-[14px] bg-surface-2 p-4">
             <span>
               <span className="block t-small font-medium text-text-1">Analytics</span>
               <span className="block t-small text-text-2">Anonymous usage, so we can see which modules help and where people get stuck.</span>
             </span>
-            <input type="checkbox" checked={analytics} onChange={(e) => setAnalytics(e.target.checked)} className="mt-1 accent-white" aria-label="Analytics cookies" />
+            <input type="checkbox" checked={analytics} onChange={(e) => setAnalytics(e.target.checked)} className="mt-1 accent-[var(--text-1)]" aria-label="Analytics cookies" />
           </label>
           <Button
             className="w-full"

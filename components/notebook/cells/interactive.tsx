@@ -43,7 +43,7 @@ export function Pitfall({ id, title, recovery, children }: { id: string; title: 
               <div className="space-y-3 border-t border-line px-4 py-3.5">
                 {children ? <div className="prose-bp t-small">{children}</div> : null}
                 {recovery ? (
-                  <div className="rounded-[12px] border border-line bg-black">
+                  <div className="theme-dark rounded-[12px] border border-line bg-bg">
                     <div className="flex items-center justify-between border-b border-line px-3 py-1.5">
                       <span className="t-small text-text-2">Recovery prompt</span>
                       <CopyButton text={recovery.trim()} onCopied={() => nb?.promptCopied(id)} />
@@ -109,7 +109,7 @@ export function Quiz({ id, question, options, answer, why }: { id: string; quest
                 picked === i ? (i === answer ? "border-passed/60 bg-passed/5" : "border-failed/60 bg-failed/5") : "border-line hover:bg-surface-2",
               )}
             >
-              <input type="radio" name={name} className="mt-0.5 accent-white" checked={picked === i} onChange={() => setPicked(i)} />
+              <input type="radio" name={name} className="mt-0.5 accent-[var(--text-1)]" checked={picked === i} onChange={() => setPicked(i)} />
               <span className="text-text-1">{o}</span>
             </label>
           ))}
@@ -188,7 +188,7 @@ export function Diagram({ id, chart, caption }: { id: string; chart: string; cap
 
   return (
     <CellFrame id={id} kind="diagram">
-      <figure className="rounded-[16px] border border-line bg-surface-1 p-4">
+      <figure className="theme-dark rounded-[16px] border border-line bg-surface-1 p-4">
         <div ref={ref} className="flex min-h-[160px] items-center justify-center overflow-x-auto [&_svg]:max-w-full [&_svg]:h-auto">
           {svg ? (
             <div role="img" aria-label={caption ?? "Diagram"} dangerouslySetInnerHTML={{ __html: svg }} />

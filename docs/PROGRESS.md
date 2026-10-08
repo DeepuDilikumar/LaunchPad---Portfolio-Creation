@@ -184,3 +184,13 @@ Two independent subagent reviews (security, accessibility), then fixes:
     is to replace the shared-layout pill highlights and `AnimatePresence` in always-loaded components with CSS
     transitions, or hydrate below-the-fold sections lazily.
   - Unit: 37 passed. E2E: J1–J9, 9 passed.
+
+## Light theme
+
+- Light tokens on `:root[data-theme="light"]` (and `data-theme="system"` under `prefers-color-scheme: light`); dark
+  stays the default. No-flash inline script in `<head>`; `theme-color` meta for both schemes.
+- Toggle in the marketing header, app header and notebook top bar; Settings → Appearance (System, Light, Dark).
+- Hard-coded black/white replaced with tokens; terminals, code, diagrams, device frames and demos are `.theme-dark`
+  islands. Status chip reads `--status-*` so it adapts.
+- Checked visually at 1440 and on a Pixel 7 (landing, pricing, dashboard, settings, notebook). Unit 37 passed, E2E 9 passed.
+

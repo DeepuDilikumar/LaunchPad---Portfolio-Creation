@@ -53,7 +53,7 @@ export function TerminalView({
   title?: string;
 }) {
   return (
-    <div className={cn("rounded-[14px] border border-line bg-black", className)}>
+    <div className={cn("theme-dark rounded-[14px] border border-line bg-bg", className)}>
       <div className="flex h-8 items-center gap-2 border-b border-line px-3 t-small text-text-3">
         <span aria-hidden className="font-mono text-[11px]">❯_</span>
         {title}

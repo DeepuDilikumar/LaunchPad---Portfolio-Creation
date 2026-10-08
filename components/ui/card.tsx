@@ -55,7 +55,7 @@ export function PhoneFrame({ children, className, label }: { children: ReactNode
       role={label ? "img" : undefined}
       aria-label={label}
       className={cn(
-        "relative mx-auto w-[260px] md:w-[300px] aspect-[9/19] rounded-[44px] border border-line-strong bg-[#0b0b0b] p-[10px] shadow-[0_40px_120px_-40px_rgba(255,255,255,0.08)]",
+        "theme-dark relative mx-auto w-[260px] md:w-[300px] aspect-[9/19] rounded-[44px] border border-line-strong bg-[#0b0b0b] p-[10px] shadow-[0_40px_120px_-40px_rgba(255,255,255,0.08)]",
         className,
       )}
     >
@@ -67,7 +67,7 @@ export function PhoneFrame({ children, className, label }: { children: ReactNode
 
 export function LaptopFrame({ children, className, label }: { children: ReactNode; className?: string; label?: string }) {
   return (
-    <div role={label ? "img" : undefined} aria-label={label} className={cn("mx-auto w-full max-w-[760px]", className)}>
+    <div role={label ? "img" : undefined} aria-label={label} className={cn("theme-dark mx-auto w-full max-w-[760px]", className)}>
       <div className="rounded-[18px] border border-line-strong bg-[#0b0b0b] p-[10px] pb-[12px]">
         <div className="relative aspect-[16/10] overflow-hidden rounded-[10px] bg-surface-1">{children}</div>
       </div>

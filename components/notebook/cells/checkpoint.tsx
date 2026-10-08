@@ -54,7 +54,7 @@ export function Checkpoint({
           {state?.status === "skipped" ? <span className="t-small text-text-2">Skipped</span> : <CheckpointChip status={status} />}
         </div>
         <div className="space-y-3 px-4 py-3.5">
-          <div className="flex items-center gap-2 rounded-[10px] border border-line bg-black px-3 py-2">
+          <div className="flex items-center gap-2 theme-dark rounded-[10px] border border-line bg-bg px-3 py-2">
             <code className="min-w-0 flex-1 truncate font-mono text-[13px] text-text-1">
               <span className="text-text-3">$ </span>
               {cmd}

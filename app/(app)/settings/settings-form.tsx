@@ -4,7 +4,15 @@ import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Select } from "@/components/ui/inputs";
+import { SegmentedToggle } from "@/components/ui/segmented";
 import { useToast } from "@/components/ui/toast";
+import { setThemePref, useTheme, type ThemePref } from "@/lib/theme";
+
+const themeOptions: { value: ThemePref; label: string }[] = [
+  { value: "system", label: "System" },
+  { value: "light", label: "Light" },
+  { value: "dark", label: "Dark" },
+];
 
 type Form = {
   name: string;
@@ -21,6 +29,7 @@ export function SettingsForm({ initial, email, githubFromOAuth }: { initial: For
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const toast = useToast();
+  const { pref } = useTheme();
   const set = <K extends keyof Form>(k: K, v: Form[K]) => setF((s) => ({ ...s, [k]: v }));
 
   const save = async () => {
@@ -70,19 +79,24 @@ export function SettingsForm({ initial, email, githubFromOAuth }: { initial: For
         </Select>
       </Field>
       <label className="flex items-start gap-3">
-        <input type="checkbox" className="mt-1 accent-white" checked={f.isPublic} onChange={(e) => set("isPublic", e.target.checked)} />
+        <input type="checkbox" className="mt-1 accent-[var(--text-1)]" checked={f.isPublic} onChange={(e) => set("isPublic", e.target.checked)} />
         <span>
           <span className="block t-small text-text-1">Public profile</span>
           <span className="block t-small text-text-2">Show your published proof pages and public decisions at /u/{f.handle}.</span>
         </span>
       </label>
       <label className="flex items-start gap-3">
-        <input type="checkbox" className="mt-1 accent-white" checked={f.marketingEmails} onChange={(e) => set("marketingEmails", e.target.checked)} />
+        <input type="checkbox" className="mt-1 accent-[var(--text-1)]" checked={f.marketingEmails} onChange={(e) => set("marketingEmails", e.target.checked)} />
         <span>
           <span className="block t-small text-text-1">Progress emails</span>
           <span className="block t-small text-text-2">Nudges and milestone emails. Receipts are always sent.</span>
         </span>
       </label>
+      <div>
+        <p className="t-small text-text-1">Appearance</p>
+        <p className="mb-2 t-small text-text-2">Applies right away on this device. System follows your device setting.</p>
+        <SegmentedToggle label="Appearance" value={pref} onChange={setThemePref} options={themeOptions} />
+      </div>
       {err ? (
         <p role="alert" className="t-small text-failed">
           {err}

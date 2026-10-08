@@ -29,7 +29,7 @@ function Step({ n, title, children, done }: { n: number; title: string; children
   return (
     <section className="rounded-[24px] border border-line bg-surface-1 p-5 md:p-7" aria-labelledby={`step-${n}`}>
       <div className="flex items-center gap-3">
-        <span className={cn("inline-flex size-7 items-center justify-center rounded-full t-badge", done ? "bg-passed text-black" : "bg-surface-3 text-text-1")}>{done ? "✓" : n}</span>
+        <span className={cn("inline-flex size-7 items-center justify-center rounded-full t-badge", done ? "bg-passed text-invert-text" : "bg-surface-3 text-text-1")}>{done ? "✓" : n}</span>
         <h2 id={`step-${n}`} className="t-h3 text-text-1">
           {title}
           {done ? <span className="sr-only"> (done)</span> : null}
@@ -158,12 +158,12 @@ export function ProofBuilder({
         </Field>
         <div>
           <p className="t-small text-text-2">Commit a file named .buildproof containing this token to your repo. It proves the repo is yours.</p>
-          <div className="mt-2 mb-4 flex items-center gap-2 rounded-[12px] border border-line bg-black px-3 py-2">
+          <div className="mt-2 mb-4 flex items-center gap-2 theme-dark rounded-[12px] border border-line bg-bg px-3 py-2">
             <code className="min-w-0 flex-1 truncate font-mono text-[12.5px] text-text-1">{token}</code>
             <CopyButton text={token} />
           </div>
           <p className="t-small text-text-2">Add this tag to the &lt;head&gt; of your live site. It proves you control the deployment.</p>
-          <div className="mt-2 flex items-center gap-2 rounded-[12px] border border-line bg-black px-3 py-2">
+          <div className="mt-2 flex items-center gap-2 theme-dark rounded-[12px] border border-line bg-bg px-3 py-2">
             <code className="min-w-0 flex-1 truncate font-mono text-[12.5px] text-text-1">{metaTag}</code>
             <CopyButton text={metaTag} />
           </div>
@@ -192,7 +192,7 @@ export function ProofBuilder({
             {Object.entries(checkLabels).map(([id, label]) => {
               const c = checks[id];
               return (
-                <li key={id} className="flex items-start gap-3 rounded-[12px] bg-black/30 px-3 py-2.5" data-check={id} data-ok={c?.ok ? "true" : "false"}>
+                <li key={id} className="flex items-start gap-3 rounded-[12px] bg-bg/40 px-3 py-2.5" data-check={id} data-ok={c?.ok ? "true" : "false"}>
                   <span aria-hidden className="mt-1.5 size-2 shrink-0 rounded-full" style={{ background: c?.ok ? "var(--status-passed)" : "var(--status-failed)" }} />
                   <div className="min-w-0">
                     <p className="t-small text-text-1">{label}</p>
@@ -243,7 +243,7 @@ export function ProofBuilder({
                   <label className={cn("flex cursor-pointer gap-3 rounded-[14px] border p-3", on ? "border-line-strong bg-surface-2" : "border-line")}>
                     <input
                       type="checkbox"
-                      className="mt-1 accent-white"
+                      className="mt-1 accent-[var(--text-1)]"
                       checked={on}
                       disabled={!on && featured.length >= 3}
                       onChange={() => setFeatured(on ? featured.filter((x) => x !== d.id) : [...featured, d.id])}

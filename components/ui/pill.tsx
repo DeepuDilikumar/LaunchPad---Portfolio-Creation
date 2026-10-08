@@ -1,7 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
-import { statusColors } from "@/lib/accents";
 
 /** Small rounded label. Monochrome by default. */
 export function Pill({
@@ -40,7 +39,7 @@ export function StatusChip({
   children: ReactNode;
   className?: string;
 }) {
-  const color = status === "idle" ? "var(--text-3)" : statusColors[status];
+  const color = status === "idle" ? "var(--text-3)" : `var(--status-${status})`;
   return (
     <span
       className={cn(

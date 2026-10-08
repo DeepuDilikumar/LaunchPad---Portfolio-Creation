@@ -1,6 +1,6 @@
 # Design
 
-A calm, monochrome, dark-only design language: pure black page, large centered medium-weight
+A calm, monochrome design language, dark by default with a light theme: pure black page, large centered medium-weight
 headlines, muted gray body, white and charcoal pills, app-window mockups that play scripted
 sessions. Color only appears in small avatars, status chips and progress rings.
 
@@ -24,6 +24,25 @@ or copy are used. Our mascot (Caret), type (Geist) and copy are original.
 Project accents: foundations `#E7E7E7` · pulse `#3CCFB4` · ledger `#E7C04A` · reel `#EF5A4C` ·
 dispatch `#F28C38` · scribe `#8B6CF0` · atlas `#3B82F6`.
 Status: working `#E7A13A` · passed `#3CCFB4` · failed `#EF5A4C`. Pass/fail is never shown by color alone: chips and check rows carry a word.
+
+### Light theme
+
+Dark is the default. The toggle in every header (sun/moon) switches light and dark; Settings → Appearance also offers
+System. The choice is stored in `localStorage` (`bp_theme`) and applied by an inline script in `<head>` before paint
+(`lib/theme-script.ts`), so there is no flash. `lib/theme.ts` has `useTheme()` and `setThemePref()`.
+
+| Token | Light value |
+|-------|-------------|
+| `--bg` | `#FFFFFF` |
+| `--surface-1` / `-2` / `-3` | `#F5F5F4` / `#EDEDEC` / `#E3E3E2` |
+| `--line` / `--line-strong` | `rgba(0,0,0,0.09)` / `rgba(0,0,0,0.16)` |
+| `--text-1` / `-2` / `-3` | `#0A0A0A` / `#5A5A5A` / `#6B6B6B` (text-3 ≥4.5:1 on bg, surface-1 and surface-2) |
+| `--invert-bg` / `--invert-text` | `#0A0A0A` / `#FFFFFF` |
+| status working / passed / failed | `#8F5100` / `#0B6E5F` / `#B03226` (≥5.2:1 on surface-2) |
+
+**Dark islands.** Terminals, code blocks, "what you should see" output, command boxes, diagrams, device mockups and
+the feature demos stay dark in both themes. Wrap them in `.theme-dark`, which re-applies the dark tokens to that
+subtree. Never hard-code `bg-black`/`text-white`; use tokens (`bg-bg/85` for translucent bars) or a `.theme-dark` island.
 
 Tailwind exposes these as `bg-bg`, `bg-surface-1..3`, `border-line`, `text-text-1..3`,
 `bg-invert`, `text-invert-text`, `text-accent-pulse`, etc.

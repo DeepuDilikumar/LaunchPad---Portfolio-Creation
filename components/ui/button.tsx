@@ -9,7 +9,7 @@ const base =
   "inline-flex items-center justify-center gap-2 rounded-full font-medium whitespace-nowrap select-none transition-[background-color,color,opacity,transform] duration-200 ease-[var(--ease-out-soft)] active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none";
 
 const variants: Record<Variant, string> = {
-  primary: "bg-invert text-invert-text hover:bg-white/85",
+  primary: "bg-invert text-invert-text hover:opacity-85",
   secondary: "bg-surface-2 text-text-1 hover:bg-surface-3",
   ghost: "text-text-2 hover:text-text-1 hover:bg-surface-2",
   danger: "bg-surface-2 text-failed hover:bg-surface-3",

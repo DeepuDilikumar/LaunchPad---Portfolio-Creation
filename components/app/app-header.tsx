@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Caret } from "@/components/ui/caret";
 import { site } from "@/config/site";
 import type { SessionUser } from "@/lib/auth/session";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { AccountMenu } from "./account-menu";
 
 const links = [
@@ -12,7 +13,7 @@ const links = [
 
 export function AppHeader({ user }: { user: SessionUser }) {
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-black/85 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-line bg-bg/85 backdrop-blur-md">
       <div className="container-bp flex h-14 items-center gap-6">
         <Link href="/dashboard" className="inline-flex items-center gap-2" aria-label={`${site.name} dashboard`}>
           <Caret size={20} blink={false} />
@@ -25,6 +26,7 @@ export function AppHeader({ user }: { user: SessionUser }) {
             </Link>
           ))}
         </nav>
+        <ThemeToggle className="-mr-3" />
         <AccountMenu handle={user.profile.handle} name={user.profile.name || user.profile.handle} isAdmin={user.isAdmin} />
       </div>
     </header>

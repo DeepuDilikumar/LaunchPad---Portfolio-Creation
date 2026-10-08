@@ -39,7 +39,7 @@ export function Expect({
 }) {
   return (
     <CellFrame id={id} kind="expect">
-      <figure className="overflow-hidden rounded-[16px] border border-line bg-black">
+      <figure className="theme-dark overflow-hidden rounded-[16px] border border-line bg-bg">
         <figcaption className="flex min-h-9 items-center justify-between gap-3 border-b border-line px-4 t-small text-text-2">
           <span>{example ? "Example output · yours will differ in the details" : expectLabels[kind]}</span>
           {kind === "terminal" ? <span aria-hidden className="font-mono text-[11px] text-text-3">❯_</span> : null}
@@ -90,7 +90,7 @@ export async function Pre({ children }: { children?: ReactNode }) {
   code = code.replace(/\n$/, "");
   const html = await highlight(code, lang);
   return (
-    <div className="code-block group relative rounded-[14px] border border-line bg-black [.expect-body_&]:rounded-none [.expect-body_&]:border-0">
+    <div className="code-block theme-dark group relative rounded-[14px] border border-line bg-bg [.expect-body_&]:rounded-none [.expect-body_&]:border-0">
       <div className="[&_pre]:overflow-x-auto [&_pre]:px-4 [&_pre]:py-3.5" dangerouslySetInnerHTML={{ __html: html }} />
       {lang === "bash" || lang === "sh" ? (
         <CopyButton text={code.replace(/^\$ /gm, "")} className="absolute right-2 top-2 opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100" />
