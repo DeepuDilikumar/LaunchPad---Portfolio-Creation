@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { randomBytes } from "node:crypto";
-import { mock } from "@/lib/env";
+import { mockEndpointsEnabled } from "@/lib/env";
 import { error, json, parseBody, safeReturnTo } from "@/lib/http";
 import { mockSignIn } from "@/lib/auth/sign-in";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
@@ -14,8 +14,8 @@ const body = z.object({
 
 /** Mock sign-in for local development and tests. Disabled whenever real auth is configured. */
 export async function POST(req: Request) {
-  if (!mock.auth) return error(404, "Not found");
-  const rl = await rateLimit(`auth:${clientIp(req)}`, 30, 60);
+  if (!mockEndpointsEnabled("auth")) return error(404, "Not found");
+  const rl = await rateLimit(`auth:${clientIp(req)}`, 30, 60, { failClosed: true });
   if (!rl.ok) return error(429, "Too many sign-in attempts. Wait a minute and try again.");
   const [data, bad] = await parseBody(req, body);
   if (bad) return bad;

@@ -27,3 +27,12 @@ describe("safeReturnTo", () => {
     expect(safeReturnTo(null, "/x")).toBe("/x");
   });
 });
+
+describe("safeReturnTo bypasses", () => {
+  it("rejects control characters and backslashes that browsers normalise into //", () => {
+    for (const v of ["/\t/evil.com", "/\n/evil.com", "/%09/evil.com".replace("%09", "\t"), "/\\/evil.com", "/\r//evil.com"]) expect(safeReturnTo(v)).toBe("/dashboard");
+  });
+  it("keeps query and hash", () => {
+    expect(safeReturnTo("/checkout?product=pro-all&currency=INR#x")).toBe("/checkout?product=pro-all&currency=INR#x");
+  });
+});

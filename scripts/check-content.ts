@@ -36,6 +36,7 @@ for (const project of catalog) {
         if (moduleFileName(cm) !== f) errors.push(`${project.slug}/${f}: file name should be ${moduleFileName(cm)}`);
       }
       if (fm.project !== project.slug) errors.push(`${project.slug}/${f}: project "${fm.project}" mismatch`);
+      if (parsed.cells[0]?.kind !== "Explain") errors.push(`${project.slug}/${f}: first cell must be Explain (used as the paywall teaser)`);
       if (fm.status === "published") {
         published++;
         const count = (k: string) => parsed.cells.filter((c) => c.kind === k).length;
@@ -44,7 +45,7 @@ for (const project of catalog) {
         if (count("Decision") < 1) errors.push(`${project.slug}/${f}: needs a Decision`);
         if (count("Pitfall") < 1) errors.push(`${project.slug}/${f}: needs a Pitfall`);
         if (count("Interview") < 2) warnings.push(`${project.slug}/${f}: ${count("Interview")} Interview cells (target 2)`);
-        if (parsed.cells[0]?.kind !== "Explain") errors.push(`${project.slug}/${f}: first cell must be Explain (used as the paywall teaser)`);
+
         for (const c of parsed.cells) {
           if (["Prompt", "Checkpoint", "Decision", "Pitfall"].includes(c.kind) && /^[a-z]+-\d+$/.test(c.id)) {
             errors.push(`${project.slug}/${f}: ${c.kind} needs an explicit stable id`);

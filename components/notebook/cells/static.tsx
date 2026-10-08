@@ -58,7 +58,7 @@ export function Callout({ id, kind = "interview", children }: { id: string; kind
   const Icon = calloutIcons[kind];
   return (
     <CellFrame id={id} kind="callout">
-      <aside className="flex gap-3 rounded-[16px] border border-line bg-surface-1 px-4 py-3.5" aria-label={calloutTitles[kind]}>
+      <div role="note" className="flex gap-3 rounded-[16px] border border-line bg-surface-1 px-4 py-3.5" aria-label={calloutTitles[kind]}>
         <span className="mt-0.5 inline-flex size-7 shrink-0 items-center justify-center rounded-full bg-surface-2 text-text-1">
           <Icon size={14} />
         </span>
@@ -66,7 +66,7 @@ export function Callout({ id, kind = "interview", children }: { id: string; kind
           <p className="t-small font-medium text-text-1">{calloutTitles[kind]}</p>
           <div className="prose-bp t-small mt-0.5 [&_p]:text-[13px] [&_p]:leading-[20px]">{children}</div>
         </div>
-      </aside>
+      </div>
     </CellFrame>
   );
 }

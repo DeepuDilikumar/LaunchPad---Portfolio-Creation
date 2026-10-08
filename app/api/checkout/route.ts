@@ -5,7 +5,7 @@ import { error, json, parseBody, safeReturnTo } from "@/lib/http";
 import { getDb, schema } from "@/lib/db";
 import { products } from "@/config/pricing";
 import { getProject } from "@/content/catalog";
-import { applyCoupon, couponProblem, findCoupon, getProvider, grantPurchase } from "@/lib/payments";
+import { applyCoupon, couponProblem, findCoupon, getProvider, grantPurchase, reserveCoupon } from "@/lib/payments";
 import { recordEvent } from "@/lib/analytics/server";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
 import { site } from "@/config/site";
@@ -40,6 +40,11 @@ export async function POST(req: Request) {
     const problem = couponProblem(coupon);
     if (problem) return error(400, problem);
     if (coupon!.kind === "grant") return error(400, "That code unlocks access directly. Redeem it on the pricing page.");
+  }
+
+  if (coupon) {
+    const reserved = await reserveCoupon(user.id, coupon.id);
+    if (!reserved.ok) return error(400, reserved.error);
   }
 
   // The amount always comes from config/pricing.ts, never from the client.

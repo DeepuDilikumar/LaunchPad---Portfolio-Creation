@@ -24,6 +24,7 @@ export default async function PricingPage({ searchParams }: { searchParams: Prom
           Team or college? Talk to us
         </LinkButton>
       </div>
+      <h2 className="sr-only">Plans</h2>
       <div className="mt-12">
         <PricingCards returnTo={returnTo} project={sp.project} />
       </div>

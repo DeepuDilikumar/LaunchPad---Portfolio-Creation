@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useRef, type KeyboardEvent, type ReactNode } from "react";
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { cn } from "@/lib/cn";
 
 export interface TabItem<T extends string> {
@@ -84,7 +84,7 @@ export function Tabs<T extends string>({
             )}
           >
             {active ? (
-              <motion.span
+              <m.span
                 layoutId={`tab-${base}`}
                 aria-hidden
                 className={cn(

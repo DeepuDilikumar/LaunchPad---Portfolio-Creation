@@ -44,13 +44,13 @@ export function ContactForm({ initialKind }: { initialKind: "team" | "college" |
         void submit();
       }}
     >
-      <Field label="Your name" htmlFor="c-name">
+      <Field label="Your name (required)" htmlFor="c-name">
         <Input id="c-name" required value={f.name} onChange={(e) => set("name", e.target.value)} autoComplete="name" />
       </Field>
-      <Field label="Work email" htmlFor="c-email">
+      <Field label="Work email (required)" htmlFor="c-email">
         <Input id="c-email" type="email" required value={f.email} onChange={(e) => set("email", e.target.value)} autoComplete="email" />
       </Field>
-      <Field label="Company or college" htmlFor="c-org">
+      <Field label="Company or college (required)" htmlFor="c-org">
         <Input id="c-org" required value={f.organization} onChange={(e) => set("organization", e.target.value)} autoComplete="organization" />
       </Field>
       <div className="grid grid-cols-2 gap-3">

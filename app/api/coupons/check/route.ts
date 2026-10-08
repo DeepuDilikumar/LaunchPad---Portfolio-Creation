@@ -8,7 +8,7 @@ import { clientIp, rateLimit } from "@/lib/rate-limit";
 export async function GET(req: Request) {
   const user = await getSessionUser();
   if (!user) return error(401, "Sign in first.");
-  const rl = await rateLimit(`coupon-check:${clientIp(req)}`, 30, 600);
+  const rl = await rateLimit(`coupon-check:${clientIp(req)}`, 30, 600, { failClosed: true });
   if (!rl.ok) return error(429, "Too many attempts.");
   const url = new URL(req.url);
   const code = url.searchParams.get("code") ?? "";

@@ -1,4 +1,4 @@
-import type { ComponentProps, ReactNode } from "react";
+import { cloneElement, isValidElement, type ComponentProps, type ReactElement, type ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
 const field =
@@ -21,18 +21,24 @@ export function Select({ className, children, ...p }: ComponentProps<"select"> &
 }
 
 export function Field({ label, hint, htmlFor, children, error }: { label: string; hint?: string; htmlFor: string; children: ReactNode; error?: string }) {
+  const describedBy = error ? `${htmlFor}-error` : hint ? `${htmlFor}-hint` : undefined;
+  const child = isValidElement(children)
+    ? cloneElement(children as ReactElement<Record<string, unknown>>, { "aria-describedby": describedBy, "aria-invalid": error ? true : undefined })
+    : children;
   return (
     <div className="space-y-1.5">
       <label htmlFor={htmlFor} className="block t-small font-medium text-text-1">
         {label}
       </label>
-      {children}
+      {child}
       {error ? (
-        <p className="t-small text-failed" role="alert">
+        <p id={`${htmlFor}-error`} className="t-small text-failed" role="alert">
           {error}
         </p>
       ) : hint ? (
-        <p className="t-small text-text-2">{hint}</p>
+        <p id={`${htmlFor}-hint`} className="t-small text-text-2">
+          {hint}
+        </p>
       ) : null}
     </div>
   );

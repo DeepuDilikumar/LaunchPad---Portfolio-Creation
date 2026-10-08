@@ -96,11 +96,13 @@ export function Caret({
       { x: -0.7, y: 0.2 },
       { x: 0, y: 0 },
     ];
+    // A few idle glances, then rest: nothing keeps moving for more than ~5 seconds (WCAG 2.2.2).
     let i = 0;
     const id = window.setInterval(() => {
-      const g = glances[i++ % glances.length];
+      const g = glances[i++];
       if (g) setLook(g);
-    }, 2200);
+      if (i >= glances.length) window.clearInterval(id);
+    }, 1250);
     return () => clearInterval(id);
   }, [track, reduced, phase]);
 

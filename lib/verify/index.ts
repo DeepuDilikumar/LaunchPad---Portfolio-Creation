@@ -1,5 +1,5 @@
 import "server-only";
-import { env, mock } from "@/lib/env";
+import { env, mockEndpointsEnabled } from "@/lib/env";
 import { site } from "@/config/site";
 import { safeFetchText, UnsafeUrlError } from "./safe-fetch";
 
@@ -8,7 +8,7 @@ export type CheckResult = { ok: boolean; detail: string; at: string };
 export type Checks = Record<CheckId, CheckResult>;
 
 export const checkLabels: Record<CheckId, string> = {
-  repo_public_owned: "Repo is public and owned by your linked GitHub account",
+  repo_public_owned: "Repo is public, owned by your linked GitHub account, and contains your token",
   commits: "At least 20 commits",
   workflows: "Has a GitHub Actions workflow",
   tests: "Has test files",
@@ -55,6 +55,8 @@ export interface RepoFacts {
   commits: number;
   hasWorkflow: boolean;
   testFiles: number;
+  /** The pack's verify token is committed in the repo (.buildproof file or README). Proves the learner controls it. */
+  hasToken: boolean;
   rateLimited?: boolean;
 }
 
@@ -73,10 +75,10 @@ async function gh(path: string): Promise<Response> {
 
 const TEST_FILE = /(^|\/)(__tests__\/|tests?\/|e2e\/).+\.[cm]?[jt]sx?$|\.(test|spec)\.[cm]?[jt]sx?$|(^|\/)test_.+\.py$|_test\.(go|py)$/;
 
-export async function githubFacts(owner: string, repo: string): Promise<RepoFacts> {
+export async function githubFacts(owner: string, repo: string, token: string): Promise<RepoFacts> {
   const r = await gh(`/repos/${owner}/${repo}`);
-  if (r.status === 403 || r.status === 429) return { exists: false, isPrivate: false, owner: "", commits: 0, hasWorkflow: false, testFiles: 0, rateLimited: true };
-  if (r.status === 404) return { exists: false, isPrivate: true, owner: "", commits: 0, hasWorkflow: false, testFiles: 0 };
+  if (r.status === 403 || r.status === 429) return { exists: false, isPrivate: false, owner: "", commits: 0, hasWorkflow: false, testFiles: 0, hasToken: false, rateLimited: true };
+  if (r.status === 404) return { exists: false, isPrivate: true, owner: "", commits: 0, hasWorkflow: false, testFiles: 0, hasToken: false };
   const meta = (await r.json()) as { private: boolean; owner: { login: string }; default_branch: string };
   const commitsRes = await gh(`/repos/${owner}/${repo}/commits?per_page=1&sha=${encodeURIComponent(meta.default_branch)}`);
   let commits = 0;
@@ -88,7 +90,15 @@ export async function githubFacts(owner: string, repo: string): Promise<RepoFact
   const hasWorkflow = wf.ok && ((await wf.json()) as { name: string }[]).some((f) => /\.ya?ml$/.test(f.name));
   const tree = await gh(`/repos/${owner}/${repo}/git/trees/${encodeURIComponent(meta.default_branch)}?recursive=1`);
   const testFiles = tree.ok ? ((await tree.json()) as { tree: { path: string; type: string }[] }).tree.filter((t) => t.type === "blob" && TEST_FILE.test(t.path)).length : 0;
-  return { exists: true, isPrivate: meta.private, owner: meta.owner.login, commits, hasWorkflow, testFiles };
+  let hasToken = false;
+  for (const file of [".buildproof", "README.md"]) {
+    const res = await fetch(`https://raw.githubusercontent.com/${owner}/${repo}/${encodeURIComponent(meta.default_branch)}/${file}`, { signal: AbortSignal.timeout(8000), cache: "no-store" });
+    if (res.ok && (await res.text()).slice(0, 200_000).includes(token)) {
+      hasToken = true;
+      break;
+    }
+  }
+  return { exists: true, isPrivate: meta.private, owner: meta.owner.login, commits, hasWorkflow, testFiles, hasToken };
 }
 
 /**
@@ -96,8 +106,8 @@ export async function githubFacts(owner: string, repo: string): Promise<RepoFact
  * public repo owned by the URL's owner; anything else looks like an empty repo.
  */
 export function mockGithubFacts(owner: string, repo: string): RepoFacts {
-  if (repo.endsWith("-verify-pass")) return { exists: true, isPrivate: false, owner, commits: 42, hasWorkflow: true, testFiles: 18 };
-  return { exists: true, isPrivate: false, owner, commits: 3, hasWorkflow: false, testFiles: 0 };
+  if (repo.endsWith("-verify-pass")) return { exists: true, isPrivate: false, owner, commits: 42, hasWorkflow: true, testFiles: 18, hasToken: true };
+  return { exists: true, isPrivate: false, owner, commits: 3, hasWorkflow: false, testFiles: 0, hasToken: false };
 }
 
 export async function runVerification(input: { repoUrl: string; liveUrl: string; token: string; githubUsername: string | null }): Promise<Checks> {
@@ -115,9 +125,9 @@ export async function runVerification(input: { repoUrl: string; liveUrl: string;
   } else {
     let facts: RepoFacts;
     try {
-      facts = mock.auth ? mockGithubFacts(parsed.owner, parsed.repo) : await githubFacts(parsed.owner, parsed.repo);
+      facts = mockEndpointsEnabled("auth") ? mockGithubFacts(parsed.owner, parsed.repo) : await githubFacts(parsed.owner, parsed.repo, input.token);
     } catch {
-      facts = { exists: false, isPrivate: false, owner: "", commits: 0, hasWorkflow: false, testFiles: 0, rateLimited: true };
+      facts = { exists: false, isPrivate: false, owner: "", commits: 0, hasWorkflow: false, testFiles: 0, hasToken: false, rateLimited: true };
     }
     if (facts.rateLimited) {
       const msg = "GitHub is rate-limiting us. Try again in a few minutes.";
@@ -134,9 +144,11 @@ export async function runVerification(input: { repoUrl: string; liveUrl: string;
       const linked = input.githubUsername?.toLowerCase();
       checks.repo_public_owned = !linked
         ? fail("Link your GitHub username in Settings first.")
-        : facts.owner.toLowerCase() === linked
-          ? pass(`Public, owned by ${facts.owner}`)
-          : fail(`Owned by ${facts.owner}, but your linked account is ${input.githubUsername}.`);
+        : facts.owner.toLowerCase() !== linked
+          ? fail(`Owned by ${facts.owner}, but your linked account is ${input.githubUsername}.`)
+          : !facts.hasToken
+            ? fail("Commit a .buildproof file containing your verification token (or add the token to README.md), then re-run.")
+            : pass(`Public, owned by ${facts.owner}, token found`);
       checks.commits = facts.commits >= MIN_COMMITS ? pass(`${facts.commits} commits`) : fail(`${facts.commits} commits; needs at least ${MIN_COMMITS}.`);
       checks.workflows = facts.hasWorkflow ? pass("Found .github/workflows") : fail("No workflow file in .github/workflows.");
       checks.tests = facts.testFiles > 0 ? pass(`${facts.testFiles} test files`) : fail("No test files found (e.g. *.test.ts or tests/).");
@@ -145,7 +157,7 @@ export async function runVerification(input: { repoUrl: string; liveUrl: string;
 
   try {
     // In local mock mode the app's own origin is allowed, so the flow can be tested end to end.
-    const allowOrigin = mock.auth ? new URL(env.siteUrl).origin : undefined;
+    const allowOrigin = mockEndpointsEnabled("auth") ? new URL(env.siteUrl).origin : undefined;
     const res = await safeFetchText(input.liveUrl, { allowOrigin });
     if (res.status !== 200) checks.live_url = fail(`Responded ${res.status}; needs 200.`);
     else if (!hasVerifyMeta(res.body, input.token)) checks.live_url = fail("Responds 200, but the verification meta tag isn't in the first 1MB of the page.");

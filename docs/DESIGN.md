@@ -18,12 +18,12 @@ or copy are used. Our mascot (Caret), type (Geist) and copy are original.
 | `--line` | `rgba(255,255,255,0.08)` | hairlines, window borders |
 | `--text-1` | `#F5F5F5` | headings, primary |
 | `--text-2` | `#9B9B9B` | body, captions |
-| `--text-3` | `#5F5F5F` | timestamps, disabled (never essential text) |
+| `--text-3` | `#858585` | timestamps, captions, placeholders. Raised from the spec's `#5F5F5F`, which fails WCAG AA (2.7–3.3:1) on our surfaces; `#858585` is ≥4.6:1 on `--bg`, `--surface-1` and `--surface-2` |
 | `--invert-bg` / `--invert-text` | `#FFFFFF` / `#0A0A0A` | primary pill |
 
 Project accents: foundations `#E7E7E7` · pulse `#3CCFB4` · ledger `#E7C04A` · reel `#EF5A4C` ·
 dispatch `#F28C38` · scribe `#8B6CF0` · atlas `#3B82F6`.
-Status: working `#E7A13A` · passed `#3CCFB4` · failed `#EF5A4C`.
+Status: working `#E7A13A` · passed `#3CCFB4` · failed `#EF5A4C`. Pass/fail is never shown by color alone: chips and check rows carry a word.
 
 Tailwind exposes these as `bg-bg`, `bg-surface-1..3`, `border-line`, `text-text-1..3`,
 `bg-invert`, `text-invert-text`, `text-accent-pulse`, etc.

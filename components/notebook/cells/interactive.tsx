@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, m } from "motion/react";
 import { CopyButton } from "@/components/ui/copy-button";
 import { IconChevronDown } from "@/components/ui/icons";
 import { cn } from "@/lib/cn";
@@ -32,7 +32,7 @@ export function Pitfall({ id, title, recovery, children }: { id: string; title: 
         </button>
         <AnimatePresence initial={false}>
           {open ? (
-            <motion.div
+            <m.div
               id={`${pid}-body`}
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
@@ -57,7 +57,7 @@ export function Pitfall({ id, title, recovery, children }: { id: string; title: 
                   </button>
                 ) : null}
               </div>
-            </motion.div>
+            </m.div>
           ) : null}
         </AnimatePresence>
       </div>
@@ -168,7 +168,11 @@ export function Diagram({ id, chart, caption }: { id: string; chart: string; cap
           });
           const mermaid = await mermaidLoader;
           const { svg } = await mermaid.render(`d${did}`, chart.trim());
-          if (!cancelled) setSvg(svg);
+          // Diagrams on public proof pages are learner-written: sanitize the SVG again on top of
+          // Mermaid's strict mode before it touches the DOM.
+          const DOMPurify = (await import("dompurify")).default;
+          const clean = DOMPurify.sanitize(svg, { USE_PROFILES: { svg: true, svgFilters: true }, ADD_TAGS: ["foreignObject"], FORBID_TAGS: ["script", "style"] });
+          if (!cancelled) setSvg(clean);
         } catch {
           if (!cancelled) setFailed(true);
         }
@@ -195,6 +199,10 @@ export function Diagram({ id, chart, caption }: { id: string; chart: string; cap
           )}
         </div>
         {caption ? <figcaption className="mt-3 t-small text-text-2">{caption}</figcaption> : null}
+        <details className="mt-2">
+          <summary className="cursor-pointer t-small text-text-2 hover:text-text-1">Diagram as text</summary>
+          <pre className="mt-2 whitespace-pre-wrap font-mono text-[12px] leading-[18px] text-text-2">{chart.trim()}</pre>
+        </details>
       </figure>
     </CellFrame>
   );

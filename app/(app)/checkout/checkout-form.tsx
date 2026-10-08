@@ -172,12 +172,20 @@ export function CheckoutForm({
       <div className="flex items-baseline justify-between border-t border-line pt-5">
         <span className="t-body text-text-2">{products[product].name}</span>
         <span className="text-right">
-          {discounted ? <span className="mr-2 t-small text-text-3 line-through">{formatPrice(base, currency)}</span> : null}
+          {discounted ? (
+            <del className="mr-2 t-small text-text-3">
+              <span className="sr-only">was </span>
+              {formatPrice(base, currency)}
+            </del>
+          ) : null}
           <span className="text-[28px] font-medium tracking-[-0.02em] text-text-1" data-total>
             {formatPrice(total, currency)}
           </span>
         </span>
       </div>
+      <p role="status" className="sr-only">
+        {discounted ? `Code applied. New total ${formatPrice(total, currency)}.` : ""}
+      </p>
       <Button className="w-full" onClick={() => void pay()} disabled={busy} data-action="pay">
         {total === 0 ? "Unlock now" : `Pay ${formatPrice(total, currency)}`}
       </Button>

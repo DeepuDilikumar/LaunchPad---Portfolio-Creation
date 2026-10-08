@@ -60,9 +60,12 @@ export const razorpay: PaymentProvider = {
     } catch {
       return null;
     }
-    const eventId = headers.get("x-razorpay-event-id") ?? hmac("event", rawBody).slice(0, 32);
     const p = body.payload?.payment?.entity;
     const r = body.payload?.refund?.entity;
+    // Dedupe on signed content (event type + entity id), not the unsigned event-id header,
+    // so a captured body can't be replayed under fresh ids.
+    const entityId = r?.id ?? p?.id;
+    const eventId = entityId ? `${body.event}:${entityId}` : `${body.event}:${hmac("event", rawBody).slice(0, 32)}`;
     return {
       eventId,
       type: body.event,

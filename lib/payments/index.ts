@@ -1,6 +1,6 @@
 import "server-only";
 import { and, eq, isNull, sql } from "drizzle-orm";
-import { mock } from "@/lib/env";
+import { mock, mockEndpointsEnabled } from "@/lib/env";
 import { getDb, schema, type Db } from "@/lib/db";
 import { formatPrice, products, type Currency, type ProductSlug } from "@/config/pricing";
 import { getProject } from "@/content/catalog";
@@ -13,7 +13,7 @@ import { razorpay } from "./razorpay";
 
 export function getProvider(name?: string): PaymentProvider {
   if (name === "mock" || (!name && mock.payments)) {
-    if (!mock.payments) throw new Error("mock provider requested while real payments are configured");
+    if (!mockEndpointsEnabled("payments")) throw new Error("mock payments are not available here");
     return mockProvider;
   }
   return razorpay;
@@ -74,13 +74,6 @@ export async function grantPurchase(input: { provider: string; orderId: string; 
       await grantEntitlement(tx as unknown as Db, { userId: purchase.userId, scope, source: "purchase", sourceId: purchase.id });
     }
     const firstTime = updated.length > 0;
-    if (firstTime && purchase.couponCode) {
-      const [c] = await tx.select().from(schema.coupons).where(eq(schema.coupons.code, purchase.couponCode)).limit(1);
-      if (c) {
-        const ins = await tx.insert(schema.couponRedemptions).values({ couponId: c.id, userId: purchase.userId }).onConflictDoNothing().returning({ id: schema.couponRedemptions.id });
-        if (ins.length) await tx.update(schema.coupons).set({ redemptions: sql`${schema.coupons.redemptions} + 1` }).where(eq(schema.coupons.id, c.id));
-      }
-    }
     return { ok: true, firstTime, returnTo: purchase.returnTo, purchase };
   });
 
@@ -151,6 +144,30 @@ export async function handleWebhook(provider: string, event: WebhookEvent): Prom
     .set(error ? { error } : { processedAt: new Date(), error: null })
     .where(and(eq(schema.webhookEvents.provider, provider), eq(schema.webhookEvents.eventId, event.eventId)));
   return { duplicate: false, processed: !error, error };
+}
+
+/**
+ * Reserve one use of a discount code for this user at order creation. Atomic: the seat count
+ * can't go over the limit under concurrency, and a user can use a code once.
+ */
+export async function reserveCoupon(userId: string, couponId: number): Promise<{ ok: true } | { ok: false; error: string }> {
+  const db = await getDb();
+  try {
+    return await db.transaction(async (tx) => {
+      const ins = await tx.insert(schema.couponRedemptions).values({ couponId, userId }).onConflictDoNothing().returning({ id: schema.couponRedemptions.id });
+      if (!ins.length) return { ok: false as const, error: "You've already used this code." };
+      const bumped = await tx
+        .update(schema.coupons)
+        .set({ redemptions: sql`${schema.coupons.redemptions} + 1` })
+        .where(and(eq(schema.coupons.id, couponId), sql`(${schema.coupons.maxRedemptions} is null or ${schema.coupons.redemptions} < ${schema.coupons.maxRedemptions})`))
+        .returning({ id: schema.coupons.id });
+      if (!bumped.length) throw new Error("exhausted");
+      return { ok: true as const };
+    });
+  } catch (e) {
+    if ((e as Error).message === "exhausted") return { ok: false, error: "That code has been fully used." };
+    throw e;
+  }
 }
 
 export async function redeemGrantCoupon(userId: string, code: string): Promise<{ ok: true; scope: string } | { ok: false; error: string }> {

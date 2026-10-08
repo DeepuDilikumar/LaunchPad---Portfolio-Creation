@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useState, type ReactNode } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, m } from "motion/react";
 import { cn } from "@/lib/cn";
 
 export function Accordion({
@@ -45,7 +45,7 @@ export function AccordionItem({ title, children, defaultOpen = false }: { title:
       </h3>
       <AnimatePresence initial={false}>
         {open ? (
-          <motion.div
+          <m.div
             id={`${id}-panel`}
             role="region"
             aria-labelledby={`${id}-btn`}
@@ -56,7 +56,7 @@ export function AccordionItem({ title, children, defaultOpen = false }: { title:
             className="overflow-hidden"
           >
             <div className="pb-6 pr-10 t-body text-text-2 max-w-[70ch]">{children}</div>
-          </motion.div>
+          </m.div>
         ) : null}
       </AnimatePresence>
     </div>

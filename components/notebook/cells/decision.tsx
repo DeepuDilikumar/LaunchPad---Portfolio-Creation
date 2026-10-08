@@ -39,9 +39,11 @@ export function Decision({ id, question, children }: { id: string; question: str
       <div className="rounded-[16px] border border-line bg-surface-1" data-decision={id}>
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-4 py-2.5">
           <p className="t-small font-medium text-text-1">Decision</p>
-          {save === "saved" && enough ? <StatusChip status="passed">Saved to your build journal</StatusChip> : null}
-          {save === "saving" ? <span className="t-small text-text-2">Saving…</span> : null}
-          {save === "error" ? <span className="t-small text-failed">Not saved. Keep typing to retry.</span> : null}
+          <div role="status" className="min-h-6">
+            {save === "saved" && enough ? <StatusChip status="passed">Saved to your build journal</StatusChip> : null}
+            {save === "saving" ? <span className="t-small text-text-2">Saving…</span> : null}
+            {save === "error" ? <span className="t-small text-failed">Not saved. Keep typing to retry.</span> : null}
+          </div>
         </div>
         <div className="space-y-3 px-4 py-3.5">
           <label htmlFor={`${id}-text`} className="block t-body text-text-1">
@@ -52,7 +54,6 @@ export function Decision({ id, question, children }: { id: string; question: str
             id={`${id}-text`}
             value={text}
             placeholder="What did the agent propose? What did you keep, reject or change, and why?"
-            onFocus={() => nb?.requireAuth(id)}
             onChange={(e) => {
               if (!nb?.user) {
                 nb?.requireAuth(id);
@@ -65,7 +66,7 @@ export function Decision({ id, question, children }: { id: string; question: str
             rows={4}
           />
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="t-small text-text-2" aria-live="polite">
+            <p className="t-small text-text-2">
               {enough ? `${count} characters` : `${Math.max(0, DECISION_MIN_CHARS - count)} more characters to count toward progress`}
             </p>
             <label className="inline-flex cursor-pointer items-center gap-2 t-small text-text-2">

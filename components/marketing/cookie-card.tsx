@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useSyncExternalStore } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, m } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { getConsent, setConsent, subscribeConsent, type Consent } from "@/lib/analytics/consent";
@@ -36,11 +36,21 @@ export function CookieCard() {
 
   const show = consent === null;
 
+  // On phones the card is a bottom sheet: pad the page so it never covers focused content.
+  useEffect(() => {
+    if (!show || !window.matchMedia("(max-width: 767px)").matches) return;
+    const prev = document.body.style.paddingBottom;
+    document.body.style.paddingBottom = "200px";
+    return () => {
+      document.body.style.paddingBottom = prev;
+    };
+  }, [show]);
+
   return (
     <>
       <AnimatePresence>
         {show ? (
-          <motion.div
+          <m.div
             role="region"
             aria-label="Cookie preferences"
             initial={{ opacity: 0, y: 16 }}
@@ -64,7 +74,7 @@ export function CookieCard() {
                 Accept all
               </Button>
             </div>
-          </motion.div>
+          </m.div>
         ) : null}
       </AnimatePresence>
       <Dialog open={settings} onClose={() => setSettings(false)} title="Cookie settings" description="Choose what we can store in your browser.">

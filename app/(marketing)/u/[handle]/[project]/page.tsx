@@ -153,7 +153,7 @@ export default async function ProofPublicPage({ params }: { params: Promise<Para
               <li key={id} className="flex items-center gap-2 t-small text-text-2">
                 <span aria-hidden className="size-1.5 rounded-full" style={{ background: checks[id]?.ok ? "var(--status-passed)" : "var(--status-failed)" }} />
                 {checkLabels[id]}
-                <span className="sr-only">{checks[id]?.ok ? "passed" : "not passed"}</span>
+                <span className={checks[id]?.ok ? "text-passed" : "text-failed"}>{checks[id]?.ok ? "Passed" : "Not passed"}</span>
                 {checks[id]?.at ? <span className="text-text-3">· {new Date(checks[id]!.at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</span> : null}
               </li>
             ))}

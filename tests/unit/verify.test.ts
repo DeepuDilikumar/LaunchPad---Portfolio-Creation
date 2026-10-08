@@ -61,3 +61,13 @@ describe("only numbers the learner entered", () => {
     expect(d.bullets.join(" ")).not.toMatch(/\d/);
   });
 });
+
+describe("SSRF guard: IPv6 forms", () => {
+  it("blocks mapped, compatible, NAT64 and 6to4 addresses in any notation", () => {
+    for (const ip of ["::ffff:a9fe:a9fe", "::ffff:7f00:1", "::7f00:1", "64:ff9b::a9fe:a9fe", "2002:7f00:1::1", "::"]) expect(isPrivateAddress(ip), ip).toBe(true);
+  });
+  it("rejects bracketed mapped literals in URLs", async () => {
+    await expect(assertPublicUrl("http://[::ffff:169.254.169.254]/latest/meta-data/")).rejects.toThrow(/private/);
+    await expect(assertPublicUrl("http://[::ffff:7f00:1]/")).rejects.toThrow(/private/);
+  });
+});

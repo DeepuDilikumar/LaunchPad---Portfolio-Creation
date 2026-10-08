@@ -1,32 +1,65 @@
 import "server-only";
 import { lookup } from "node:dns/promises";
-import { isIP } from "node:net";
+import { lookup as dnsLookup, type LookupAddress, type LookupOptions } from "node:dns";
+import { BlockList, isIP } from "node:net";
+import { Agent, fetch as undiciFetch } from "undici";
 
 export class UnsafeUrlError extends Error {}
 
-/** True for loopback, private, link-local, CGNAT, multicast and other non-public ranges. */
+const v4Blocked = [
+  ["0.0.0.0", 8],
+  ["10.0.0.0", 8],
+  ["100.64.0.0", 10],
+  ["127.0.0.0", 8],
+  ["169.254.0.0", 16],
+  ["172.16.0.0", 12],
+  ["192.0.0.0", 24],
+  ["192.0.2.0", 24],
+  ["192.168.0.0", 16],
+  ["198.18.0.0", 15],
+  ["198.51.100.0", 24],
+  ["203.0.113.0", 24],
+  ["224.0.0.0", 3],
+] as const;
+const v6Blocked = [
+  ["::", 96], // unspecified, loopback and IPv4-compatible (::a.b.c.d)
+  ["::ffff:0:0", 96], // IPv4-mapped, in any notation (::ffff:7f00:1 is 127.0.0.1)
+  ["64:ff9b::", 96], // NAT64
+  ["64:ff9b:1::", 48],
+  ["100::", 64], // discard
+  ["2001:db8::", 32], // documentation
+  ["2002::", 16], // 6to4 can embed private IPv4
+  ["fc00::", 7], // unique local
+  ["fe80::", 10], // link-local
+  ["ff00::", 8], // multicast
+] as const;
+
+// Separate lists: a single BlockList matches IPv4 addresses against IPv4-mapped IPv6 rules.
+const blocked4 = new BlockList();
+const blocked6 = new BlockList();
+for (const [net, prefix] of v4Blocked) blocked4.addSubnet(net, prefix, "ipv4");
+for (const [net, prefix] of v6Blocked) blocked6.addSubnet(net, prefix, "ipv6");
+
+/** True for loopback, private, link-local, CGNAT, multicast, mapped/NAT64 and other non-public ranges. */
 export function isPrivateAddress(ip: string): boolean {
-  if (isIP(ip) === 4) {
-    const [a, b] = ip.split(".").map(Number) as [number, number, number, number];
-    return (
-      a === 0 ||
-      a === 10 ||
-      a === 127 ||
-      (a === 100 && b >= 64 && b <= 127) ||
-      (a === 169 && b === 254) ||
-      (a === 172 && b >= 16 && b <= 31) ||
-      (a === 192 && b === 168) ||
-      (a === 192 && b === 0) ||
-      (a === 198 && (b === 18 || b === 19)) ||
-      a >= 224
-    );
-  }
-  const v6 = ip.toLowerCase();
-  if (v6 === "::" || v6 === "::1") return true;
-  const mapped = v6.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/);
-  if (mapped) return isPrivateAddress(mapped[1]!);
-  return /^(fc|fd|fe8|fe9|fea|feb|ff)/.test(v6);
+  const family = isIP(ip);
+  if (family === 4) return blocked4.check(ip, "ipv4");
+  if (family === 6) return blocked6.check(ip, "ipv6");
+  return true;
 }
+
+/** DNS lookup that refuses non-public addresses. Used at connect time, so rebinding can't slip through. */
+function safeLookup(hostname: string, options: LookupOptions, callback: (err: NodeJS.ErrnoException | null, address: string | LookupAddress[], family?: number) => void) {
+  dnsLookup(hostname, { ...options, all: true }, (err, addresses) => {
+    if (err) return callback(err, "");
+    const list = (addresses as LookupAddress[]).filter((a) => !isPrivateAddress(a.address));
+    if (!list.length) return callback(Object.assign(new Error("blocked address"), { code: "EBLOCKED" }), "");
+    if (options.all) return callback(null, list);
+    callback(null, list[0]!.address, list[0]!.family);
+  });
+}
+
+const pinnedAgent = new Agent({ connect: { lookup: safeLookup as never }, headersTimeout: 5000, bodyTimeout: 5000 });
 
 export async function assertPublicUrl(raw: string): Promise<URL> {
   let url: URL;
@@ -62,7 +95,13 @@ export async function safeFetchText(
   let current = raw;
   for (let hop = 0; hop < 4; hop++) {
     const url = opts.allowOrigin && new URL(current).origin === opts.allowOrigin ? new URL(current) : await assertPublicUrl(current);
-    const res = await fetch(url, { redirect: "manual", signal, headers: { "user-agent": "BuildproofVerifier/1.0", accept: "text/html" } });
+    const pinned = !(opts.allowOrigin && url.origin === opts.allowOrigin);
+    const res = await undiciFetch(url, {
+      redirect: "manual",
+      signal,
+      headers: { "user-agent": "BuildproofVerifier/1.0", accept: "text/html" },
+      ...(pinned ? { dispatcher: pinnedAgent } : {}),
+    });
     if (res.status >= 300 && res.status < 400 && res.headers.get("location")) {
       if (hop === 3) throw new UnsafeUrlError("Too many redirects.");
       current = new URL(res.headers.get("location")!, url).toString();

@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
+import { AnimatePresence, m } from "motion/react";
 import { cn } from "@/lib/cn";
 import { Button, LinkButton } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
@@ -32,6 +32,31 @@ const toolOptions: { value: Tool; label: string }[] = [
   { value: "cursor", label: "Cursor" },
 ];
 
+const SHORTCUTS_KEY = "bp_shortcuts";
+const shortcutListeners = new Set<() => void>();
+function readShortcuts() {
+  try {
+    return window.localStorage.getItem(SHORTCUTS_KEY) !== "off";
+  } catch {
+    return true;
+  }
+}
+function subscribeShortcuts(cb: () => void) {
+  shortcutListeners.add(cb);
+  return () => {
+    shortcutListeners.delete(cb);
+  };
+}
+const NARROW = "(max-width: 767px)";
+function readNarrow() {
+  return window.matchMedia(NARROW).matches;
+}
+function subscribeNarrow(cb: () => void) {
+  const mq = window.matchMedia(NARROW);
+  mq.addEventListener("change", cb);
+  return () => mq.removeEventListener("change", cb);
+}
+
 function isTyping(el: EventTarget | null) {
   const t = el as HTMLElement | null;
   if (!t) return false;
@@ -60,6 +85,46 @@ export function NotebookShell({
   const [notes, setNotes] = useState("");
   const notesKey = `bp_notes:${nb.project}/${nb.module}`;
   const resumed = useRef(false);
+  const pageRef = useRef<HTMLDivElement>(null);
+  const drawerRef = useRef<HTMLElement>(null);
+  const openerRef = useRef<HTMLElement | null>(null);
+  const shortcutsOn = useSyncExternalStore(subscribeShortcuts, readShortcuts, () => true);
+  const toggleShortcuts = () => {
+    try {
+      window.localStorage.setItem(SHORTCUTS_KEY, shortcutsOn ? "off" : "on");
+    } catch {}
+    shortcutListeners.forEach((l) => l());
+  };
+  const isNarrow = useSyncExternalStore(subscribeNarrow, readNarrow, () => false);
+
+  // Drawer: Escape closes it, focus moves in on open and back to the opener on close,
+  // and on narrow screens (where it covers the page) the page behind is inert.
+  useEffect(() => {
+    if (!nb.tutor.open) return;
+    openerRef.current = document.activeElement as HTMLElement | null;
+    const t = window.setTimeout(() => {
+      const target = drawerRef.current?.querySelector<HTMLElement>("textarea, [role=tab][aria-selected=true], button");
+      target?.focus();
+    }, 50);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && !document.querySelector("dialog[open]")) {
+        e.preventDefault();
+        nb.closeTutor();
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => {
+      window.clearTimeout(t);
+      document.removeEventListener("keydown", onKey);
+      openerRef.current?.focus?.();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nb.tutor.open]);
+  useEffect(() => {
+    const el = pageRef.current;
+    if (!el) return;
+    el.inert = nb.tutor.open && isNarrow;
+  }, [nb.tutor.open, isNarrow]);
 
   const total = nb.requiredCheckpoints.length + nb.decisionIds.length;
   const done =
@@ -114,6 +179,7 @@ export function NotebookShell({
   );
 
   useEffect(() => {
+    if (!shortcutsOn) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.metaKey || e.ctrlKey || e.altKey || isTyping(e.target)) return;
       if (document.querySelector("dialog[open]")) return;
@@ -138,7 +204,7 @@ export function NotebookShell({
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [go, nb]);
+  }, [go, nb, shortcutsOn]);
 
   const current = rail.find((m) => m.slug === nb.module);
 
@@ -180,6 +246,7 @@ export function NotebookShell({
 
   return (
     <div className="min-h-dvh">
+      <div ref={pageRef}>
       {/* Top bar */}
       <header className="sticky top-0 z-40 border-b border-line bg-black/85 backdrop-blur-md">
         <div className="flex h-14 items-center gap-3 px-4 md:px-6">
@@ -237,12 +304,15 @@ export function NotebookShell({
       <div className="mx-auto flex max-w-[1440px]">
         <aside className="sticky top-14 hidden h-[calc(100dvh-56px)] w-[272px] shrink-0 overflow-y-auto border-r border-line px-3 py-5 lg:block">
           {railList}
-          <p className="mt-6 px-2 text-[11.5px] leading-4 text-text-3">
-            Keys: j / k next and previous cell · c copy prompt · p mark passed · / tutor
-          </p>
+          <div className="mt-6 px-2">
+            <p className="text-[12px] leading-4 text-text-3">Keys: j / k next and previous cell · c copy prompt · p mark passed · / tutor</p>
+            <button type="button" onClick={toggleShortcuts} aria-pressed={shortcutsOn} className="mt-2 text-[12px] text-text-2 underline underline-offset-2 hover:text-text-1" data-shortcuts-toggle>
+              {shortcutsOn ? "Turn off keyboard shortcuts" : "Turn on keyboard shortcuts"}
+            </button>
+          </div>
         </aside>
 
-        <div className="min-w-0 flex-1 px-5 pb-32 pt-8 md:px-10 md:pt-12">
+        <main id="main" className="min-w-0 flex-1 px-5 pb-32 pt-8 md:px-10 md:pt-12">
           <div className="mx-auto max-w-[760px]">
             <div className="md:hidden mb-6">
               <SegmentedToggle size="sm" label="Agent" value={nb.tool} onChange={nb.setTool} options={toolOptions} />
@@ -257,7 +327,8 @@ export function NotebookShell({
               </div>
             ) : null}
           </div>
-        </div>
+        </main>
+      </div>
       </div>
 
       {/* Mobile: sticky "Next cell" */}
@@ -277,9 +348,11 @@ export function NotebookShell({
       {/* Right drawer: Tutor · Journal · Notes */}
       <AnimatePresence>
         {nb.tutor.open ? (
-          <motion.aside
+          <m.aside
             key="drawer"
+            ref={drawerRef}
             role="dialog"
+            aria-modal={isNarrow ? true : undefined}
             aria-label="Notebook drawer"
             initial={{ x: 40, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
@@ -342,7 +415,7 @@ export function NotebookShell({
                 </div>
               ) : null}
             </div>
-          </motion.aside>
+          </m.aside>
         ) : null}
       </AnimatePresence>
 
@@ -372,15 +445,11 @@ function Celebration({ next }: { next: { href: string; title: string } | null })
   // The "first checkpoint" moment is the Foundations onboarding win; elsewhere it's a normal pass.
   const first = nb.celebrate === "first" && nb.project === "foundations" && nb.module === "setup-agents";
   const mod = nb.celebrate === "module";
-  useEffect(() => {
-    if (!nb.celebrate) return;
-    const id = window.setTimeout(nb.clearCelebrate, 9000);
-    return () => window.clearTimeout(id);
-  }, [nb.celebrate, nb.clearCelebrate]);
+  // No auto-dismiss: it holds actions, so it stays until the learner closes it (WCAG 2.2.1).
   return (
     <AnimatePresence>
       {first || mod ? (
-        <motion.div
+        <m.div
           role="status"
           initial={{ opacity: 0, y: 16, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -416,7 +485,7 @@ function Celebration({ next }: { next: { href: string; title: string } | null })
               </div>
             </div>
           </div>
-        </motion.div>
+        </m.div>
       ) : null}
     </AnimatePresence>
   );

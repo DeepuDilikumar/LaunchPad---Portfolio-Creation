@@ -29,9 +29,10 @@ function Step({ n, title, children, done }: { n: number; title: string; children
   return (
     <section className="rounded-[24px] border border-line bg-surface-1 p-5 md:p-7" aria-labelledby={`step-${n}`}>
       <div className="flex items-center gap-3">
-        <span className={cn("inline-flex size-7 items-center justify-center rounded-full t-badge", done ? "bg-passed text-black" : "bg-surface-3 text-text-1")}>{n}</span>
+        <span className={cn("inline-flex size-7 items-center justify-center rounded-full t-badge", done ? "bg-passed text-black" : "bg-surface-3 text-text-1")}>{done ? "✓" : n}</span>
         <h2 id={`step-${n}`} className="t-h3 text-text-1">
           {title}
+          {done ? <span className="sr-only"> (done)</span> : null}
         </h2>
       </div>
       <div className="mt-5 space-y-4">{children}</div>
@@ -156,6 +157,11 @@ export function ProofBuilder({
           <Input id="pf-live" value={liveUrl} onChange={(e) => setLiveUrl(e.target.value)} placeholder="https://your-app.example.com" />
         </Field>
         <div>
+          <p className="t-small text-text-2">Commit a file named .buildproof containing this token to your repo. It proves the repo is yours.</p>
+          <div className="mt-2 mb-4 flex items-center gap-2 rounded-[12px] border border-line bg-black px-3 py-2">
+            <code className="min-w-0 flex-1 truncate font-mono text-[12.5px] text-text-1">{token}</code>
+            <CopyButton text={token} />
+          </div>
           <p className="t-small text-text-2">Add this tag to the &lt;head&gt; of your live site. It proves you control the deployment.</p>
           <div className="mt-2 flex items-center gap-2 rounded-[12px] border border-line bg-black px-3 py-2">
             <code className="min-w-0 flex-1 truncate font-mono text-[12.5px] text-text-1">{metaTag}</code>
@@ -195,7 +201,7 @@ export function ProofBuilder({
                       {c?.at ? ` · ${new Date(c.at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}` : ""}
                     </p>
                   </div>
-                  <span className="sr-only">{c?.ok ? "passed" : "failed"}</span>
+                  <span className={cn("ml-auto shrink-0 t-badge", c?.ok ? "text-passed" : "text-failed")}>{c?.ok ? "Passed" : "Failed"}</span>
                 </li>
               );
             })}

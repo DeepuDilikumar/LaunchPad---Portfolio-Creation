@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, m } from "motion/react";
 import { AppWindow } from "@/components/ui/card";
 import { AccentAvatar, StatusChip } from "@/components/ui/pill";
 import { IconCheck, IconCopy, IconSearch } from "@/components/ui/icons";
@@ -116,7 +116,7 @@ export function HeroDemo() {
           <div className="flex min-w-0 flex-col">
             <div className="relative flex h-12 items-center border-b border-line px-4 md:px-6" aria-hidden>
               <AnimatePresence mode="wait" initial={false}>
-                <motion.p
+                <m.p
                   key={nextModule ? "m4" : "m3"}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -125,7 +125,7 @@ export function HeroDemo() {
                   className="t-small text-text-1 truncate"
                 >
                   Pulse · Module {nextModule ? "4 · Presence at scale" : "3 · Delivery receipts"}
-                </motion.p>
+                </m.p>
               </AnimatePresence>
               <div className="ml-auto hidden sm:block">
                 <ToolTabsView tools={["Claude Code", "Codex"]} active="Claude Code" />
@@ -141,7 +141,7 @@ export function HeroDemo() {
                 <div className="space-y-3.5 min-w-0">
                   <AnimatePresence>
                     {show(0) ? (
-                      <motion.p
+                      <m.p
                         key="explain"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -150,10 +150,10 @@ export function HeroDemo() {
                         className="t-small md:text-[14px] md:leading-[22px] text-text-2 max-w-[52ch]"
                       >
                         Messages need three states: sent, delivered, read. Have the agent plan it before it writes code.
-                      </motion.p>
+                      </m.p>
                     ) : null}
                     {show(1500) ? (
-                      <motion.div key="prompt" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.35, ease }}>
+                      <m.div key="prompt" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.35, ease }}>
                         <CellShell
                           label={<ToolTabsView tools={["Claude Code", "Codex"]} active="Claude Code" />}
                           right={
@@ -169,10 +169,10 @@ export function HeroDemo() {
                           </p>
                           <p className="border-t border-line px-4 py-2 text-[12px] text-text-3">Run this in plan mode first</p>
                         </CellShell>
-                      </motion.div>
+                      </m.div>
                     ) : null}
                     {show(7600) ? (
-                      <motion.div key="checkpoint" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.35, ease }}>
+                      <m.div key="checkpoint" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.35, ease }}>
                         <CellShell className="flex items-center justify-between gap-3 px-4 py-3">
                           <div className="min-w-0">
                             <p className="t-small text-text-1">Checkpoint</p>
@@ -180,26 +180,26 @@ export function HeroDemo() {
                           </div>
                           <CheckpointChip status={checkpoint} />
                         </CellShell>
-                      </motion.div>
+                      </m.div>
                     ) : null}
                     {show(12000) ? (
-                      <motion.div key="decision" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.35, ease }}>
+                      <m.div key="decision" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.35, ease }}>
                         <CellShell label="Decision · What did you change, and why?" right={saved ? <StatusChip status="passed">Saved to your build journal</StatusChip> : null}>
                           <p className="min-h-[66px] px-4 py-3 text-[13px] leading-[20px] text-text-1">{decisionText}</p>
                         </CellShell>
-                      </motion.div>
+                      </m.div>
                     ) : null}
                     {t >= 15000 && t < 15800 ? (
-                      <motion.div key="dots" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="px-1 py-2">
+                      <m.div key="dots" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="px-1 py-2">
                         <ThinkingDots />
-                      </motion.div>
+                      </m.div>
                     ) : null}
                   </AnimatePresence>
                 </div>
 
                 <AnimatePresence>
                   {show(4000) ? (
-                    <motion.div
+                    <m.div
                       key="terminal"
                       initial={{ opacity: 0, x: 24 }}
                       animate={{ opacity: 1, x: 0 }}
@@ -208,7 +208,7 @@ export function HeroDemo() {
                       className="min-w-0"
                     >
                       <TerminalView lines={lines} className="min-h-[200px]" />
-                    </motion.div>
+                    </m.div>
                   ) : null}
                 </AnimatePresence>
               </div>

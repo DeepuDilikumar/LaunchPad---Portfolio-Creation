@@ -86,7 +86,8 @@ export function CheckpointChip({ status }: { status: Status }) {
 
 export function ThinkingDots({ className }: { className?: string }) {
   return (
-    <span className={cn("inline-flex items-center gap-1", className)} aria-label="Thinking">
+    <span role="status" className={cn("inline-flex items-center gap-1", className)}>
+      <span className="sr-only">Thinking</span>
       {[0, 1, 2].map((i) => (
         <span
           key={i}

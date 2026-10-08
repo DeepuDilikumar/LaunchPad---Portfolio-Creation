@@ -2,7 +2,7 @@ import type { SVGProps } from "react";
 
 type P = SVGProps<SVGSVGElement> & { size?: number };
 
-const base = (size = 16) => ({
+const base = (size = 16, label?: string) => ({
   width: size,
   height: size,
   viewBox: "0 0 16 16",
@@ -11,91 +11,91 @@ const base = (size = 16) => ({
   strokeWidth: 1.5,
   strokeLinecap: "round" as const,
   strokeLinejoin: "round" as const,
-  "aria-hidden": true,
+  ...(label ? { role: "img", "aria-label": label } : { "aria-hidden": true }),
 });
 
 export const IconCheck = ({ size, ...p }: P) => (
-  <svg {...base(size)} {...p}>
+  <svg {...base(size, p["aria-label"])} {...p}>
     <path d="M3 8.5l3 3 7-7" />
   </svg>
 );
 export const IconCopy = ({ size, ...p }: P) => (
-  <svg {...base(size)} {...p}>
+  <svg {...base(size, p["aria-label"])} {...p}>
     <rect x="5" y="5" width="8.5" height="8.5" rx="2" />
     <path d="M10.5 5V3.5a1.5 1.5 0 0 0-1.5-1.5H3.5A1.5 1.5 0 0 0 2 3.5V9a1.5 1.5 0 0 0 1.5 1.5H5" />
   </svg>
 );
 export const IconArrowUpRight = ({ size, ...p }: P) => (
-  <svg {...base(size)} {...p}>
+  <svg {...base(size, p["aria-label"])} {...p}>
     <path d="M5 11l6-6M6 5h5v5" />
   </svg>
 );
 export const IconArrowRight = ({ size, ...p }: P) => (
-  <svg {...base(size)} {...p}>
+  <svg {...base(size, p["aria-label"])} {...p}>
     <path d="M3 8h10M9 4l4 4-4 4" />
   </svg>
 );
 export const IconChevronDown = ({ size, ...p }: P) => (
-  <svg {...base(size)} {...p}>
+  <svg {...base(size, p["aria-label"])} {...p}>
     <path d="M4 6l4 4 4-4" />
   </svg>
 );
 export const IconMenu = ({ size, ...p }: P) => (
-  <svg {...base(size)} {...p}>
+  <svg {...base(size, p["aria-label"])} {...p}>
     <path d="M3 6h10M3 10h10" />
   </svg>
 );
 export const IconClose = ({ size, ...p }: P) => (
-  <svg {...base(size)} {...p}>
+  <svg {...base(size, p["aria-label"])} {...p}>
     <path d="M4 4l8 8M12 4l-8 8" />
   </svg>
 );
 export const IconSearch = ({ size, ...p }: P) => (
-  <svg {...base(size)} {...p}>
+  <svg {...base(size, p["aria-label"])} {...p}>
     <circle cx="7" cy="7" r="4.5" />
     <path d="M10.5 10.5L14 14" />
   </svg>
 );
 export const IconPlay = ({ size, ...p }: P) => (
-  <svg {...base(size)} {...p} fill="currentColor" stroke="none">
+  <svg {...base(size, p["aria-label"])} {...p} fill="currentColor" stroke="none">
     <path d="M5 3.2v9.6a.6.6 0 0 0 .9.5l7.6-4.8a.6.6 0 0 0 0-1L5.9 2.7a.6.6 0 0 0-.9.5z" />
   </svg>
 );
 export const IconPause = ({ size, ...p }: P) => (
-  <svg {...base(size)} {...p} fill="currentColor" stroke="none">
+  <svg {...base(size, p["aria-label"])} {...p} fill="currentColor" stroke="none">
     <rect x="4" y="3" width="3" height="10" rx="1" />
     <rect x="9" y="3" width="3" height="10" rx="1" />
   </svg>
 );
 export const IconLock = ({ size, ...p }: P) => (
-  <svg {...base(size)} {...p}>
+  <svg {...base(size, p["aria-label"])} {...p}>
     <rect x="3" y="7" width="10" height="7" rx="2" />
     <path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" />
   </svg>
 );
 export const IconTerminal = ({ size, ...p }: P) => (
-  <svg {...base(size)} {...p}>
+  <svg {...base(size, p["aria-label"])} {...p}>
     <path d="M3 5l3 3-3 3M8 11h5" />
   </svg>
 );
 export const IconShield = ({ size, ...p }: P) => (
-  <svg {...base(size)} {...p}>
+  <svg {...base(size, p["aria-label"])} {...p}>
     <path d="M8 2l5 2v4c0 3-2.2 5.2-5 6-2.8-.8-5-3-5-6V4l5-2z" />
   </svg>
 );
 export const IconCoin = ({ size, ...p }: P) => (
-  <svg {...base(size)} {...p}>
+  <svg {...base(size, p["aria-label"])} {...p}>
     <circle cx="8" cy="8" r="5.5" />
     <path d="M8 5v6M6.5 6.5h2.2a1 1 0 0 1 0 2H7.3a1 1 0 0 0 0 2h2.2" />
   </svg>
 );
 export const IconMic = ({ size, ...p }: P) => (
-  <svg {...base(size)} {...p}>
+  <svg {...base(size, p["aria-label"])} {...p}>
     <path d="M3 4.5h10M3 8h10M3 11.5h6" />
   </svg>
 );
 export const IconSparkle = ({ size, ...p }: P) => (
-  <svg {...base(size)} {...p}>
+  <svg {...base(size, p["aria-label"])} {...p}>
     <path d="M8 2v3M8 11v3M2 8h3M11 8h3M4 4l1.5 1.5M10.5 10.5L12 12M12 4l-1.5 1.5M5.5 10.5L4 12" />
   </svg>
 );

@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, type KeyboardEvent } from "react";
-import { motion } from "motion/react";
+import { m } from "motion/react";
 import { cn } from "@/lib/cn";
 
 /** A radio group styled as a segmented toggle. Lives inside cards. */
@@ -60,7 +60,7 @@ export function SegmentedToggle<T extends string>({
             )}
           >
             {active ? (
-              <motion.span
+              <m.span
                 layoutId={`seg-${id}`}
                 className="absolute inset-0 -z-10 rounded-full bg-invert"
                 transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}

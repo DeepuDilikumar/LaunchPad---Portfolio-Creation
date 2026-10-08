@@ -4,6 +4,7 @@ import { getSessionUser } from "@/lib/auth/session";
 import { error, json, parseBody } from "@/lib/http";
 import { getDb, schema } from "@/lib/db";
 import { RESERVED_HANDLES } from "@/lib/auth/profiles";
+import { mock } from "@/lib/env";
 
 const body = z.object({
   name: z.string().trim().max(80),
@@ -36,9 +37,14 @@ export async function POST(req: Request) {
     .where(and(eq(schema.profiles.handle, data.handle), ne(schema.profiles.userId, user.id)))
     .limit(1);
   if (taken) return error(409, "That handle is taken. Pick another.");
-  await db
-    .update(schema.profiles)
-    .set({ ...data, githubUsername: data.githubUsername || null })
-    .where(eq(schema.profiles.userId, user.id));
+  const githubUsername = data.githubUsername || null;
+  if (!mock.auth && user.profile.githubUsername && githubUsername !== user.profile.githubUsername) {
+    return error(400, "Your GitHub username comes from your GitHub sign-in and can't be changed here.");
+  }
+  await db.update(schema.profiles).set({ ...data, githubUsername }).where(eq(schema.profiles.userId, user.id));
+  if ((githubUsername ?? "").toLowerCase() !== (user.profile.githubUsername ?? "").toLowerCase()) {
+    // Verification was tied to the old account.
+    await db.update(schema.proofPacks).set({ checks: {}, verifiedAt: null }).where(eq(schema.proofPacks.userId, user.id));
+  }
   return json({ ok: true });
 }

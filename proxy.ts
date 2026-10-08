@@ -12,6 +12,16 @@ const realAuth = process.env.MOCK_MODE !== "true" && !!supabaseUrl && !!supabase
  *   pick INR or USD on the client.
  */
 export async function proxy(request: NextRequest) {
+  // CSRF defence in depth: state-changing API calls must come from our own origin.
+  // Webhooks and cron are excluded (server-to-server, authenticated by signature / secret).
+  const path = request.nextUrl.pathname;
+  if (path.startsWith("/api/") && !["GET", "HEAD", "OPTIONS"].includes(request.method) && !path.startsWith("/api/webhooks/") && !path.startsWith("/api/cron/")) {
+    const origin = request.headers.get("origin");
+    const site = process.env.NEXT_PUBLIC_SITE_URL ? new URL(process.env.NEXT_PUBLIC_SITE_URL).origin : null;
+    if (origin && origin !== request.nextUrl.origin && origin !== site) {
+      return NextResponse.json({ error: "Cross-site request blocked." }, { status: 403 });
+    }
+  }
   let response = NextResponse.next({ request });
 
   if (realAuth) {
@@ -30,14 +40,16 @@ export async function proxy(request: NextRequest) {
     if (!data.user && request.cookies.get("bp_auth")) response.cookies.delete("bp_auth");
   }
 
-  const country =
-    request.headers.get("x-vercel-ip-country") ?? request.headers.get("cf-ipcountry") ?? process.env.DEV_COUNTRY ?? "";
-  if (country && request.cookies.get("bp_cc")?.value !== country) {
+  // Real geo headers win; the local DEV_COUNTRY override only fills an empty cookie.
+  const geo = request.headers.get("x-vercel-ip-country") ?? request.headers.get("cf-ipcountry");
+  const current = request.cookies.get("bp_cc")?.value;
+  const country = geo ?? (current ? "" : (process.env.DEV_COUNTRY ?? ""));
+  if (country && current !== country) {
     response.cookies.set("bp_cc", country.toUpperCase().slice(0, 2), { path: "/", sameSite: "lax", maxAge: 60 * 60 * 24 });
   }
   return response;
 }
 
 export const config = {
-  matcher: ["/((?!api/webhooks|_next/static|_next/image|media|icon.svg|favicon.ico|robots.txt|sitemap.xml|.*\\.(?:png|jpg|svg|webp|avif)$).*)"],
+  matcher: ["/((?!_next/static|_next/image|media|icon.svg|favicon.ico|robots.txt|sitemap.xml|.*\\.(?:png|jpg|svg|webp|avif)$).*)"],
 };

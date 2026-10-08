@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, m } from "motion/react";
 import { useLoopDemo } from "@/lib/hooks/use-loop-demo";
 import { DemoControl } from "./demo-control";
 import { TerminalView, ToolTabsView } from "@/components/notebook/views";
@@ -39,7 +39,7 @@ export function PromptTabsDemo() {
             <span className="text-[11px] text-text-3">Plan mode</span>
           </div>
           <AnimatePresence mode="wait" initial={false}>
-            <motion.p
+            <m.p
               key={tool}
               initial={{ opacity: 0, filter: "blur(4px)" }}
               animate={{ opacity: 1, filter: "blur(0px)" }}
@@ -48,7 +48,7 @@ export function PromptTabsDemo() {
               className="pt-3 font-mono text-[12.5px] leading-[20px] text-text-1"
             >
               {prompts[tool]}
-            </motion.p>
+            </m.p>
           </AnimatePresence>
         </div>
       </DemoFrame>
@@ -90,22 +90,22 @@ export function JournalDemo() {
         <div className="flex h-full flex-col gap-2.5 p-4">
           <AnimatePresence>
             {t >= 300 ? (
-              <motion.div key="a" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.3, ease }} className="max-w-[86%] rounded-[14px] rounded-bl-[4px] bg-surface-2 px-3.5 py-2.5">
+              <m.div key="a" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.3, ease }} className="max-w-[86%] rounded-[14px] rounded-bl-[4px] bg-surface-2 px-3.5 py-2.5">
                 <p className="text-[11px] text-text-3">Agent proposed</p>
                 <p className="text-[13px] leading-[19px] text-text-1">A receipts row for every message and every reader.</p>
-              </motion.div>
+              </m.div>
             ) : null}
             {t >= 1600 ? (
-              <motion.div key="b" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.3, ease }} className="ml-auto max-w-[86%] rounded-[14px] rounded-br-[4px] border border-line bg-surface-1 px-3.5 py-2.5">
+              <m.div key="b" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.3, ease }} className="ml-auto max-w-[86%] rounded-[14px] rounded-br-[4px] border border-line bg-surface-1 px-3.5 py-2.5">
                 <p className="text-[11px] text-text-3">I changed</p>
                 <p className="text-[13px] leading-[19px] text-text-1">One read cursor per member. Group reads become a single write.</p>
-              </motion.div>
+              </m.div>
             ) : null}
             {t >= 3200 ? (
-              <motion.div key="c" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3, ease }} className="mt-auto flex items-center gap-2 t-small text-text-2">
+              <m.div key="c" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3, ease }} className="mt-auto flex items-center gap-2 t-small text-text-2">
                 <AccentAvatar color={accents.pulse} size={20} round />
                 Added to case study: Pulse
-              </motion.div>
+              </m.div>
             ) : null}
           </AnimatePresence>
         </div>
@@ -136,9 +136,9 @@ export function TutorDemo() {
               </span>
             </div>
             <AnimatePresence mode="wait" initial={false}>
-              <motion.span key={step} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.25, ease }}>
+              <m.span key={step} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.25, ease }}>
                 <StatusChip status="working">{tutorSteps[step]}</StatusChip>
-              </motion.span>
+              </m.span>
             </AnimatePresence>
           </div>
         </div>

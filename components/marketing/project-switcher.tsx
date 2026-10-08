@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, m } from "motion/react";
 import { catalog, type ProjectSlug } from "@/content/catalog";
 import { Tabs } from "@/components/ui/tabs";
 import { LaptopFrame, PhoneFrame } from "@/components/ui/card";
@@ -64,7 +64,7 @@ export function ProjectSwitcher() {
       >
         <div className="flex min-h-[560px] items-center justify-center md:min-h-[640px]">
           <AnimatePresence mode="wait" initial={false}>
-            <motion.div
+            <m.div
               key={active}
               initial={{ opacity: 0, scale: 0.985 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -81,10 +81,10 @@ export function ProjectSwitcher() {
                   <Screen />
                 </LaptopFrame>
               )}
-            </motion.div>
+            </m.div>
           </AnimatePresence>
         </div>
-        <p className="mx-auto mt-10 max-w-[620px] text-center t-body text-text-2" aria-live="polite">
+        <p className="mx-auto mt-10 max-w-[620px] text-center t-body text-text-2" aria-live={interacted ? "polite" : "off"}>
           <span className="text-text-1 font-medium">{project.caption[0]}</span> {project.caption[1]}
         </p>
         <div className="mt-6 flex justify-center">

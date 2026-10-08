@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useId, useRef, type ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
 /**
@@ -25,6 +25,7 @@ export function Dialog({
   variant?: "center" | "sheet" | "drawer";
 }) {
   const ref = useRef<HTMLDialogElement>(null);
+  const uid = useId();
 
   useEffect(() => {
     const d = ref.current;
@@ -47,7 +48,8 @@ export function Dialog({
   return (
     <dialog
       ref={ref}
-      aria-labelledby="dialog-title"
+      aria-labelledby={`${uid}-title`}
+      aria-describedby={description ? `${uid}-desc` : undefined}
       onClick={(e) => {
         if (e.target === ref.current) onClose();
       }}
@@ -70,10 +72,14 @@ export function Dialog({
         >
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h2 id="dialog-title" className="t-h3 text-text-1">
+              <h2 id={`${uid}-title`} className="t-h3 text-text-1">
                 {title}
               </h2>
-              {description ? <p className="mt-1.5 t-small text-text-2">{description}</p> : null}
+              {description ? (
+                <p id={`${uid}-desc`} className="mt-1.5 t-small text-text-2">
+                  {description}
+                </p>
+              ) : null}
             </div>
             <button
               type="button"

@@ -42,8 +42,10 @@ tests/unit, tests/e2e
 ## Mock mode
 
 `lib/env.ts` computes `MOCK_MODE` per provider: a provider is mocked when its keys are missing,
-or everything is mocked when `MOCK_MODE=true`. In production (`NODE_ENV=production` and
-`VERCEL_ENV=production`) mock payments and mock auth throw at startup.
+or everything is mocked when `MOCK_MODE=true`. Fail closed: any production build (`NODE_ENV=production`)
+is treated as production unless `ALLOW_MOCK=1` is set explicitly (never honoured on Vercel production or with
+`APP_ENV=production`), and `instrumentation.ts` refuses to boot when auth, payments, DB or rate limits would be
+mocked or `AUTH_SECRET`/`CRON_SECRET` are missing. Mock-only routes check `mockEndpointsEnabled()`.
 
 | Provider | Real when | Mock behaviour |
 |----------|-----------|----------------|
@@ -96,15 +98,20 @@ and API routes (progress/decision writes for paid modules).
 
 `lib/verify`: GitHub REST (optional token, handles 403 rate limits) checks public repo, owner
 matches linked GitHub username, ≥20 commits, `.github/workflows/` exists, test files exist.
-Live URL fetch with SSRF protection: http/https only, DNS-resolve and block private, loopback,
-link-local and CGNAT ranges, 5s timeout, 1MB cap, no redirects to blocked hosts. Looks for
+Ownership also requires the pack's token committed in the repo (`.buildproof` or README).
+Live URL fetch with SSRF protection: http/https only, standard ports, `net.BlockList` for private, loopback,
+link-local, CGNAT, mapped/compatible IPv6, NAT64 and 6to4 ranges, DNS validated again at connect time through an
+undici dispatcher (no rebinding window), manual redirects re-validated, 5s timeout, 1MB cap. Looks for
 `<meta name="buildproof-verify" content="{token}">`. Results per check are stored with dates.
 
 ## Security
 
-RLS on every user table (`db/rls.sql`), service credentials server-only, zod on every input,
-rate limits on auth, tutor, verify and contact, CSP + security headers in `next.config.ts`,
-webhook signature checks, user text rendered as text.
+RLS on every user table (`db/rls.sql`), service credentials server-only, zod on every input (JSON content-type
+required), same-origin check on state-changing API calls in `proxy.ts`, return-to paths normalised with `URL`
+(no control characters or backslashes), rate limits on auth, tutor, verify, coupons and contact (platform client IP;
+fail closed on limiter outages for auth/coupon/contact), coupon seats reserved atomically at order creation, webhook
+dedupe keyed on signed content, CSP + security headers in `next.config.ts`, learner Mermaid re-sanitised with DOMPurify,
+user text rendered as text.
 
 ## ADRs
 

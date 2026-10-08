@@ -127,8 +127,8 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
               <thead>
                 <tr>
                   {["When", "Learner", "Product", "Amount", "Status", "Payment", ""].map((h) => (
-                    <th key={h} className={th}>
-                      {h}
+                    <th key={h || "actions"} className={th}>
+                      {h || <span className="sr-only">Actions</span>}
                     </th>
                   ))}
                 </tr>

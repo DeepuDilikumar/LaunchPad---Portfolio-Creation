@@ -10,7 +10,13 @@ import { recordEvent } from "@/lib/analytics/server";
 import { sendEmail } from "@/lib/email";
 import { env } from "@/lib/env";
 
-const url = z.string().trim().max(300).url().or(z.literal(""));
+const url = z
+  .string()
+  .trim()
+  .max(300)
+  .url()
+  .refine((u) => /^https?:\/\//i.test(u), "Use an http or https URL.")
+  .or(z.literal(""));
 
 const body = z.object({
   repoUrl: url.optional(),

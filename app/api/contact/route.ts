@@ -16,7 +16,7 @@ const body = z.object({
 });
 
 export async function POST(req: Request) {
-  const rl = await rateLimit(`contact:${clientIp(req)}`, 5, 3600);
+  const rl = await rateLimit(`contact:${clientIp(req)}`, 5, 3600, { failClosed: true });
   if (!rl.ok) return error(429, "You've sent a few messages already. We'll reply soon.");
   const [data, bad] = await parseBody(req, body);
   if (bad) return bad;

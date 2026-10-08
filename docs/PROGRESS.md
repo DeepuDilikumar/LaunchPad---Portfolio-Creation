@@ -147,3 +147,40 @@ Each phase appends: what was done, what is mocked, what is left.
 - Legal: `/legal/terms`, `/legal/privacy`, `/legal/refunds` with a visible "Draft: review with a lawyer" notice.
 - Tests: e2e J9 (non-admin gets 404; funnel numbers; refund revokes access; manual grant restores it; bulk codes).
 - Note: Vercel's Hobby plan runs crons once a day; the schedule in `vercel.json` is hourly (Pro).
+
+## P9 — Hardening
+
+Two independent subagent reviews (security, accessibility), then fixes:
+
+- **Security (13 findings, all addressed or documented):** open redirect via tab/newline/backslash in return-to
+  paths (now `URL`-normalised); production guard now fails closed (`ALLOW_MOCK=1` needed to run a production build with
+  mocks, refused on Vercel production; boot check also requires Upstash, `CRON_SECRET`, 32+ char `AUTH_SECRET`); mock
+  routes gated; SSRF: IPv4-mapped/compatible IPv6, NAT64, 6to4 blocked via `net.BlockList`, DNS pinned at connect time
+  (undici dispatcher); badge forgery: ownership needs the token committed in the repo, GitHub username locked to the
+  OAuth identity with real auth, and changing it clears verification; coupons: seats reserved atomically at order
+  creation, one use per learner; learner Mermaid re-sanitised with DOMPurify; client IP from platform headers and
+  fail-closed limits for auth/coupon/contact; JSON content-type required + same-origin check for API writes; proof URLs
+  http(s) only; cron closed without a secret in production; Razorpay webhook dedupe keyed on signed body content;
+  teaser can never include cells before the first Explain (and every module must start with one).
+  Not changed (documented): self-attested checkpoints (the verification checks are the trust signal), INR/USD chosen by
+  the learner (business decision), Supabase cookie flags (library defaults), CSP still uses `'unsafe-inline'`.
+- **Accessibility (20 findings):** `--text-3` raised to #858585 (≥4.6:1; was 2.7–3.3:1) and Shiki comment colour;
+  notebook `<main>` landmark, callouts as notes; no sign-in modal on focus (keyboard trap); keyboard shortcuts can be
+  turned off; drawer: Escape, focus in/out, inert page on phones; mobile menu makes the page inert; account menu as a
+  disclosure; celebration no longer auto-dismisses; focus kept after passing a checkpoint and between onboarding steps;
+  labelled icons exposed; `Field` wires `aria-describedby`/`aria-invalid`; status regions for saves, tutor log, thinking
+  dots, discount totals; diagrams have a text alternative; pass/fail shown in words; switcher caption silent while
+  auto-rotating; Caret idle glances stop after ~5s; cookie sheet no longer covers focused content; dialog ids unique.
+- Added: sitemap, robots, `db/rls.sql`, Sentry-compatible error reporter via `instrumentation.ts` `onRequestError`,
+  `.env.example`, README with setup and deploy guide.
+- Results (production build, mock mode):
+  - Lighthouse (mobile, simulated Slow 4G): `/` perf 94 · a11y 100 · best practices 100 · SEO 100; `/projects/pulse`
+    96/100/100/100; `/pricing` 93/100/100/100; learn page 94/97→100 after the Shiki fix. CLS 0 everywhere.
+    Lighthouse's simulated LCP is 2.6–3.1s under its Slow-4G profile (1.6 Mbps).
+  - Measured LCP on a Pixel 7 profile with 4G throttling (9 Mbps, 150ms RTT) and 4× CPU: `/` 784ms, learn 872ms,
+    `/u/sample` 620ms (J7 asserts < 2s).
+  - Initial JS for `/`: ~210 KB gzip for modern browsers (React DOM 72, Next runtime 46, motion 42, app ~50), above the
+    170 KB target. Open item: motion's layout-projection code stays in the initial chunk even with `LazyMotion`; the fix
+    is to replace the shared-layout pill highlights and `AnimatePresence` in always-loaded components with CSS
+    transitions, or hydrate below-the-fold sections lazily.
+  - Unit: 40 passed. E2E: J1–J9, 9 passed.

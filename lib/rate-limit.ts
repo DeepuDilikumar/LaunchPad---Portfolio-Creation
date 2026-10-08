@@ -13,7 +13,7 @@ const g = globalThis as unknown as { __bpRl?: Map<string, Bucket> };
 const memory = (g.__bpRl ??= new Map());
 
 /** Fixed-window limiter. Upstash Redis when configured, in-memory otherwise. */
-export async function rateLimit(key: string, limit: number, windowSeconds: number): Promise<RateLimitResult> {
+export async function rateLimit(key: string, limit: number, windowSeconds: number, opts: { failClosed?: boolean } = {}): Promise<RateLimitResult> {
   const now = Date.now();
   if (mock.rateLimit) {
     const b = memory.get(key);
@@ -42,11 +42,22 @@ export async function rateLimit(key: string, limit: number, windowSeconds: numbe
     const resetAt = (window + 1) * windowSeconds * 1000;
     return { ok: count <= limit, remaining: Math.max(0, limit - count), resetAt };
   } catch {
-    // Fail open on limiter outages; the endpoints still require auth.
-    return { ok: true, remaining: limit, resetAt: now + windowSeconds * 1000 };
+    // Limiter outage: fail closed for abuse-prone endpoints, open elsewhere (they still require auth).
+    return { ok: !opts.failClosed, remaining: opts.failClosed ? 0 : limit, resetAt: now + windowSeconds * 1000 };
   }
 }
 
+/**
+ * The client IP as set by the platform, not by the client. On Vercel, x-vercel-forwarded-for and
+ * x-real-ip are written by the edge. Elsewhere, the last x-forwarded-for hop is the one our own proxy
+ * appended; earlier entries are client-controlled.
+ */
 export function clientIp(req: Request) {
-  return req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || "local";
+  const h = req.headers;
+  const vercel = h.get("x-vercel-forwarded-for")?.split(",")[0]?.trim();
+  if (vercel) return vercel;
+  const real = h.get("x-real-ip")?.trim();
+  if (real) return real;
+  const xff = h.get("x-forwarded-for")?.split(",").map((s) => s.trim()).filter(Boolean);
+  return xff?.length ? xff[xff.length - 1]! : "local";
 }

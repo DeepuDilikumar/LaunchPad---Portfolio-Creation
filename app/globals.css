@@ -10,7 +10,7 @@
   --line-strong: rgba(255, 255, 255, 0.14);
   --text-1: #f5f5f5;
   --text-2: #9b9b9b;
-  --text-3: #5f5f5f;
+  --text-3: #858585; /* raised from #5F5F5F for WCAG AA contrast on surfaces (see docs/DESIGN.md) */
   --invert-bg: #ffffff;
   --invert-text: #0a0a0a;
 
@@ -93,7 +93,6 @@ body {
 :focus-visible {
   outline: 2px solid var(--text-1);
   outline-offset: 2px;
-  border-radius: 6px;
 }
 
 /* Type scale (docs/DESIGN.md) */

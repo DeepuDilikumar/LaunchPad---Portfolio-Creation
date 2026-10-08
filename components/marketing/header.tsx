@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, m } from "motion/react";
 import { site } from "@/config/site";
 import { cn } from "@/lib/cn";
 import { LinkButton } from "@/components/ui/button";
@@ -50,6 +50,14 @@ export function Header() {
     setOpen(false);
   }
 
+  // On phones the menu covers the page: make the page behind it inert while it's open.
+  useEffect(() => {
+    if (!open || !window.matchMedia("(max-width: 767px)").matches) return;
+    const els = [document.getElementById("main"), document.querySelector<HTMLElement>("footer")].filter((e): e is HTMLElement => !!e);
+    els.forEach((e) => (e.inert = true));
+    return () => els.forEach((e) => (e.inert = false));
+  }, [open]);
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -84,7 +92,7 @@ export function Header() {
         <div className="flex items-center gap-2">
           <AnimatePresence>
             {solid ? (
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, x: 8 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 8 }}
@@ -93,7 +101,7 @@ export function Header() {
                 <LinkButton href={startHref} size="sm" data-cta="header-start">
                   {signedIn ? "Dashboard" : "Start free"}
                 </LinkButton>
-              </motion.div>
+              </m.div>
             ) : null}
           </AnimatePresence>
           <button
@@ -112,7 +120,7 @@ export function Header() {
 
       <AnimatePresence>
         {open ? (
-          <motion.div
+          <m.div
             id="site-menu"
             ref={panelRef}
             role="navigation"
@@ -154,7 +162,7 @@ export function Header() {
                 See the projects
               </LinkButton>
             </div>
-          </motion.div>
+          </m.div>
         ) : null}
       </AnimatePresence>
     </header>

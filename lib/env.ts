@@ -5,7 +5,12 @@
 const e = process.env;
 
 const forceMock = e.MOCK_MODE === "true";
-export const isProduction = e.NODE_ENV === "production" && (e.VERCEL_ENV === "production" || e.APP_ENV === "production");
+/**
+ * Fail closed: a production build is treated as production unless ALLOW_MOCK=1 is set
+ * explicitly (local `pnpm start`, e2e tests). ALLOW_MOCK is ignored on Vercel production.
+ */
+export const allowMock = e.ALLOW_MOCK === "1" && e.VERCEL_ENV !== "production" && e.APP_ENV !== "production";
+export const isProduction = e.NODE_ENV === "production" && !allowMock;
 
 export const env = {
   siteUrl: e.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
@@ -38,12 +43,21 @@ export const mock = {
 
 export const anyMock = Object.values(mock).some(Boolean);
 
+/** Mock-only endpoints (mock sign-in, mock pay, mock webhooks, mock deploy) answer only when this is true. */
+export function mockEndpointsEnabled(kind: "auth" | "payments") {
+  if (isProduction) return false;
+  return kind === "auth" ? mock.auth : mock.payments;
+}
+
 export function assertProductionSafe() {
-  if (!isProduction) return;
+  // `next build` runs with NODE_ENV=production; the check applies when the server runs.
+  if (!isProduction || e.NEXT_PHASE === "phase-production-build") return;
   const problems: string[] = [];
   if (mock.auth) problems.push("auth is mocked (set Supabase keys)");
   if (mock.payments) problems.push("payments are mocked (set Razorpay keys)");
   if (mock.db) problems.push("database is embedded PGlite (set DATABASE_URL)");
-  if (env.authSecret.startsWith("dev-only")) problems.push("AUTH_SECRET is the dev default");
+  if (mock.rateLimit) problems.push("rate limits are in-memory (set Upstash keys)");
+  if (env.authSecret.startsWith("dev-only") || env.authSecret.length < 32) problems.push("AUTH_SECRET is missing, short or the dev default");
+  if (!env.cronSecret) problems.push("CRON_SECRET is not set");
   if (problems.length) throw new Error(`Refusing to run in production: ${problems.join("; ")}`);
 }

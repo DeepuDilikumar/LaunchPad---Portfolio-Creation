@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, m } from "motion/react";
 import { Caret } from "@/components/ui/caret";
 import { cn } from "@/lib/cn";
 
@@ -43,6 +43,15 @@ export function Onboarding({ next }: { next: string }) {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const current = steps[step]!;
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const first = useRef(true);
+  useEffect(() => {
+    if (first.current) {
+      first.current = false;
+      return;
+    }
+    headingRef.current?.focus();
+  }, [step]);
 
   const choose = async (value: string) => {
     const nextAnswers = { ...answers, [current.key]: value };
@@ -71,7 +80,7 @@ export function Onboarding({ next }: { next: string }) {
         Step {step + 1} of {steps.length}
       </p>
       <AnimatePresence mode="wait">
-        <motion.div
+        <m.div
           key={step}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -79,7 +88,9 @@ export function Onboarding({ next }: { next: string }) {
           transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
           className="w-full max-w-[440px]"
         >
-          <h1 className="mt-3 text-center t-h2 text-text-1">{current.title}</h1>
+          <h1 ref={headingRef} tabIndex={-1} className="mt-3 text-center t-h2 text-text-1 outline-none">
+            {current.title}
+          </h1>
           <div className="mt-8 grid gap-2.5" role="group" aria-label={current.title}>
             {current.options.map((o) => (
               <button
@@ -87,6 +98,7 @@ export function Onboarding({ next }: { next: string }) {
                 type="button"
                 disabled={busy}
                 data-choice={o.value}
+                aria-pressed={answers[current.key] === o.value}
                 onClick={() => void choose(o.value)}
                 className={cn(
                   "h-12 rounded-[14px] border border-line bg-surface-1 px-4 text-left text-[15px] text-text-1 transition-colors hover:bg-surface-2",
@@ -97,7 +109,7 @@ export function Onboarding({ next }: { next: string }) {
               </button>
             ))}
           </div>
-        </motion.div>
+        </m.div>
       </AnimatePresence>
       {step > 0 ? (
         <button type="button" onClick={() => setStep(step - 1)} className="mt-6 t-small text-text-2 hover:text-text-1">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CopyButton } from "@/components/ui/copy-button";
 import { Textarea } from "@/components/ui/inputs";
@@ -27,6 +27,7 @@ export function Checkpoint({
   const [output, setOutput] = useState(state?.output ?? "");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const statusRef = useRef<HTMLParagraphElement>(null);
   const status = state?.status === "passed" ? "passed" : state?.status === "skipped" ? "idle" : "idle";
 
   const mark = async (s: "passed" | "skipped") => {
@@ -36,7 +37,11 @@ export function Checkpoint({
     const ok = await nb.markCheckpoint(id, s, s === "passed" && output.trim() ? output.slice(0, 4000) : undefined);
     setBusy(false);
     if (!ok && nb.user) setError("That didn't save. Check your connection and try again.");
-    if (ok) setPasting(false);
+    if (ok) {
+      setPasting(false);
+      // The buttons unmount after a pass: keep focus in the cell.
+      if (s === "passed") window.setTimeout(() => statusRef.current?.focus(), 0);
+    }
   };
 
   return (
@@ -91,7 +96,9 @@ export function Checkpoint({
             </div>
           ) : (
             <div className="flex items-center gap-3">
-              <p className="t-small text-text-2">Nice. Keep going.</p>
+              <p ref={statusRef} tabIndex={-1} className="t-small text-text-2 outline-none" role="status">
+                Passed. Keep going.
+              </p>
               <Button size="sm" variant="ghost" onClick={() => setPasting((p) => !p)}>
                 {pasting ? "Hide output" : output ? "View output" : "Add output"}
               </Button>

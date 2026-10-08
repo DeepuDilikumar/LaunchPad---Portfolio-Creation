@@ -1,5 +1,5 @@
 import { and, eq, gte, lte, notInArray, sql } from "drizzle-orm";
-import { env } from "@/lib/env";
+import { env, isProduction } from "@/lib/env";
 import { getDb, schema } from "@/lib/db";
 import { sendEmail } from "@/lib/email";
 
@@ -8,6 +8,7 @@ import { sendEmail } from "@/lib/email";
  * a checkpoint yet. Each learner gets this nudge at most once.
  */
 export async function GET(req: Request) {
+  if (isProduction && !env.cronSecret) return new Response("Unauthorized", { status: 401 });
   if (env.cronSecret && req.headers.get("authorization") !== `Bearer ${env.cronSecret}`) return new Response("Unauthorized", { status: 401 });
   const db = await getDb();
   const now = Date.now();

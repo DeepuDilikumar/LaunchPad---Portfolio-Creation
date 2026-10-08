@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useState, type ReactNode } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, m } from "motion/react";
 
 type Toast = { id: number; text: string; tone?: "default" | "passed" | "failed" };
 
@@ -30,7 +30,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       >
         <AnimatePresence>
           {toasts.map((t) => (
-            <motion.div
+            <m.div
               key={t.id}
               initial={{ opacity: 0, y: 12, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -42,7 +42,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                 <span aria-hidden className="size-1.5 rounded-full" style={{ background: t.tone === "passed" ? "var(--status-passed)" : "var(--status-failed)" }} />
               ) : null}
               {t.text}
-            </motion.div>
+            </m.div>
           ))}
         </AnimatePresence>
       </div>

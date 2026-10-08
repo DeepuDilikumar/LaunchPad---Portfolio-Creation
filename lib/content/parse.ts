@@ -115,8 +115,10 @@ export function parseModule(raw: string, file = "module"): ParsedModule {
 export function teaserSource(body: string, cells: CellMeta[]): string {
   const first = cells.find((c) => c.kind === "Explain");
   if (!first) return "";
-  const end = body.indexOf(first.source) + first.source.length;
-  return body.slice(0, end);
+  if (first.index !== 0) return ""; // never risk sending cells that come before the teaser
+  const at = body.indexOf(first.source);
+  if (at < 0) return "";
+  return body.slice(0, at + first.source.length);
 }
 
 /** Rewrite cells so every top-level cell carries its computed id (as `id`) and `cellIndex`. */
