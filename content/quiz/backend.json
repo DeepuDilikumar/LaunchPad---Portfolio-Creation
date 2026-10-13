@@ -1,0 +1,198 @@
+{
+  "slug": "backend",
+  "title": "Backend Readiness Check",
+  "guide": "backend",
+  "warmup": [
+    {
+      "id": "experience",
+      "label": "Your experience",
+      "options": ["0–2 yrs", "2–4 yrs", "4–8 yrs", "8+ yrs"]
+    },
+    {
+      "id": "round",
+      "label": "Round you’re preparing for",
+      "options": ["Backend", "System design", "Behavioural"]
+    },
+    {
+      "id": "when",
+      "label": "Your interview is",
+      "options": ["This week", "In 1–4 weeks", "Not scheduled"]
+    }
+  ],
+  "areas": [
+    { "id": "payments", "title": "Payments and idempotency", "module": "payments-and-idempotency" },
+    {
+      "id": "reliability",
+      "title": "Reliability and incidents",
+      "module": "reliability-and-incidents"
+    },
+    { "id": "databases", "title": "Databases", "module": "databases-and-transactions" },
+    { "id": "caching", "title": "Caching", "module": "caching" }
+  ],
+  "questions": [
+    {
+      "id": "q1",
+      "area": "payments",
+      "source": "be-pay-001",
+      "prompt": "Your call to the payment gateway times out after 30 seconds. What do you do before retrying?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Retry straight away; a timeout means the charge failed",
+          "grade": "weak"
+        },
+        {
+          "key": "B",
+          "text": "Ask the gateway for the payment status, then retry with the same idempotency key if needed",
+          "grade": "strong"
+        },
+        {
+          "key": "C",
+          "text": "Show the customer an error and ask them to pay again",
+          "grade": "plausible"
+        },
+        {
+          "key": "D",
+          "text": "Raise the timeout to 60 seconds so it doesn't happen again",
+          "grade": "plausible"
+        }
+      ],
+      "strong_answer": "A timeout means the outcome is unknown. Check the payment status first, and only retry with the same idempotency key so the gateway can't charge twice."
+    },
+    {
+      "id": "q2",
+      "area": "payments",
+      "source": "be-pay-002",
+      "prompt": "The payment webhook arrives before your API has saved the payment response. The order still says 'created'. What should the handler do?",
+      "options": [
+        { "key": "A", "text": "Reject the webhook; it arrived out of order", "grade": "weak" },
+        { "key": "B", "text": "Wait a few seconds and check again", "grade": "plausible" },
+        {
+          "key": "C",
+          "text": "Move the order forward to 'captured' with a conditional update, and ignore later events that would move it back",
+          "grade": "strong"
+        },
+        {
+          "key": "D",
+          "text": "Store the webhook and process it in a nightly batch",
+          "grade": "plausible"
+        }
+      ],
+      "strong_answer": "Treat the order as a state machine that only moves forward. Whichever signal arrives first applies a conditional update; the other becomes a no-op."
+    },
+    {
+      "id": "q3",
+      "area": "reliability",
+      "source": "be-rel-001",
+      "prompt": "One downstream service gets slow (not down), and soon every endpoint of your API is timing out. What's the most likely cause?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Slow calls are holding threads or connections from a shared pool, so healthy endpoints queue behind them",
+          "grade": "strong"
+        },
+        { "key": "B", "text": "The downstream service is sending bad data", "grade": "weak" },
+        { "key": "C", "text": "The load balancer is misconfigured", "grade": "plausible" },
+        { "key": "D", "text": "Your servers need more CPU", "grade": "plausible" }
+      ],
+      "strong_answer": "Slow is worse than down. Waiting calls exhaust a shared pool. Timeouts on every call, separate pools per dependency and a circuit breaker stop the spread."
+    },
+    {
+      "id": "q4",
+      "area": "reliability",
+      "source": "be-rel-002",
+      "prompt": "Three layers of your stack each retry failed calls 3 times. A dependency starts failing. What happens?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Each user request gets up to 3 extra tries, which helps it recover",
+          "grade": "weak"
+        },
+        {
+          "key": "B",
+          "text": "One request can become up to 64 calls, piling load onto a service that's already struggling",
+          "grade": "strong"
+        },
+        { "key": "C", "text": "Retries smooth out the failures over time", "grade": "plausible" },
+        { "key": "D", "text": "Nothing; retries only fire on network errors", "grade": "plausible" }
+      ],
+      "strong_answer": "Retries multiply across layers: 4 attempts at each of 3 layers is 64 calls. Retry at one layer, with backoff and jitter, and cap retries with a budget."
+    },
+    {
+      "id": "q5",
+      "area": "databases",
+      "source": "be-db-001",
+      "prompt": "Two users book the last seat at the same moment, and both bookings succeed. Your code checks the seat is free before booking. What's the fix?",
+      "options": [
+        { "key": "A", "text": "Check twice before booking", "grade": "weak" },
+        {
+          "key": "B",
+          "text": "Put a mutex around the booking code in the app",
+          "grade": "plausible"
+        },
+        {
+          "key": "C",
+          "text": "Let the database decide: a conditional update or a unique constraint, then check the result",
+          "grade": "strong"
+        },
+        { "key": "D", "text": "Add a short sleep so requests don't overlap", "grade": "weak" }
+      ],
+      "strong_answer": "Check-then-act is the race. Make the write itself conditional, or rely on a unique constraint, so only one booking can succeed."
+    },
+    {
+      "id": "q6",
+      "area": "databases",
+      "source": "be-db-002",
+      "prompt": "A quick ALTER TABLE on orders caused a checkout outage, even though it should take milliseconds. Why?",
+      "options": [
+        {
+          "key": "A",
+          "text": "It waited for a lock behind a long-running transaction, and every new query queued behind it",
+          "grade": "strong"
+        },
+        { "key": "B", "text": "The database ran out of disk space", "grade": "plausible" },
+        { "key": "C", "text": "Migrations should only run at night", "grade": "weak" },
+        { "key": "D", "text": "The ORM generated a slow query", "grade": "plausible" }
+      ],
+      "strong_answer": "Even a fast ALTER needs a strong lock. If it waits behind a long transaction, all new queries queue behind it. Set a lock timeout and roll schema changes out in steps."
+    },
+    {
+      "id": "q7",
+      "area": "caching",
+      "source": "be-cache-001",
+      "prompt": "A popular cache key expires, and database load spikes for about a minute. What do you check first?",
+      "options": [
+        {
+          "key": "A",
+          "text": "Whether lots of requests missed the cache at the same moment and all hit the database",
+          "grade": "strong"
+        },
+        { "key": "B", "text": "Whether the database needs a bigger instance", "grade": "weak" },
+        {
+          "key": "C",
+          "text": "Whether the expiry time is too short, so you can make it longer",
+          "grade": "plausible"
+        },
+        { "key": "D", "text": "Whether the cache server restarted", "grade": "plausible" }
+      ],
+      "strong_answer": "Check for a stampede first: many requests missing the same key at once. Fix it with request coalescing, jittered expiry or an early refresh."
+    },
+    {
+      "id": "q8",
+      "area": "caching",
+      "source": "be-cache-002",
+      "prompt": "After a price change, some users see the old price for far longer than the 5-minute cache TTL. What's the best explanation?",
+      "options": [
+        { "key": "A", "text": "The TTL setting isn't being applied", "grade": "plausible" },
+        { "key": "B", "text": "Users' browsers are slow", "grade": "weak" },
+        {
+          "key": "C",
+          "text": "Another cache layer is serving it, or a slow reader wrote the old value back after the update",
+          "grade": "strong"
+        },
+        { "key": "D", "text": "The database update failed", "grade": "plausible" }
+      ],
+      "strong_answer": "Look for other layers (CDN, in-process caches, replicas) and the stale write-back race. Versioning cached values stops old writes from winning."
+    }
+  ]
+}

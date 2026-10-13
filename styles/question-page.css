@@ -1,0 +1,266 @@
+/* One layout for every question page, on the site and in the PDF:
+   question → what it tests → weak answer → follow-up ladder → framework → self-check. */
+.qp {
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--card);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.qp-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--faint);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.qp-title {
+  margin: 0;
+  font-family: var(--font-head);
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+.qp-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--faint);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.qp-tests {
+  background: var(--blue-wash);
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+.qp-tests .qp-label {
+  color: var(--blue);
+}
+.qp-hand {
+  font-family: var(--font-hand);
+  font-size: 22px;
+  line-height: 1.1;
+  color: var(--red);
+}
+.qp-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 4px 0;
+}
+.qp-flow .qp-hand {
+  align-self: flex-end;
+  transform: rotate(-2deg);
+}
+.qp-flow-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.qp-node {
+  border: 1.5px solid var(--ink);
+  background: var(--card);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.qp-node--bad {
+  border-color: var(--red);
+  background: var(--red-wash);
+}
+.qp-arrow {
+  font-family: var(--font-mono);
+  color: var(--muted);
+}
+.qp-weak {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 1px dashed var(--rule);
+  padding-top: 14px;
+}
+.qp-weak-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  align-items: baseline;
+}
+.qp-strike {
+  text-decoration: line-through;
+  text-decoration-color: var(--red);
+  text-decoration-thickness: 2px;
+}
+.qp-why {
+  color: var(--body);
+  margin: 0;
+}
+.qp-ladder {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.qp-rung {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 4px 12px;
+  align-items: baseline;
+}
+.qp-rung-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.qp-rung-q {
+  font-weight: 600;
+}
+.qp-rung-tests {
+  color: var(--muted);
+  font-size: 13.5px;
+}
+.qp-points {
+  margin: 2px 0 0;
+  padding-left: 18px;
+  font-size: 14px;
+  color: var(--ink-2);
+}
+.qp-tag {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.qp-tag--failure {
+  background: var(--red-wash);
+  color: var(--red-dark);
+}
+.qp-tag--tradeoff {
+  background: var(--blue-wash);
+  color: var(--blue);
+}
+.qp-tag--ownership {
+  background: var(--amber-wash);
+  color: var(--amber-dark);
+}
+.qp-tag--measurement {
+  background: var(--green-wash);
+  color: var(--green-dark);
+}
+.qp-tag--technical {
+  background: #ece8f7;
+  color: #4a3a8c;
+}
+.qp-strong {
+  background: var(--green-wash);
+  border: 1.5px solid var(--green);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.qp-strong .qp-label {
+  color: var(--green-dark);
+}
+.qp-move {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+}
+.qp-move-n {
+  font-family: var(--font-head);
+  font-weight: 800;
+  color: var(--green-dark);
+}
+.qp-model {
+  margin: 0;
+  color: var(--ink-2);
+}
+.qp-signals {
+  border-left: 3px solid var(--red);
+  padding-left: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.qp-signals ul,
+.qp-check ul {
+  margin: 0;
+  padding-left: 18px;
+}
+.qp-check ul {
+  list-style: none;
+  padding-left: 0;
+}
+.qp-check li::before {
+  content: "☐ ";
+  font-family: var(--font-mono);
+  color: var(--muted);
+}
+.qp-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--fainter);
+}
+.qp-draft {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--red-dark);
+  border: 1.5px dashed var(--red);
+  border-radius: 6px;
+  padding: 4px 8px;
+  align-self: flex-start;
+}
+
+/* Phone edition: large type, one question per screen. */
+.qp--phone {
+  font-size: 19px;
+  gap: 22px;
+}
+.qp--phone .qp-title {
+  font-size: 30px;
+}
+.qp--phone .qp-rung {
+  grid-template-columns: 1fr;
+}
+.qp--phone .qp-tag {
+  justify-self: start;
+}
+.qp--phone .qp-points,
+.qp--phone .qp-rung-tests {
+  font-size: 17px;
+}
+@media (max-width: 640px) {
+  .qp-title {
+    font-size: 23px;
+  }
+  .qp-rung {
+    grid-template-columns: 1fr;
+  }
+  .qp-tag {
+    justify-self: start;
+  }
+}
+.qp-points,
+.qp-signals ul {
+  list-style: disc;
+}

@@ -1,0 +1,32 @@
+/* Design tokens: the engineer's notebook. Shared by the site, the PDF and the previews. */
+:root {
+  --paper: #f5f1e6;
+  --card: #fffefa;
+  --ink: #1c1a16;
+  --ink-2: #2b2820;
+  --body: #3f3a30;
+  --muted: #5c5648;
+  --faint: #8a8273;
+  --fainter: #a39a88;
+  --rule: #dcd4c2;
+  --rule-2: #e2daca;
+  --chip: #cfc6b2;
+  --blue: #2340b0;
+  --blue-dark: #16297a;
+  --blue-wash: #e6ecfb;
+  --marker: #ffe36e;
+  --red: #c2412d;
+  --red-dark: #9a2f1f;
+  --red-wash: #fbe6e1;
+  --green: #2e7a4b;
+  --green-dark: #1f5c37;
+  --green-wash: #e3f1e7;
+  --amber-wash: #fff4c7;
+  --amber-dark: #7a5a00;
+  --note-paper: #fff8d6;
+
+  --font-head: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --font-hand: "Caveat", cursive;
+}

@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Backend Switch Guide</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;family=Caveat:wght@500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2340B0}a:hover{color:#16297A}
+.hide-sm{}
+@media (max-width: 760px){.hide-sm{display:none}}
+.only-sm{display:none}
+@media (max-width: 760px){.only-sm{display:flex}}
+</style>
+</helmet>
+<div style="font-family: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif; color: #1C1A16; background-color: #F5F1E6; background-image: linear-gradient(rgba(35,64,176,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(35,64,176,0.07) 1px, transparent 1px); background-size: 24px 24px; min-height: 100vh">
+
+<header style="border-bottom: 1.5px solid #1C1A16; background: #F5F1E6">
+  <div style="max-width: 1160px; margin: 0 auto; padding: 12px 24px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap">
+    <a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: #1C1A16; min-height: 44px">
+      <span style="width: 32px; height: 32px; border-radius: 8px; background: #1C1A16; color: #FFE36E; display: flex; align-items: center; justify-content: center; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px; font-weight: 600">Q2</span>
+      <span style="font-family: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif; font-weight: 700; font-size: 20px; letter-spacing: -0.02em">secondquestion</span>
+    </a>
+    <nav aria-label="Main" style="display: flex; align-items: center; gap: 22px; flex-wrap: wrap; font-size: 15px; font-weight: 500">
+      <a href="Product.dc.html" style="color: #1C1A16; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 6px">Guides</a>
+      <a href="Check.dc.html" style="color: #1C1A16; text-decoration: none">Free check</a>
+      <a href="Main.dc.html" style="color: #1C1A16; text-decoration: none">About</a>
+      <a href="#buy" style="display: inline-flex; align-items: center; min-height: 44px; box-sizing: border-box; padding: 10px 16px; border-radius: 10px; background: {{accent}}; color: #FFFFFF; font-weight: 600; text-decoration: none; box-shadow: 0 3px 0 rgba(0,0,0,0.35)">Get the guide · ₹349</a>
+    </nav>
+  </div>
+</header>
+
+<section style="max-width: 1160px; margin: 0 auto; padding: 56px 24px 72px; box-sizing: border-box; display: flex; flex-wrap: wrap; gap: 56px; align-items: flex-start">
+  <div style="flex: 1 1 440px; min-width: 0; display: flex; flex-direction: column; gap: 20px">
+    <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px; color: #5C5648">guides / backend / v1.0</span>
+    <h1 style="margin: 0; font-family: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif; font-size: clamp(40px, 5vw, 60px); line-height: 1.02; letter-spacing: -0.035em; font-weight: 800">Backend Switch Guide</h1>
+    <p style="margin: 0; font-size: 19px; line-height: 1.55; color: #3F3A30">100 backend interview questions. Each one comes with the 4–5 follow-ups that come next, what they test, and a strong answer in three moves.</p>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px">
+      <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; padding: 5px 10px; border-radius: 6px; background: #FFFEFA; border: 1.5px solid #1C1A16">12 modules</span>
+      <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; padding: 5px 10px; border-radius: 6px; background: #FFFEFA; border: 1.5px solid #1C1A16">A4 + phone edition</span>
+      <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; padding: 5px 10px; border-radius: 6px; background: #FFFEFA; border: 1.5px solid #1C1A16">language-agnostic</span>
+      <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; padding: 5px 10px; border-radius: 6px; background: #FFFEFA; border: 1.5px solid #1C1A16">12 months of updates</span>
+    </div>
+    <div style="background: #FFFEFA; border: 1.5px solid #1C1A16; border-radius: 16px; padding: 26px; box-sizing: border-box; box-shadow: 8px 8px 0 #1C1A16; display: flex; flex-direction: column; gap: 12px; max-width: 480px; margin-top: 6px">
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap">
+        <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; font-weight: 600; letter-spacing: 0.06em">ONE-TIME · INCL. GST</span>
+        <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: #C2412D; border: 2px solid #C2412D; border-radius: 6px; padding: 4px 8px; transform: rotate(-4deg); display: inline-block">LAUNCH PRICE</span>
+      </div>
+      <div style="display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap">
+        <span style="font-family: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif; font-size: 68px; font-weight: 800; letter-spacing: -0.04em; line-height: 1">₹349</span>
+        <span style="font-size: 15px; color: #3F3A30">₹499 after <strong>{{launchEnd}}</strong></span>
+      </div>
+      <span style="align-self: flex-start; font-size: 15px; font-weight: 600; background: linear-gradient(transparent 55%, #FFE36E 55%, #FFE36E 95%, transparent 95%); padding: 0 4px">₹3.49 per question</span>
+      <a href="#buy" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 54px; box-sizing: border-box; padding: 14px 22px; border-radius: 12px; background: {{accent}}; color: #FFFFFF; font-weight: 600; font-size: 17px; text-decoration: none; box-shadow: 0 4px 0 rgba(0,0,0,0.35)">Get the guide
+        <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+      </a>
+      <div style="display: flex; flex-wrap: wrap; gap: 6px 16px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; color: #5C5648; justify-content: center">
+        <span>UPI · cards · netbanking</span>
+        <span>PDF in 2 min</span>
+        <span>7-day refund</span>
+      </div>
+    </div>
+    <a href="#pages" style="font-weight: 600; font-size: 16px; text-decoration: none; min-height: 44px; display: inline-flex; align-items: center">Read 4 full pages first ↓</a>
+  </div>
+
+  <div style="flex: 1 1 460px; min-width: 0; position: relative; min-height: 560px">
+    <div style="position: absolute; top: 0; left: 0; width: min(80%, 440px); background: #FFFEFA; border: 1px solid #E2DACA; border-radius: 4px; box-shadow: 0 1px 0 #DCD4C2, 0 18px 40px rgba(60,48,20,0.18); transform: rotate(-1.5deg); padding: 28px 28px 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 13px">
+      <div style="display: flex; justify-content: space-between; gap: 8px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 10px; color: #8A8273; letter-spacing: 0.06em"><span>BACKEND · MODULE 10</span><span>Q 10.3</span></div>
+      <span style="font-family: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif; font-size: 21px; font-weight: 700; line-height: 1.18; letter-spacing: -0.01em">A customer was charged twice for one order. Walk me through why.</span>
+      <div style="font-size: 12.5px; line-height: 1.45; background: #E6ECFB; border-radius: 6px; padding: 8px 10px"><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 10px; font-weight: 600; color: #2340B0">TESTS · </span>Telling a lost response apart from a failed call.</div>
+      <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; position: relative; padding-top: 16px">
+        <span style="border: 1.5px solid #1C1A16; border-radius: 6px; padding: 5px 8px; font-size: 11.5px; font-weight: 600; background: #FFFEFA">Client</span>
+        <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; color: #5C5648">→</span>
+        <span style="border: 1.5px solid #1C1A16; border-radius: 6px; padding: 5px 8px; font-size: 11.5px; font-weight: 600; background: #FFFEFA">Orders API</span>
+        <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; color: #C2412D">⇢</span>
+        <span style="border: 1.5px solid #C2412D; border-radius: 6px; padding: 5px 8px; font-size: 11.5px; font-weight: 600; background: #FBE6E1">Gateway</span>
+        <span style="position: absolute; top: -6px; right: 4px; font-family: Caveat, cursive; font-size: 18px; color: #C2412D; transform: rotate(-4deg)">timed out… or did it?</span>
+      </div>
+      <div style="font-size: 12.5px; line-height: 1.45; display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline">
+        <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 10px; font-weight: 600; color: #8A8273">USUAL ANSWER</span>
+        <span style="text-decoration: line-through; text-decoration-color: #C2412D; text-decoration-thickness: 2px">“I’d cap the retries.”</span>
+        <span style="font-family: Caveat, cursive; font-size: 18px; color: #C2412D">symptom, not cause</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; line-height: 1.4">
+        <div style="display: flex; gap: 8px; align-items: baseline"><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 9.5px; font-weight: 600; padding: 1px 6px; border-radius: 4px; background: #FBE6E1; color: #9A2F1F">FAILURE</span><span>The gateway charged, but the response was lost. Now what?</span></div>
+        <div style="display: flex; gap: 8px; align-items: baseline"><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 9.5px; font-weight: 600; padding: 1px 6px; border-radius: 4px; background: #E6ECFB; color: #2340B0">TRADEOFF</span><span>Where does the key live, and for how long?</span></div>
+        <div style="display: flex; gap: 8px; align-items: baseline"><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 9.5px; font-weight: 600; padding: 1px 6px; border-radius: 4px; background: #FFF4C7; color: #7A5A00">OWNERSHIP</span><span>Which part of the fix did you build?</span></div>
+      </div>
+      <div style="font-size: 12px; line-height: 1.45; background: #E3F1E7; border: 1.5px solid #2E7A4B; border-radius: 6px; padding: 8px 10px"><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 10px; font-weight: 600; color: #1F5C37">STRONG · </span>Idempotency key + request hash; replay the stored result, charge nothing.</div>
+      <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 9px; color: #A39A88">stamped for you@email.com · v1.0</span>
+    </div>
+    <div class="hide-sm" aria-hidden="true" style="position: absolute; right: 0; bottom: 0; width: 200px; height: 404px; border-radius: 32px; background: #1C1A16; padding: 8px; box-sizing: border-box; box-shadow: 0 20px 40px rgba(28,26,22,0.30); transform: rotate(3deg)">
+      <div style="background: #FFFEFA; border-radius: 25px; height: 100%; padding: 26px 14px 14px; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px">
+        <div style="display: flex; justify-content: space-between; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 9px; color: #8A8273"><span>Q 10.3</span><span>follow-up 2/5</span></div>
+        <div style="display: flex; gap: 3px">
+          <span style="flex: 1; height: 4px; border-radius: 2px; background: {{accent}}"></span>
+          <span style="flex: 1; height: 4px; border-radius: 2px; background: {{accent}}"></span>
+          <span style="flex: 1; height: 4px; border-radius: 2px; background: #E2DACA"></span>
+          <span style="flex: 1; height: 4px; border-radius: 2px; background: #E2DACA"></span>
+          <span style="flex: 1; height: 4px; border-radius: 2px; background: #E2DACA"></span>
+        </div>
+        <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 9px; font-weight: 600; color: #2340B0">TRADEOFF</span>
+        <span style="font-family: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif; font-size: 15px; font-weight: 700; line-height: 1.25">The same key comes back with a different amount. What should the server do?</span>
+        <span style="font-size: 11px; line-height: 1.45; color: #5C5648">Say your answer out loud, then reveal the strong one.</span>
+        <span style="margin-top: auto; display: flex; align-items: center; justify-content: center; height: 36px; border-radius: 9px; background: #1C1A16; color: #FFFEFA; font-size: 12px; font-weight: 600">Reveal strong answer</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pages" style="background: rgba(255,254,250,0.75); border-top: 1.5px solid #1C1A16; border-bottom: 1.5px solid #1C1A16">
+  <div style="max-width: 1160px; margin: 0 auto; padding: 80px 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 30px">
+    <div style="display: flex; flex-direction: column; gap: 10px">
+      <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px; color: #5C5648">// page viewer</span>
+      <h2 style="margin: 0; font-family: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif; font-size: clamp(30px, 3.6vw, 44px); line-height: 1.08; letter-spacing: -0.03em; font-weight: 800">Read real pages before you pay.</h2>
+      <p style="margin: 0; font-size: 17px; color: #3F3A30">Pick a page. This is exactly what’s in the PDF.</p>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 28px; align-items: flex-start">
+      <div style="flex: 1 1 250px; min-width: 0; display: flex; flex-direction: column; gap: 12px">
+        <sc-for list="{{ pages }}" as="p" hint-placeholder-count="4">
+          <button type="button" aria-pressed="{{ p.pressed }}" onClick="{{ p.pick }}" style="text-align: left; display: flex; flex-direction: column; gap: 4px; background: {{ p.bg }}; border: 1.5px solid {{ p.bd }}; box-shadow: {{ p.shadow }}; border-radius: 10px; padding: 12px 14px; min-height: 44px; font-family: inherit; color: #1C1A16; cursor: pointer">
+            <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; color: #5C5648">{{ p.qid }} · {{ p.tag }}</span>
+            <span style="font-weight: 600; font-size: 15px; line-height: 1.35">{{ p.short }}</span>
+          </button>
+        </sc-for>
+        <span class="hide-sm" style="font-family: Caveat, cursive; font-size: 22px; color: #C2412D; transform: rotate(-3deg); display: inline-block; margin-top: 6px">96 more where these came from</span>
+      </div>
+      <article style="flex: 999 1 560px; min-width: 0; background: #FFFEFA; border: 1px solid #E2DACA; border-radius: 4px; box-shadow: 0 1px 0 #DCD4C2, 0 22px 48px rgba(60,48,20,0.16); padding: 40px 44px 26px; box-sizing: border-box; display: flex; flex-direction: column; gap: 18px">
+        <div style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; color: #8A8273; letter-spacing: 0.06em"><span>BACKEND SWITCH GUIDE · {{ sel.module }}</span><span>{{ sel.qid }}</span></div>
+        <h3 style="margin: 0; font-family: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif; font-size: clamp(24px, 2.6vw, 30px); font-weight: 700; line-height: 1.15; letter-spacing: -0.02em">{{ sel.title }}</h3>
+        <div style="font-size: 15px; line-height: 1.5; background: #E6ECFB; border-radius: 8px; padding: 12px 14px"><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; font-weight: 600; color: #2340B0">WHAT IT TESTS · </span>{{ sel.tests }}</div>
+        <div style="display: flex; flex-direction: column; gap: 6px; padding: 6px 0">
+          <span style="font-family: Caveat, cursive; font-size: 22px; color: #C2412D; transform: rotate(-2deg); align-self: flex-end">{{ sel.note }}</span>
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap">
+            <sc-for list="{{ sel.nodes }}" as="n" hint-placeholder-count="3">
+              <span style="display: flex; align-items: center; gap: 8px">
+                <span style="border: 1.5px solid {{ n.bd }}; background: {{ n.bg }}; border-radius: 8px; padding: 9px 13px; font-size: 14px; font-weight: 600">{{ n.label }}</span>
+                <sc-if value="{{ n.arrow }}" hint-placeholder-val="{{ true }}"><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 16px; color: #5C5648">→</span></sc-if>
+              </span>
+            </sc-for>
+          </div>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: baseline; font-size: 15px; line-height: 1.5; border-top: 1px dashed #DCD4C2; padding-top: 16px">
+          <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; font-weight: 600; color: #8A8273">USUAL ANSWER</span>
+          <span style="text-decoration: line-through; text-decoration-color: #C2412D; text-decoration-thickness: 2px">{{ sel.usual }}</span>
+          <span style="font-family: Caveat, cursive; font-size: 22px; color: #C2412D">{{ sel.redNote }}</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 10px">
+          <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; font-weight: 600; color: #8A8273">FOLLOW-UP LADDER</span>
+          <sc-for list="{{ sel.ladder }}" as="r" hint-placeholder-count="4">
+            <div style="display: flex; gap: 10px; align-items: baseline; font-size: 15px; line-height: 1.5">
+              <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 10.5px; font-weight: 600; padding: 2px 7px; border-radius: 4px; background: {{ r.tagBg }}; color: {{ r.tagFg }}; min-width: 76px; text-align: center; box-sizing: border-box">{{ r.tag }}</span>
+              <span>{{ r.text }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="background: #E3F1E7; border: 1.5px solid #2E7A4B; border-radius: 10px; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px">
+          <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; font-weight: 600; color: #1F5C37">STRONG ANSWER, IN 3 MOVES</span>
+          <sc-for list="{{ sel.strong }}" as="m" hint-placeholder-count="3">
+            <div style="display: flex; gap: 10px; align-items: baseline; font-size: 15px; line-height: 1.5">
+              <span style="font-family: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif; font-weight: 800; color: #1F5C37">{{ m.n }}</span>
+              <span>{{ m.text }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 10px; color: #A39A88"><span>stamped for you@email.com · v1.0</span><span>secondquestion</span></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="demo" style="max-width: 900px; margin: 0 auto; padding: 80px 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px">
+  <div style="display: flex; flex-direction: column; gap: 10px">
+    <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px; color: #5C5648">// try it live</span>
+    <h2 style="margin: 0; font-family: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif; font-size: clamp(30px, 3.6vw, 44px); line-height: 1.08; letter-spacing: -0.03em; font-weight: 800">Can you handle the second question?</h2>
+    <span style="font-family: Caveat, cursive; font-size: 24px; color: #C2412D; transform: rotate(-1.5deg); display: inline-block; align-self: flex-start">pick how you’d start, then watch them push back</span>
+  </div>
+  <div style="background: #14130F; border: 1.5px solid #1C1A16; border-radius: 16px; padding: 22px; box-sizing: border-box; box-shadow: 8px 8px 0 #1C1A16; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 14px; line-height: 1.65; color: #EDE7D6; display: flex; flex-direction: column; gap: 16px">
+    <div style="display: flex; align-items: center; gap: 6px">
+      <span style="width: 10px; height: 10px; border-radius: 999px; background: #E2604A"></span>
+      <span style="width: 10px; height: 10px; border-radius: 999px; background: #E8B93C"></span>
+      <span style="width: 10px; height: 10px; border-radius: 999px; background: #5BAA6E"></span>
+      <span style="margin-left: 8px; color: #A39A88; font-size: 12px">~/interview/backend-round · Q 10.3</span>
+    </div>
+    <div><span style="color: #9DB3FF">interviewer &gt;</span> A customer was charged twice for one order. Walk me through why.</div>
+
+    <sc-if value="{{ notPicked }}" hint-placeholder-val="{{ true }}">
+      <div style="display: flex; flex-direction: column; gap: 10px">
+        <span style="color: #A39A88; font-size: 13px">how would you start? pick one</span>
+        <sc-for list="{{ options }}" as="opt" hint-placeholder-count="3">
+          <button type="button" onClick="{{ opt.pick }}" style="text-align: left; background: #1E1C17; color: #EDE7D6; border: 1px solid #3A362D; border-radius: 10px; padding: 12px 14px; min-height: 44px; font-family: inherit; font-size: 14px; line-height: 1.5; cursor: pointer"><span style="color: #E8B93C">{{ opt.key }})</span> {{ opt.text }}</button>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ picked }}" hint-placeholder-val="{{ false }}">
+      <div style="display: flex; flex-direction: column; gap: 16px">
+        <div><span style="color: #8FD19E">you &gt;</span> {{ chosen.text }}</div>
+        <div style="font-size: 13px; color: {{ chosen.color }}">{{ chosen.verdict }}</div>
+        <div><span style="color: #9DB3FF">interviewer &gt;</span> Say you add an idempotency key. The same key arrives again, but with a different amount. What should the server do?</div>
+        <div style="border-top: 1px dashed #3A362D; padding-top: 12px; display: flex; flex-direction: column; gap: 6px; color: #A39A88; font-size: 13px">
+          <span>tests: whether the key is tied to the request, not just stored</span>
+          <span>rejection signal: “return the saved response” without comparing the request</span>
+        </div>
+        <div style="background: #1E1C17; border: 1px solid #3A362D; border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 6px; font-size: 13px">
+          <span style="color: #8FD19E">strong answers mention</span>
+          <span>· store the key with a hash of the request body</span>
+          <span>· same key, different body → reject with a clear error</span>
+          <span>· same key, same body → return the stored result, charge nothing</span>
+        </div>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; font-family: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif">
+          <button type="button" onClick="{{ reset }}" style="background: transparent; color: #EDE7D6; border: 1px solid #5C5648; border-radius: 10px; padding: 10px 16px; min-height: 44px; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer">Try another answer</button>
+          <a href="#buy" style="display: inline-flex; align-items: center; justify-content: center; min-height: 44px; box-sizing: border-box; padding: 10px 18px; border-radius: 10px; background: #FFE36E; color: #1C1A16; font-size: 15px; font-weight: 700; text-decoration: none">Get all 100 questions · ₹349</a>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+</section>
+
+<section style="max-width: 1160px; margin: 0 auto; padding: 0 24px 80px; box-sizing: border-box; display: flex; flex-wrap: wrap; gap: 28px; align-items: stretch">
+  <div style="flex: 999 1 520px; min-width: 0; background: #FFFEFA; border: 1.5px solid #1C1A16; border-radius: 14px; padding: 28px; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px">
+    <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap">
+      <h2 style="margin: 0; font-family: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif; font-size: 30px; letter-spacing: -0.03em; font-weight: 800">Contents</h2>
+      <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; color: #5C5648">12 modules · 100 questions</span>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; column-gap: 32px">
+      <div style="flex: 1 1 220px; display: flex; gap: 12px; align-items: baseline; padding: 10px 0; border-top: 1px dashed #DCD4C2"><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; color: #8A8273">01</span><span style="font-weight: 500">API design</span></div>
+      <div style="flex: 1 1 220px; display: flex; gap: 12px; align-items: baseline; padding: 10px 0; border-top: 1px dashed #DCD4C2"><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; color: #8A8273">07</span><span style="font-weight: 500">Observability</span></div>
+      <div style="flex: 1 1 220px; display: flex; gap: 12px; align-items: baseline; padding: 10px 0; border-top: 1px dashed #DCD4C2"><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; color: #8A8273">02</span><span style="font-weight: 500">Databases and transactions</span></div>
+      <div style="flex: 1 1 220px; display: flex; gap: 12px; align-items: baseline; padding: 10px 0; border-top: 1px dashed #DCD4C2"><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; color: #8A8273">08</span><span style="font-weight: 500">Security</span></div>
+      <div style="flex: 1 1 220px; display: flex; gap: 12px; align-items: baseline; padding: 10px 0; border-top: 1px dashed #DCD4C2"><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; color: #8A8273">03</span><span style="font-weight: 500">Caching</span></div>
+      <div style="flex: 1 1 220px; display: flex; gap: 12px; align-items: baseline; padding: 10px 0; border-top: 1px dashed #DCD4C2"><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; color: #8A8273">09</span><span style="font-weight: 500">Performance</span></div>
+      <div style="flex: 1 1 220px; display: flex; gap: 12px; align-items: baseline; padding: 10px 0; border-top: 1px dashed #DCD4C2"><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; color: #8A8273">04</span><span style="font-weight: 500">Queues and async</span></div>
+      <div style="flex: 1 1 220px; display: flex; gap: 12px; align-items: baseline; padding: 10px 0; border-top: 1px dashed #DCD4C2"><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; color: #8A8273">10</span><span style="font-weight: 500">Payments and idempotency</span></div>
+      <div style="flex: 1 1 220px; display: flex; gap: 12px; align-items: baseline; padding: 10px 0; border-top: 1px dashed #DCD4C2"><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; color: #8A8273">05</span><span style="font-weight: 500">Consistency across services</span></div>
+      <div style="flex: 1 1 220px; display: flex; gap: 12px; align-items: baseline; padding: 10px 0; border-top: 1px dashed #DCD4C2"><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; color: #8A8273">11</span><span style="font-weight: 500">Ownership stories</span></div>
+      <div style="flex: 1 1 220px; display: flex; gap: 12px; align-items: baseline; padding: 10px 0; border-top: 1px dashed #DCD4C2"><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; color: #8A8273">06</span><span style="font-weight: 500">Reliability and incidents</span></div>
+      <div style="flex: 1 1 220px; display: flex; gap: 12px; align-items: baseline; padding: 10px 0; border-top: 1px dashed #DCD4C2"><span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; color: #8A8273">12</span><span style="font-weight: 500">Design shorts</span></div>
+    </div>
+  </div>
+  <div style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 20px">
+    <div style="background: #E3F1E7; border: 1.5px solid #2E7A4B; border-radius: 14px; padding: 22px; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px; transform: rotate(0.6deg)">
+      <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; font-weight: 600; color: #1F5C37">MADE FOR YOU IF</span>
+      <span style="font-size: 15px; line-height: 1.5">✓ You have 2–8 years and a backend round coming up</span>
+      <span style="font-size: 15px; line-height: 1.5">✓ You’ve built real things but stall on “why”</span>
+      <span style="font-size: 15px; line-height: 1.5">✓ Your interview is in the next few weeks</span>
+    </div>
+    <div style="background: #FBE6E1; border: 1.5px solid #C2412D; border-radius: 14px; padding: 22px; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px; transform: rotate(-0.6deg)">
+      <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; font-weight: 600; color: #9A2F1F">NOT FOR YOU IF</span>
+      <span style="font-size: 15px; line-height: 1.5">✗ You don’t have work projects to talk about yet</span>
+      <span style="font-size: 15px; line-height: 1.5">✗ You want answers to memorise word for word</span>
+      <span style="font-size: 15px; line-height: 1.5">✗ You want leaked company questions</span>
+    </div>
+  </div>
+</section>
+
+<section id="buy" style="background: #1C1A16; color: #F5F1E6">
+  <div style="max-width: 1160px; margin: 0 auto; padding: 88px 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 32px">
+    <div style="display: flex; flex-direction: column; gap: 10px">
+      <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px; color: #BDB4A0">// pick your prep</span>
+      <h2 style="margin: 0; font-family: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif; font-size: clamp(30px, 3.6vw, 44px); line-height: 1.08; letter-spacing: -0.03em; font-weight: 800; color: #FFFEFA">Less than one dinner out. <span style="color: #FFE36E">Prep for the round that sets your salary.</span></h2>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: stretch">
+      <div style="flex: 1 1 360px; min-width: 0; background: #FFFEFA; color: #1C1A16; border: 1.5px solid #FFFEFA; border-radius: 16px; padding: 30px; box-sizing: border-box; box-shadow: 8px 8px 0 #FFE36E; display: flex; flex-direction: column; gap: 14px">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap">
+          <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; font-weight: 600; letter-spacing: 0.06em">BACKEND SWITCH GUIDE</span>
+          <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: #C2412D; border: 2px solid #C2412D; border-radius: 6px; padding: 4px 8px; transform: rotate(-4deg); display: inline-block">LAUNCH PRICE</span>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap">
+          <span style="font-family: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif; font-size: 72px; font-weight: 800; letter-spacing: -0.04em; line-height: 1">₹349</span>
+          <span style="font-size: 15px; color: #3F3A30">₹499 after <strong>{{launchEnd}}</strong></span>
+        </div>
+        <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; font-size: 16px">
+          <li style="display: flex; gap: 10px; align-items: flex-start"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2E7A4B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13l5 5 11-12"></path></svg>100 questions, 4–5 follow-ups each</li>
+          <li style="display: flex; gap: 10px; align-items: flex-start"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2E7A4B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13l5 5 11-12"></path></svg>A4 and phone editions</li>
+          <li style="display: flex; gap: 10px; align-items: flex-start"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2E7A4B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13l5 5 11-12"></path></svg>Free updates for 12 months</li>
+          <li style="display: flex; gap: 10px; align-items: flex-start"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2E7A4B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13l5 5 11-12"></path></svg>7-day refund on your first guide</li>
+        </ul>
+        <a href="#" style="margin-top: auto; display: inline-flex; align-items: center; justify-content: center; min-height: 54px; box-sizing: border-box; padding: 14px 22px; border-radius: 12px; background: {{accent}}; color: #FFFFFF; font-weight: 600; font-size: 17px; text-decoration: none; box-shadow: 0 4px 0 rgba(0,0,0,0.35)">Get the guide · ₹349</a>
+        <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; color: #5C5648; text-align: center">UPI · cards · netbanking · PDF in 2 min</span>
+      </div>
+      <div style="flex: 1 1 360px; min-width: 0; border: 1.5px dashed #BDB4A0; border-radius: 16px; padding: 30px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+        <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; color: #BDB4A0">COMING NEXT · SWITCH KIT</span>
+        <span style="font-family: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif; font-size: 56px; font-weight: 800; letter-spacing: -0.04em; line-height: 1; color: #FFFEFA">₹999</span>
+        <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; font-size: 16px; color: #E9E3D3">
+          <li>Backend Switch Guide</li>
+          <li>System Design Follow-Ups</li>
+          <li><span style="background: linear-gradient(transparent 55%, rgba(255,227,110,0.45) 55%, rgba(255,227,110,0.45) 95%, transparent 95%)">Switch playbook, included free</span>: notice period, offers, negotiation</li>
+        </ul>
+        <span style="font-family: Caveat, cursive; font-size: 22px; color: #FFE36E; transform: rotate(-2deg); display: inline-block; align-self: flex-start">buyers of the guide get it at a discount</span>
+        <a href="#" style="margin-top: auto; display: inline-flex; align-items: center; justify-content: center; min-height: 50px; box-sizing: border-box; padding: 12px 20px; border-radius: 12px; background: transparent; color: #FFFEFA; border: 1.5px solid #FFFEFA; font-weight: 600; font-size: 16px; text-decoration: none">Tell me when it’s out</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="max-width: 1160px; margin: 0 auto; padding: 80px 24px 0; box-sizing: border-box">
+  <div style="position: relative; max-width: 720px; margin: 0 auto; background: #FFF8D6; border: 1px solid #E8DA9A; border-radius: 4px; padding: 36px 32px 28px; box-sizing: border-box; box-shadow: 0 14px 30px rgba(60,48,20,0.12); transform: rotate(0.6deg); display: flex; flex-direction: column; gap: 14px">
+    <span aria-hidden="true" style="position: absolute; top: -12px; left: 50%; width: 120px; height: 26px; margin-left: -60px; background: rgba(255,255,255,0.65); border: 1px solid rgba(0,0,0,0.06); transform: rotate(-2deg)"></span>
+    <div style="display: flex; align-items: center; gap: 14px">
+      <span style="width: 52px; height: 52px; border-radius: 999px; background: #1C1A16; color: #FFE36E; display: flex; align-items: center; justify-content: center; font-family: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif; font-size: 22px; font-weight: 800">D</span>
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <span style="font-family: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif; font-size: 22px; font-weight: 800; letter-spacing: -0.02em">Written by Deepu</span>
+        <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; color: #5C5648">backend engineer · payments and distributed systems</span>
+      </div>
+    </div>
+    <p style="margin: 0; font-size: 16px; line-height: 1.65; color: #2B2820">Every question here is one I’ve seen trip up good engineers. I review each page myself before it ships, and I fix anything you report within a week.</p>
+  </div>
+</section>
+
+<section style="max-width: 780px; margin: 0 auto; padding: 80px 24px 88px; box-sizing: border-box; display: flex; flex-direction: column; gap: 4px">
+  <h2 style="margin: 0 0 14px; font-family: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif; font-size: 36px; letter-spacing: -0.03em; font-weight: 800">Before you buy</h2>
+  <details style="border-top: 1.5px solid #1C1A16; padding: 16px 0">
+    <summary style="font-weight: 600; font-size: 17px; cursor: pointer; min-height: 28px">Is it tied to one language or framework?</summary>
+    <p style="margin: 10px 0 0; color: #3F3A30; line-height: 1.6">No. The questions test decisions and failure reasoning, which carry across Java, Go, Node and Python.</p>
+  </details>
+  <details style="border-top: 1.5px solid #1C1A16; padding: 16px 0">
+    <summary style="font-weight: 600; font-size: 17px; cursor: pointer; min-height: 28px">Does it include model answers?</summary>
+    <p style="margin: 10px 0 0; color: #3F3A30; line-height: 1.6">Yes: a strong answer in three moves for every question, built to adapt to your own projects, not to memorise.</p>
+  </details>
+  <details style="border-top: 1.5px solid #1C1A16; padding: 16px 0">
+    <summary style="font-weight: 600; font-size: 17px; cursor: pointer; min-height: 28px">How do I get it?</summary>
+    <p style="margin: 10px 0 0; color: #3F3A30; line-height: 1.6">A download link lands in your email within 2 minutes of paying. Both editions, stamped with your email.</p>
+  </details>
+  <details style="border-top: 1.5px solid #1C1A16; border-bottom: 1.5px solid #1C1A16; padding: 16px 0">
+    <summary style="font-weight: 600; font-size: 17px; cursor: pointer; min-height: 28px">What if it doesn’t help?</summary>
+    <p style="margin: 10px 0 0; color: #3F3A30; line-height: 1.6">Email within 7 days of your first purchase and you get a full refund.</p>
+  </details>
+</section>
+
+<footer style="background: #1C1A16; color: #E9E3D3">
+  <div style="max-width: 1160px; margin: 0 auto; padding: 36px 24px 96px; box-sizing: border-box; display: flex; flex-wrap: wrap; gap: 24px; justify-content: space-between; font-size: 14px">
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <span style="font-family: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif; font-weight: 700; font-size: 18px; color: #FFFEFA">secondquestion</span>
+      <span>Made in Trivandrum, Kerala</span>
+      <span>support@secondquestion.in · replies within 1 business day</span>
+    </div>
+    <nav aria-label="Footer" style="display: flex; gap: 18px; flex-wrap: wrap; align-items: flex-start">
+      <a href="#" style="color: #E9E3D3">Refund policy</a>
+      <a href="#" style="color: #E9E3D3">Terms</a>
+      <a href="#" style="color: #E9E3D3">Privacy</a>
+      <a href="#" style="color: #E9E3D3">Changelog</a>
+    </nav>
+  </div>
+</footer>
+
+<div class="only-sm" style="position: sticky; bottom: 0; background: #FFFEFA; border-top: 1.5px solid #1C1A16; padding: 10px 16px; box-sizing: border-box; align-items: center; justify-content: space-between; gap: 12px">
+  <div style="display: flex; flex-direction: column">
+    <span style="font-family: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif; font-weight: 800; font-size: 22px; letter-spacing: -0.02em">₹349</span>
+    <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; color: #5C5648">₹499 after {{launchEnd}}</span>
+  </div>
+  <a href="#buy" style="display: inline-flex; align-items: center; justify-content: center; min-height: 48px; box-sizing: border-box; padding: 12px 20px; border-radius: 12px; background: {{accent}}; color: #FFFFFF; font-weight: 600; font-size: 16px; text-decoration: none; box-shadow: 0 3px 0 rgba(0,0,0,0.35)">Get the guide</a>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#2340B0","options":["#2340B0","#1C1A16","#2E7A4B","#C2412D"]},"launchEnd":{"editor":"text","default":"15 Nov"},"$preview":{"width":1280,"height":4600}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { page: 0, picked: null };
+  }
+  renderVals() {
+    const accent = this.props.accent ?? '#2340B0';
+    const launchEnd = this.props.launchEnd ?? '15 Nov';
+    const s = this.state || {};
+    const tagColors = {
+      failure: { tagBg: '#FBE6E1', tagFg: '#9A2F1F' },
+      tradeoff: { tagBg: '#E6ECFB', tagFg: '#2340B0' },
+      ownership: { tagBg: '#FFF4C7', tagFg: '#7A5A00' },
+      measure: { tagBg: '#E3F1E7', tagFg: '#1F5C37' }
+    };
+    const node = (label, bad, last) => ({ label, bd: bad ? '#C2412D' : '#1C1A16', bg: bad ? '#FBE6E1' : '#FFFEFA', arrow: !last });
+    const rung = (tag, text) => Object.assign({ tag: tag.toUpperCase(), text }, tagColors[tag]);
+    const moves = (list) => list.map((text, i) => ({ n: String(i + 1), text }));
+    const data = [
+      {
+        qid: 'Q 10.3', tag: 'payments', module: 'MODULE 10 · PAYMENTS AND IDEMPOTENCY',
+        short: 'A customer was charged twice',
+        title: 'A customer was charged twice for one order. Walk me through why.',
+        tests: 'Telling a lost response apart from a failed call, and making retries safe.',
+        nodes: [node('Client', false, false), node('Orders API', false, false), node('Payment gateway', true, true)],
+        note: 'timed out after 30 s… or did it?',
+        usual: '“The client retried, so I’d cap the retries.”',
+        redNote: 'treats the symptom, not the cause',
+        ladder: [
+          rung('failure', 'The gateway charged, but the response was lost. What does your service do next?'),
+          rung('tradeoff', 'Where does the idempotency key live, and for how long?'),
+          rung('ownership', 'Which part of the fix did you build yourself?'),
+          rung('measure', 'How would you prove duplicate charges stopped?')
+        ],
+        strong: moves([
+          'Treat a timeout as unknown, not failed. The charge may have gone through.',
+          'Send an idempotency key with every charge, created once per order attempt.',
+          'Store the key with a hash of the request, and replay the stored result instead of charging again.'
+        ])
+      },
+      {
+        qid: 'Q 9.2', tag: 'performance', module: 'MODULE 09 · PERFORMANCE',
+        short: 'p99 latency doubled after a deploy',
+        title: 'p99 latency doubled after a deploy, but the average looks fine. Where do you look?',
+        tests: 'Reading latency distributions, and tying a regression to one change.',
+        nodes: [node('Load balancer', false, false), node('Service v2.4', true, false), node('Postgres', false, true)],
+        note: 'p99: 180 ms → 410 ms',
+        usual: '“The average is fine, so it’s probably noise.”',
+        redNote: 'averages hide tails',
+        ladder: [
+          rung('failure', 'Only some users feel it. Which ones, and why?'),
+          rung('tradeoff', 'Roll back now, or fix forward?'),
+          rung('measure', 'Which metric proves the fix worked?'),
+          rung('ownership', 'What did you change in the release process afterwards?')
+        ],
+        strong: moves([
+          'Break p99 down by endpoint, version and instance before guessing.',
+          'Find the one change behind it: a new query, a lock, a GC pause, a cold cache.',
+          'Roll back if users are hurting, then ship the fix with a guard metric.'
+        ])
+      },
+      {
+        qid: 'Q 4.2', tag: 'queues', module: 'MODULE 04 · QUEUES AND ASYNC',
+        short: 'The queue keeps growing overnight',
+        title: 'The queue keeps growing overnight. Consumers look healthy. What’s happening?',
+        tests: 'Throughput maths, back-pressure and poison messages.',
+        nodes: [node('Producers', false, false), node('Queue', true, false), node('Consumers ×6', false, true)],
+        note: 'lag: 2M messages by 6 a.m.',
+        usual: '“Add more consumers.”',
+        redNote: 'what if one message blocks a partition?',
+        ladder: [
+          rung('failure', 'One message fails forever. What happens to the ones behind it?'),
+          rung('tradeoff', 'Retry in place, or send it to a dead-letter queue?'),
+          rung('measure', 'How do you get alerted before morning?'),
+          rung('ownership', 'Who replays the dead letters, and when?')
+        ],
+        strong: moves([
+          'Compare the arrival rate with the processing rate before adding anything.',
+          'Look for a poison message holding a partition hostage.',
+          'Bounded retries, a dead-letter queue, and a safe way to replay.'
+        ])
+      },
+      {
+        qid: 'Q 2.6', tag: 'databases', module: 'MODULE 02 · DATABASES AND TRANSACTIONS',
+        short: 'A migration locked the orders table',
+        title: 'A migration locked the orders table at peak traffic. What went wrong?',
+        tests: 'How schema changes take locks, and how to roll them out safely.',
+        nodes: [node('Migration', false, false), node('orders table', true, false), node('Checkout API', false, true)],
+        note: 'table lock held for 4 minutes',
+        usual: '“Run migrations at night.”',
+        redNote: 'hides it, doesn’t fix it',
+        ladder: [
+          rung('failure', 'Which statements take a lock on the whole table?'),
+          rung('tradeoff', 'Add the column with a default, or backfill later?'),
+          rung('measure', 'How do you know a migration is safe before production?'),
+          rung('ownership', 'What check did you add to CI afterwards?')
+        ],
+        strong: moves([
+          'Know which schema changes rewrite or lock the whole table.',
+          'Expand and contract: add, backfill in batches, then switch reads.',
+          'Set a lock timeout, and dry-run on a copy of production data.'
+        ])
+      }
+    ];
+    const pageIndex = typeof s.page === 'number' ? s.page : 0;
+    const pages = data.map((p, i) => {
+      const on = i === pageIndex;
+      return Object.assign({}, p, {
+        pressed: on ? 'true' : 'false',
+        bg: on ? '#FFFEFA' : 'rgba(255,254,250,0.55)',
+        bd: on ? accent : '#CFC6B2',
+        shadow: on ? '4px 4px 0 ' + accent : 'none',
+        pick: () => this.setState({ page: i })
+      });
+    });
+    const sel = pages[pageIndex];
+
+    const picked = s.picked ?? null;
+    const raw = [
+      { key: 'a', text: 'The client retried after a timeout, so the charge ran twice. I’d cap the retries.', verdict: 'weak: true, but it treats the symptom, not the cause', color: '#E8B93C' },
+      { key: 'b', text: 'Look in the payment logs for two successful charges on the same order ID.', verdict: 'okay: a good first move. Now name the cause.', color: '#9DB3FF' },
+      { key: 'c', text: 'A retry reached the gateway after the first call had already succeeded. I’d check whether we send an idempotency key.', verdict: 'strong: names the gap and the fix', color: '#8FD19E' }
+    ];
+    const options = raw.map((o) => Object.assign({}, o, { pick: () => this.setState({ picked: o.key }) }));
+    const chosen = options.find((o) => o.key === picked) || options[0];
+
+    return {
+      accent,
+      launchEnd,
+      pages,
+      sel,
+      options,
+      chosen,
+      picked: picked !== null,
+      notPicked: picked === null,
+      reset: () => this.setState({ picked: null })
+    };
+  }
+}
+</script>
+</body>
+</html>

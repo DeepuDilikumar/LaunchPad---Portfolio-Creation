@@ -1,0 +1,8 @@
+# Public changelog. Newest first. `pnpm release` adds entries.
+backend:
+  - version: 1.0.0
+    date: "2026-10-13"
+    status: in-review
+    notes:
+      - "First draft of the guide: 12 modules. Questions ship only after the author has reviewed them."
+errata: []
