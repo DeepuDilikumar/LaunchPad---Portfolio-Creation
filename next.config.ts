@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  devIndicators: false,
   // Content files are read at build time by server components and API routes.
   outputFileTracingIncludes: {
     "/api/**": ["./content/**/*", "./config/**/*"],

@@ -24,7 +24,8 @@
     "ad-spend": "tsx --tsconfig tsconfig.scripts.json scripts/ad-spend.ts",
     "reviews": "tsx --tsconfig tsconfig.scripts.json scripts/reviews.ts",
     "release": "tsx --tsconfig tsconfig.scripts.json scripts/release.ts",
-    "preflight": "tsx --tsconfig tsconfig.scripts.json scripts/preflight.ts"
+    "preflight": "tsx --tsconfig tsconfig.scripts.json scripts/preflight.ts",
+    "screenshots": "tsx --tsconfig tsconfig.scripts.json scripts/capture-journeys.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.133.0",

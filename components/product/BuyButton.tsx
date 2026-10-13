@@ -77,6 +77,7 @@ export function BuyButton({
 
       if (data.simulated) {
         setDevOrder(data);
+        setBusy(false);
         return;
       }
       await loadRazorpay();

@@ -27,6 +27,66 @@ pnpm release --guide backend --drafts   # upload it as the local delivery master
 pnpm dev                                # buy on /guides/backend → check .data/outbox
 ```
 
+## User journeys
+
+Screenshots from local dev with draft content visible (the red banner) and the simulated checkout,
+so nothing here is a live payment. Regenerate them with `pnpm screenshots` (see
+`scripts/capture-journeys.ts` for the steps it clicks through).
+
+### 1. Buy the guide (ad → product page → pay → download)
+
+The visitor lands on the home page, reads real pages and tries the follow-up demo on the product
+page, pays, and gets a stamped PDF by email.
+
+<img src="docs/screenshots/buy-01-home-desktop.webp" width="820" alt="Home page on desktop">
+
+| Home on a phone                                                                            | Product page: price and one CTA                                                                   | Interactive follow-up demo                                                                                       |
+| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| <img src="docs/screenshots/buy-02-home-phone.webp" width="240" alt="Home page on a phone"> | <img src="docs/screenshots/buy-03-product-price.webp" width="240" alt="Product page price block"> | <img src="docs/screenshots/buy-04-follow-up-demo.webp" width="240" alt="Follow-up demo after picking an answer"> |
+
+Page viewer: pick a sample question and read it exactly as it appears in the PDF.
+
+<img src="docs/screenshots/buy-05-page-viewer.webp" width="820" alt="Page viewer on the product page">
+
+| Checkout (dev simulator in place of Razorpay)                                | Thank-you page                                                                      | Delivery email                                                                           |
+| ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| <img src="docs/screenshots/buy-06-checkout.webp" width="240" alt="Checkout"> | <img src="docs/screenshots/buy-07-thank-you.webp" width="240" alt="Thank-you page"> | <img src="docs/screenshots/buy-08-delivery-email.webp" width="300" alt="Delivery email"> |
+
+| Download page (24 h, 5 downloads)                                                      | Stamped PDF, phone edition (buyer's email in the footer)                                              |
+| -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| <img src="docs/screenshots/buy-09-download-page.webp" width="240" alt="Download page"> | <img src="docs/screenshots/buy-10-stamped-pdf-phone-edition.webp" width="240" alt="Stamped PDF page"> |
+
+### 2. Free Readiness Check (cold ad traffic → lead)
+
+Three warm-up taps, 8 real follow-ups, a score by area with no email needed, then an optional
+emailed PDF report and an opt-in 3-email sequence.
+
+| Warm-up                                                                                      | A question                                                                                     | Result (no email needed)                                                                   |
+| -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| <img src="docs/screenshots/check-01-warm-up.webp" width="240" alt="Readiness Check warm-up"> | <img src="docs/screenshots/check-02-question.webp" width="240" alt="Readiness Check question"> | <img src="docs/screenshots/check-03-result.webp" width="240" alt="Readiness Check result"> |
+
+| Email for the full report                                                                  | Report email (PDF attached)                                                            |
+| ------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------- |
+| <img src="docs/screenshots/check-04-email-captured.webp" width="240" alt="Email captured"> | <img src="docs/screenshots/check-05-report-email.webp" width="300" alt="Report email"> |
+
+### 3. Free article (search traffic → guide)
+
+| `/learn` article: one question, three follow-ups, strong-answer outline, CTA       |
+| ---------------------------------------------------------------------------------- |
+| <img src="docs/screenshots/learn-01-article.webp" width="240" alt="Learn article"> |
+
+### 4. Review and referral (day 7 after purchase)
+
+| Review form from the day-7 email                                               | Referral link after the review                                                            |
+| ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
+| <img src="docs/screenshots/review-01-form.webp" width="240" alt="Review form"> | <img src="docs/screenshots/review-02-referral-link.webp" width="240" alt="Referral link"> |
+
+### 5. AI follow-up drill (Phase 6, behind a feature flag)
+
+| Buyers log in with a magic link                                                |
+| ------------------------------------------------------------------------------ |
+| <img src="docs/screenshots/drill-01-login.webp" width="240" alt="Drill login"> |
+
 ## Content pipeline
 
 Guides are Markdown with YAML frontmatter in `content/guides/<guide>/<module>/<id>.md` (schema in
@@ -81,6 +141,7 @@ pnpm report:weekly --weeks 4                 # orders, revenue, spend, cost/orde
 pnpm reviews list | publish <id> | reject <id>
 pnpm stamp file.pdf buyer@x.in sq_123        # stamp a PDF by hand
 pnpm capture-reference                       # competitor screenshots (git-ignored)
+pnpm screenshots http://localhost:3300       # README journey screenshots (needs pnpm dev with drafts + drill flag)
 ```
 
 ## Phase status
