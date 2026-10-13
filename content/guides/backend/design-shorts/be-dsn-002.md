@@ -49,5 +49,6 @@ self_check:
 sources:
   - "https://cheatsheetseries.owasp.org/cheatsheets/Multifactor_Authentication_Cheat_Sheet.html"
   - "https://owasp.org/www-community/controls/Blocking_Brute_Force_Attacks"
+concepts: [rate-limiting, authentication]
 reviewed: false
 ---

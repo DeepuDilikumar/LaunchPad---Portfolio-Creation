@@ -48,5 +48,6 @@ self_check:
 sources:
   - "https://datatracker.ietf.org/doc/html/rfc6585"
   - "https://redis.io/docs/latest/develop/interact/programmability/eval-intro/"
+concepts: [rate-limiting]
 reviewed: false
 ---

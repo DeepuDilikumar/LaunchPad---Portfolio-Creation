@@ -49,5 +49,6 @@ self_check:
 sources:
   - "https://www.postgresql.org/docs/current/using-explain.html"
   - "https://use-the-index-luke.com/"
+concepts: [sql-vs-nosql, tail-latency]
 reviewed: false
 ---

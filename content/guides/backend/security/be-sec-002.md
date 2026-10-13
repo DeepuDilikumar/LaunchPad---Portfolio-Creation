@@ -49,5 +49,6 @@ self_check:
 sources:
   - "https://datatracker.ietf.org/doc/html/rfc6749"
   - "https://datatracker.ietf.org/doc/html/rfc7519"
+concepts: [authentication, encryption-in-transit]
 reviewed: false
 ---

@@ -49,5 +49,6 @@ self_check:
 sources:
   - "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html"
   - "https://microservices.io/patterns/communication-style/idempotent-consumer.html"
+concepts: [message-queues, idempotency]
 reviewed: false
 ---

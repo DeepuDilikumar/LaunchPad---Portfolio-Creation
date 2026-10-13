@@ -48,5 +48,6 @@ self_check:
 sources:
   - "https://cloud.google.com/apis/design/compatibility"
   - "https://www.rfc-editor.org/rfc/rfc9110"
+concepts: [rpc-vs-rest, http]
 reviewed: false
 ---

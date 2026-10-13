@@ -49,5 +49,6 @@ self_check:
 sources:
   - "https://use-the-index-luke.com/no-offset"
   - "https://docs.stripe.com/api/pagination"
+concepts: [http, denormalisation]
 reviewed: false
 ---

@@ -16,6 +16,8 @@ export interface QuestionPageProps {
   /** Footer text, e.g. the stamp placeholder on the site. */
   footer?: string;
   showDraftMark?: boolean;
+  /** Roadmap topics this question tests; links open the basics in a new tab. Web only. */
+  concepts?: { title: string; href: string }[];
 }
 
 /**
@@ -29,9 +31,10 @@ export function QuestionPage({
   edition = "web",
   footer,
   showDraftMark,
+  concepts,
 }: QuestionPageProps) {
   return (
-    <article className={`qp${edition === "phone" ? "qp--phone" : ""}`} data-question={q.id}>
+    <article className={edition === "phone" ? "qp qp--phone" : "qp"} data-question={q.id}>
       <div className="qp-meta">
         <span>
           {guideTitle} · Module {String(q.moduleNumber).padStart(2, "0")} · {q.moduleTitle}
@@ -46,6 +49,17 @@ export function QuestionPage({
         <span className="qp-label">What it tests · </span>
         {q.intent}
       </div>
+      {concepts?.length ? (
+        <div className="qp-concepts">
+          <span className="qp-label">Concepts ↗</span>
+          {concepts.map((c) => (
+            <a key={c.href} href={c.href} target="_blank" rel="noopener" className="qp-concept">
+              {c.title}
+            </a>
+          ))}
+          <span className="qp-hand qp-concepts-note">opens the basics in a new tab</span>
+        </div>
+      ) : null}
 
       {q.flow ? (
         <div className="qp-flow" aria-label="Diagram">
@@ -53,7 +67,7 @@ export function QuestionPage({
           <div className="qp-flow-row">
             {q.flow.nodes.map((n, i) => (
               <span key={n.label} className="qp-flow-row">
-                <span className={`qp-node${n.bad ? "qp-node--bad" : ""}`}>{n.label}</span>
+                <span className={n.bad ? "qp-node qp-node--bad" : "qp-node"}>{n.label}</span>
                 {i < q.flow!.nodes.length - 1 ? (
                   <span className="qp-arrow" aria-hidden="true">
                     →

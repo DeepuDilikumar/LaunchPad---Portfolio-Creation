@@ -264,3 +264,29 @@
 .qp-signals ul {
   list-style: disc;
 }
+.qp-concepts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  background: #fffbe6;
+  border: 1.5px dashed var(--ink);
+  border-radius: 10px;
+  padding: 9px 12px;
+}
+.qp-concept {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1.5px solid var(--blue);
+  color: var(--blue);
+  background: var(--card);
+  text-decoration: none;
+}
+.qp-concept:hover {
+  background: var(--blue-wash);
+}
+.qp-concepts-note {
+  font-size: 19px;
+}

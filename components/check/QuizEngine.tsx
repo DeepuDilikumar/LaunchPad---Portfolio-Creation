@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { Quiz } from "@/lib/quiz";
 import { scoreQuiz } from "@/lib/quiz";
 import { track } from "@/lib/track";
+import { BasicsNudge } from "@/components/roadmap/BasicsNudge";
 
 type Step = "intro" | "question" | "result";
 
@@ -265,6 +266,8 @@ export function QuizEngine({
           </Link>
         </div>
       </div>
+
+      <BasicsNudge compact />
 
       <form
         className="border-ink bg-card flex flex-col gap-3 rounded-2xl border-[1.5px] p-6"

@@ -53,5 +53,6 @@ self_check:
 sources:
   - "https://sre.google/sre-book/addressing-cascading-failures/"
   - "https://martinfowler.com/bliki/CircuitBreaker.html"
+concepts: [health-checks, microservices]
 reviewed: false
 ---

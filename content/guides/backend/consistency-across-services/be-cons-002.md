@@ -48,5 +48,6 @@ self_check:
 sources:
   - "https://microservices.io/patterns/data/saga.html"
   - "https://learn.microsoft.com/en-us/azure/architecture/reference-architectures/saga/saga"
+concepts: [microservices, eventual-consistency]
 reviewed: false
 ---

@@ -58,5 +58,6 @@ self_check:
 sources:
   - "https://razorpay.com/docs/webhooks/"
   - "https://docs.stripe.com/webhooks"
+concepts: [eventual-consistency, idempotency]
 reviewed: false
 ---

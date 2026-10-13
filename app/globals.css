@@ -200,6 +200,17 @@ body {
     background: #ece8f7;
     color: #4a3a8c;
   }
+  .qc {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 5px;
+    background: var(--blue-wash);
+    color: var(--blue);
+    white-space: nowrap;
+    line-height: 1.4;
+  }
   .stamp {
     font-family: var(--font-mono);
     font-size: 11px;

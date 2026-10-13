@@ -47,5 +47,6 @@ self_check:
 sources:
   - "https://opentelemetry.io/docs/concepts/signals/traces/"
   - "https://www.w3.org/TR/trace-context/"
+concepts: [tracing]
 reviewed: false
 ---

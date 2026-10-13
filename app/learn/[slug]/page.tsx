@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { site } from "@/config/site";
 import { JsonLd } from "@/components/site/JsonLd";
+import { BasicsNudge } from "@/components/roadmap/BasicsNudge";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { guideFacts, productOnSale } from "@/lib/catalog";
@@ -85,6 +86,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
             ))}
           </div>
         </article>
+
+        <BasicsNudge compact />
 
         <aside className="bg-ink text-paper flex flex-col gap-3 rounded-2xl p-6">
           <span className="text-marker font-mono text-[11px] font-semibold">

@@ -49,6 +49,8 @@ export const questionSchema = z
     diagram: z.string().optional(),
     self_check: z.array(nonEmpty).min(1),
     sources: z.array(z.string().url()).min(1),
+    /** Roadmap topic ids this question tests; shown as concept links. */
+    concepts: z.array(nonEmpty).optional(),
     reviewed: z.boolean(),
   })
   .superRefine((q, ctx) => {

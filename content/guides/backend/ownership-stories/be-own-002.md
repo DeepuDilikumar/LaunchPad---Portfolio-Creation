@@ -44,5 +44,6 @@ self_check:
 sources:
   - "https://adr.github.io/"
   - "https://www.reddit.com/r/developersIndia/"
+concepts: [design-round]
 reviewed: false
 ---

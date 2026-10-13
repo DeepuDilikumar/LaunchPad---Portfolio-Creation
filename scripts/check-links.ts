@@ -1,4 +1,5 @@
 /** Checks every URL in content/sources.csv responds. Run in CI; flaky hosts can be retried. */
+import fs from "node:fs";
 import { readSources } from "../lib/content/sources";
 
 async function check(url: string): Promise<string | null> {
@@ -29,12 +30,24 @@ async function check(url: string): Promise<string | null> {
   return null;
 }
 
+function cloudLinks(): { url: string }[] {
+  const m = JSON.parse(fs.readFileSync("content/roadmap/cloud-map.json", "utf8")) as {
+    concepts: Record<string, Record<string, { docUrl?: string }>>;
+  };
+  const urls = new Set<string>();
+  for (const c of Object.values(m.concepts))
+    for (const v of Object.values(c)) if (typeof v === "object" && v.docUrl) urls.add(v.docUrl);
+  return [...urls].map((url) => ({ url }));
+}
+
 async function main() {
-  const sources = readSources();
+  const sources = [...readSources(), ...cloudLinks()];
   const results = await Promise.all(sources.map(async (s) => [s.url, await check(s.url)] as const));
   const broken = results.filter(([, e]) => e);
   for (const [url, e] of broken) console.error(`✗ ${url}: ${e}`);
-  console.log(`${sources.length - broken.length}/${sources.length} source links OK`);
+  console.log(
+    `${sources.length - broken.length}/${sources.length} links OK (sources + cloud docs)`,
+  );
   if (broken.length) process.exit(1);
 }
 

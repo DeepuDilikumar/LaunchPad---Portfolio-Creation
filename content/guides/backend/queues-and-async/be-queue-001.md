@@ -62,5 +62,6 @@ self_check:
 sources:
   - "https://kafka.apache.org/documentation/"
   - "https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html"
+concepts: [message-queues, back-pressure]
 reviewed: false
 ---

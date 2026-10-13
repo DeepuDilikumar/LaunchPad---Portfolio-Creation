@@ -2,7 +2,8 @@
  * Walks each user journey in a running dev server and saves screenshots for the README.
  *
  *   NEXT_PUBLIC_CONTENT_PREVIEW=1 NEXT_PUBLIC_FEATURE_DRILL=1 pnpm dev -p 3300
- *   pnpm screenshots http://localhost:3300
+ *   pnpm screenshots http://localhost:3300            # every journey
+ *   pnpm screenshots http://localhost:3300 roadmap    # only the roadmap journey
  *
  * Needs dev mode (the simulated checkout) and a local delivery master
  * (`pnpm build:pdf --drafts && pnpm release --guide backend --drafts`).
@@ -17,6 +18,7 @@ import { signToken } from "../lib/ids";
 import { launchBrowser } from "./lib/browser";
 
 const base = process.argv[2] ?? "http://localhost:3000";
+const only = process.argv[3];
 const out = path.join(process.cwd(), "docs", "screenshots");
 const outbox = path.join(process.cwd(), ".data", "outbox");
 const buyer = "asha@example.com";
@@ -53,6 +55,60 @@ function latestEmail(to: string): string {
   return path.join(outbox, files[files.length - 1]);
 }
 
+/**
+ * The free System Design roadmap: map, drawer tabs, phone sheet, and the links from the guide.
+ * Shots are written at the end: a file landing in the repo mid-journey makes the dev server
+ * reload the page, which then shows the pushed topic URL instead of the open drawer.
+ */
+async function roadmapJourney(desktop: Page, phone: Page) {
+  const map = `${base}/roadmap/system-design`;
+  const shots: [string, Buffer, number][] = [];
+  await desktop.setViewportSize({ width: 1440, height: 1000 });
+  await go(desktop, map);
+  await desktop.waitForTimeout(2000);
+  await desktop.getByRole("button", { name: "14 days" }).click();
+  shots.push(["roadmap-01-map-desktop", await desktop.screenshot(), 1440]);
+  shots.push([
+    "roadmap-02-map-full",
+    await desktop.screenshot({ fullPage: true, clip: { x: 0, y: 0, width: 1440, height: 2600 } }),
+    1440,
+  ]);
+
+  await desktop
+    .getByRole("link", { name: /Layer 4 vs Layer 7/ })
+    .first()
+    .click();
+  const drawer = desktop.getByRole("dialog");
+  await drawer.waitFor();
+  await drawer.getByRole("tab", { name: "They ask" }).click();
+  await desktop.waitForTimeout(300);
+  shots.push(["roadmap-03-drawer-they-ask", await desktop.screenshot(), 1440]);
+  await drawer.getByRole("tab", { name: /Real world/ }).click();
+  await desktop.waitForTimeout(300);
+  shots.push(["roadmap-04-drawer-cloud", await desktop.screenshot(), 1440]);
+  await desktop.keyboard.press("Escape");
+
+  await go(phone, map);
+  shots.push(["roadmap-05-map-phone", await phone.screenshot(), 780]);
+  // Wait for hydration, or the tap follows the plain link to the topic page.
+  await phone.waitForTimeout(2000);
+  await phone
+    .getByRole("link", { name: /Cache-aside/ })
+    .first()
+    .click();
+  await phone.getByRole("dialog").waitFor();
+  await phone.getByRole("dialog").getByRole("tab", { name: "They ask" }).click();
+  await phone.waitForTimeout(300);
+  shots.push(["roadmap-06-sheet-phone", await phone.screenshot(), 780]);
+
+  await desktop.setViewportSize({ width: 1280, height: 860 });
+  await go(desktop, `${base}/guides/backend#pages`);
+  await desktop.waitForTimeout(800);
+  shots.push(["roadmap-07-guide-nudge", await desktop.locator("#pages").screenshot(), 1280]);
+
+  for (const [name, png, width] of shots) await save(name, png, width);
+}
+
 async function main() {
   fs.mkdirSync(out, { recursive: true });
   fs.rmSync(outbox, { recursive: true, force: true });
@@ -74,6 +130,12 @@ async function main() {
     });
     await p.waitForTimeout(200);
   };
+
+  if (only === "roadmap") {
+    await roadmapJourney(desktop, phone);
+    await browser.close();
+    return;
+  }
 
   // ---------- 1. Buy the guide ----------
   await go(desktop, `${base}/`);
@@ -212,6 +274,9 @@ async function main() {
   const drill = await go(phone, `${base}/drill`);
   if (drill?.ok()) await shot(phone, "drill-01-login");
   else console.warn("drill is off (NEXT_PUBLIC_FEATURE_DRILL); skipping");
+
+  // ---------- 6. System Design roadmap ----------
+  await roadmapJourney(desktop, phone);
 
   await browser.close();
 }

@@ -48,5 +48,6 @@ self_check:
 sources:
   - "https://aws.amazon.com/builders-library/caching-challenges-and-strategies/"
   - "https://redis.io/docs/latest/develop/clients/client-side-caching/"
+concepts: [cache-invalidation, where-to-cache, read-replicas]
 reviewed: false
 ---

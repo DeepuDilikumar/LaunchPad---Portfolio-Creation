@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { formatInr, getProduct, site } from "@/config/site";
 import { QuestionPage } from "@/components/guide/QuestionPage";
+import { BasicsNudge } from "@/components/roadmap/BasicsNudge";
+import { conceptLinks } from "@/lib/roadmap/view";
 import { AuthorCard } from "@/components/site/AuthorCard";
 import { JsonLd } from "@/components/site/JsonLd";
 import { SiteFooter } from "@/components/site/SiteFooter";
@@ -193,6 +195,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                     version={facts.version}
                     footer="stamped for you@email.com"
                     showDraftMark={facts.preview}
+                    concepts={conceptLinks(q.concepts)}
                   />
                 ))}
               </PageViewer>
@@ -204,6 +207,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                   <SamplePages images={images} />
                 </div>
               ) : null}
+              <div className="max-w-[560px]">
+                <BasicsNudge />
+              </div>
             </div>
           </section>
         ) : null}

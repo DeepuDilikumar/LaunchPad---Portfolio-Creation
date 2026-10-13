@@ -55,5 +55,6 @@ self_check:
 sources:
   - "https://www.postgresql.org/docs/current/sql-altertable.html"
   - "https://www.postgresql.org/docs/current/explicit-locking.html"
+concepts: [sql-vs-nosql]
 reviewed: false
 ---

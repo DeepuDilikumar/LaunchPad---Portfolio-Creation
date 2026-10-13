@@ -51,5 +51,6 @@ self_check:
 sources:
   - "https://sre.google/sre-book/postmortem-culture/"
   - "https://sre.google/sre-book/managing-incidents/"
+concepts: [metrics-slos]
 reviewed: false
 ---

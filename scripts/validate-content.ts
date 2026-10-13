@@ -5,6 +5,7 @@
 import { listGuideSlugs, loadGuide } from "../lib/content/load";
 import { nearDuplicateTitles } from "../lib/content/quality";
 import { readSources } from "../lib/content/sources";
+import { loadRoadmap } from "../lib/roadmap/load";
 
 let failed = false;
 const logged = new Set(readSources().map((s) => s.url));
@@ -36,6 +37,28 @@ for (const slug of listGuideSlugs()) {
   console.log(
     `${slug}: ${questions.length} questions (${reviewed} reviewed, ${questions.length - reviewed} drafts)`,
   );
+  for (const issue of all) console.error(`  ✗ ${issue.file}: ${issue.message}`);
+  if (all.length) failed = true;
+}
+
+// Roadmap: topics, placement, cloud keys, guide references, and guide → roadmap concept links.
+{
+  const rm = loadRoadmap("system-design", { fresh: true });
+  const ids = new Set(rm.topics.map((t) => t.id));
+  const all = [...rm.issues];
+  for (const q of loadGuide("backend", { fresh: true }).questions) {
+    for (const c of q.concepts ?? [])
+      if (!ids.has(c)) all.push({ file: q.file, message: `concept "${c}" is not a roadmap topic` });
+  }
+  const ageDays = (Date.now() - Date.parse(`${rm.cloud.lastVerified}T00:00:00Z`)) / 86400_000;
+  const full = rm.topics.filter((t) => t.questions.length).length;
+  console.log(
+    `roadmap/system-design: ${rm.topics.length} topics (${rm.topics.filter((t) => t.reviewed).length} reviewed, ${full} with interview questions)`,
+  );
+  if (ageDays > 120)
+    console.warn(
+      `  ! cloud-map.json lastVerified is ${Math.round(ageDays)} days old; re-check the services`,
+    );
   for (const issue of all) console.error(`  ✗ ${issue.file}: ${issue.message}`);
   if (all.length) failed = true;
 }

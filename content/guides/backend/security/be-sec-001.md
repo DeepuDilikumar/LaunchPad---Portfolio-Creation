@@ -48,5 +48,6 @@ self_check:
 sources:
   - "https://owasp.org/API-Security/editions/2023/en/0xa1-broken-object-level-authorization/"
   - "https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html"
+concepts: [authentication]
 reviewed: false
 ---

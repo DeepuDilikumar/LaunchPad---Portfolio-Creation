@@ -12,7 +12,7 @@ Playwright (PDFs) · pdf-lib (stamping) · Vercel.
 ```bash
 pnpm install
 pnpm dev            # http://localhost:3000, drafts visible (see .env.development)
-pnpm test           # 41 tests: webhook idempotency, stamping, download limits, pricing, quiz, content gates
+pnpm test           # 58 tests: webhook idempotency, stamping, download limits, pricing, quiz, content gates, roadmap
 ```
 
 With no secrets set, everything still runs: an in-memory database, local file storage in
@@ -87,6 +87,22 @@ emailed PDF report and an opt-in 3-email sequence.
 | ------------------------------------------------------------------------------ |
 | <img src="docs/screenshots/drill-01-login.webp" width="240" alt="Drill login"> |
 
+### 6. Free System Design roadmap (basics → guide)
+
+The free layer under the guides: every topic in order, a "why next" phrase between sections, and
+the interviewer's follow-ups on each topic. Plan, research and more screenshots:
+[docs/roadmap-plan.md](docs/roadmap-plan.md).
+
+<img src="docs/screenshots/roadmap-01-map-desktop.webp" width="820" alt="System Design roadmap on desktop">
+
+| Topic drawer: what the interviewer asks next                                                | The same idea on AWS / Google Cloud / Azure                                                |
+| ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| <img src="docs/screenshots/roadmap-03-drawer-they-ask.webp" width="400" alt="They ask tab"> | <img src="docs/screenshots/roadmap-04-drawer-cloud.webp" width="400" alt="Real world tab"> |
+
+| On a phone                                                                                  | Topic as a bottom sheet                                                                       |
+| ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| <img src="docs/screenshots/roadmap-05-map-phone.webp" width="240" alt="Roadmap on a phone"> | <img src="docs/screenshots/roadmap-06-sheet-phone.webp" width="240" alt="Topic bottom sheet"> |
+
 ## Content pipeline
 
 Guides are Markdown with YAML frontmatter in `content/guides/<guide>/<module>/<id>.md` (schema in
@@ -104,6 +120,10 @@ Guides are Markdown with YAML frontmatter in `content/guides/<guide>/<module>/<i
 `NEXT_PUBLIC_CONTENT_PREVIEW=1` shows drafts on the site behind a red banner (on by default in
 `pnpm dev`). Production never shows drafts, and a guide with no reviewed questions shows
 "In final review. Not on sale yet." instead of a buy button.
+
+The roadmap follows the same rule: topics live in `content/roadmap/system-design/` and only
+`reviewed: true` topics get a page; `pnpm content:validate` and `pnpm content:links` cover them
+and `content/roadmap/cloud-map.json`. See [docs/roadmap-plan.md](docs/roadmap-plan.md).
 
 ## How a sale works
 
@@ -146,12 +166,13 @@ pnpm screenshots http://localhost:3300       # README journey screenshots (needs
 
 ## Phase status
 
-| Phase               | State                                                                                                                                                                                                                                                         |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 0 Setup             | Done: scaffold, lint/format/typecheck/test/build in CI, `config/site.ts`, reference capture script (ran OK; PNGs are git-ignored)                                                                                                                             |
-| 1 Content engine    | Engine done (schema, gates, PDF A4 + phone, previews, stats). **24 of 100 questions drafted** (2 per module), all `reviewed: false`. Your review and the remaining 76 drafts are next.                                                                        |
-| 2 Storefront        | Done: every route in the spec, Razorpay order + checkout + idempotent webhook → stamp → email, signed downloads, GA4 + Pixel + CAPI with shared event id, preview images, JSON-LD, legal pages                                                                |
-| 3 Readiness Check   | Done: 8-question check from guide content, per-area score without email, share image, PDF report by email, opt-in 3-email sequence, one-click unsubscribe, `/learn` with 4 articles                                                                           |
-| 4 Launch            | Done in code: launch price window, UTM capture on orders/leads, weekly report, preflight. Needs live keys and your decisions.                                                                                                                                 |
-| 5 Second guide etc. | Partly: bundle/waitlist, review flow + moderation, referral codes, changelog/errata are built. The System Design guide content is not.                                                                                                                        |
-| 6 AI drill          | Built behind `NEXT_PUBLIC_FEATURE_DRILL=1`: magic-link login for buyers, follow-ups grounded in each question's ladder and rejection signals, score + strong answer, daily cap, monthly budget, per-session cost logging. Off until ~100 sales, per the plan. |
+| Phase               | State                                                                                                                                                                                                                                                                                          |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0 Setup             | Done: scaffold, lint/format/typecheck/test/build in CI, `config/site.ts`, reference capture script (ran OK; PNGs are git-ignored)                                                                                                                                                              |
+| 1 Content engine    | Engine done (schema, gates, PDF A4 + phone, previews, stats). **24 of 100 questions drafted** (2 per module), all `reviewed: false`. Your review and the remaining 76 drafts are next.                                                                                                         |
+| 2 Storefront        | Done: every route in the spec, Razorpay order + checkout + idempotent webhook → stamp → email, signed downloads, GA4 + Pixel + CAPI with shared event id, preview images, JSON-LD, legal pages                                                                                                 |
+| 3 Readiness Check   | Done: 8-question check from guide content, per-area score without email, share image, PDF report by email, opt-in 3-email sequence, one-click unsubscribe, `/learn` with 4 articles                                                                                                            |
+| 4 Launch            | Done in code: launch price window, UTM capture on orders/leads, weekly report, preflight. Needs live keys and your decisions.                                                                                                                                                                  |
+| 5 Second guide etc. | Partly: bundle/waitlist, review flow + moderation, referral codes, changelog/errata are built. The System Design guide content is not.                                                                                                                                                         |
+| 6 AI drill          | Built behind `NEXT_PUBLIC_FEATURE_DRILL=1`: magic-link login for buyers, follow-ups grounded in each question's ladder and rejection signals, score + strong answer, daily cap, monthly budget, per-session cost logging. Off until ~100 sales, per the plan.                                  |
+| Roadmap (free)      | Built: map with why-next phrases, drawer (Explain / They ask / Real world / Self-check), progress without login, Minimum/Everything path, 7/14/30-day plan, share card, progress-by-email link, concept chips in the guide. **13 of 62 topics have interview content**, all `reviewed: false`. |

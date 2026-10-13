@@ -16,7 +16,11 @@ export function Logo() {
   );
 }
 
-export function SiteHeader({ active }: { active?: "guides" | "check" | "learn" | "about" }) {
+export function SiteHeader({
+  active,
+}: {
+  active?: "guides" | "roadmap" | "check" | "learn" | "about";
+}) {
   const flagship = getProduct("backend")!;
   const onSale = productOnSale("backend");
   const link = (key: typeof active, href: string, label: string) => (
@@ -36,6 +40,7 @@ export function SiteHeader({ active }: { active?: "guides" | "check" | "learn" |
           className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[15px] font-medium"
         >
           {link("guides", "/guides", "Guides")}
+          {link("roadmap", "/roadmap/system-design", "Roadmap")}
           {link("check", "/check", "Free check")}
           {link("learn", "/learn", "Learn")}
           {link("about", "/about", "About")}

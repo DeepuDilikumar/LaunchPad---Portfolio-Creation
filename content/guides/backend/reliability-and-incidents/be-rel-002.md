@@ -49,5 +49,6 @@ self_check:
 sources:
   - "https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/"
   - "https://sre.google/sre-book/handling-overload/"
+concepts: [back-pressure, idempotency]
 reviewed: false
 ---

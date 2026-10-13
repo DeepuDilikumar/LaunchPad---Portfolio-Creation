@@ -53,5 +53,6 @@ self_check:
 sources:
   - "https://microservices.io/patterns/data/transactional-outbox.html"
   - "https://debezium.io/documentation/reference/stable/transformations/outbox-event-router.html"
+concepts: [event-driven-jobs, message-queues, eventual-consistency]
 reviewed: false
 ---

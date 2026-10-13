@@ -6,6 +6,7 @@ import { readStatsFile } from "@/lib/content/stats";
 import { listArticles } from "@/lib/learn";
 import { visibleProducts } from "@/lib/catalog";
 import { absoluteUrl } from "@/lib/seo";
+import { buildRoadmapView } from "@/lib/roadmap/view";
 
 /** Real lastmod dates: from the changelog, article frontmatter, the stats build and the legal pages. */
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -23,6 +24,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
         lastModified: (guides.includes(p.slug) && lastUpdated(p.slug)) || contentDate,
       })),
     { url: absoluteUrl("/check"), lastModified: contentDate },
+    { url: absoluteUrl("/roadmap/system-design"), lastModified: contentDate },
+    ...buildRoadmapView()
+      .topics.filter((t) => t.visible)
+      .map((t) => ({ url: absoluteUrl(t.href), lastModified: contentDate })),
     { url: absoluteUrl("/learn"), lastModified: articles[0]?.updated ?? contentDate },
     ...articles.map((a) => ({ url: absoluteUrl(`/learn/${a.slug}`), lastModified: a.updated })),
     { url: absoluteUrl("/about"), lastModified: LEGAL_UPDATED },

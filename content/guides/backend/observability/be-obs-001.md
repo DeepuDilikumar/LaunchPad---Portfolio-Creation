@@ -47,5 +47,6 @@ self_check:
 sources:
   - "https://sre.google/sre-book/service-level-objectives/"
   - "https://sre.google/sre-book/monitoring-distributed-systems/"
+concepts: [metrics-slos, logs]
 reviewed: false
 ---

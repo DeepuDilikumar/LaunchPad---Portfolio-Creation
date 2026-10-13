@@ -62,5 +62,6 @@ self_check:
 sources:
   - "https://sre.google/sre-book/monitoring-distributed-systems/"
   - "https://www.brendangregg.com/usemethod.html"
+concepts: [tail-latency]
 reviewed: false
 ---

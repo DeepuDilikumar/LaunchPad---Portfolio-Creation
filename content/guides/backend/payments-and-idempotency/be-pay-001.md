@@ -66,5 +66,6 @@ self_check:
 sources:
   - "https://docs.stripe.com/api/idempotent_requests"
   - "https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/"
+concepts: [idempotency, http]
 reviewed: false
 ---

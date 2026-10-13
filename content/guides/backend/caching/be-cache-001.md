@@ -54,5 +54,6 @@ self_check:
 sources:
   - "https://en.wikipedia.org/wiki/Cache_stampede"
   - "https://aws.amazon.com/builders-library/caching-challenges-and-strategies/"
+concepts: [cache-stampede, cache-aside]
 reviewed: false
 ---

@@ -55,5 +55,6 @@ self_check:
 sources:
   - "https://www.postgresql.org/docs/current/transaction-iso.html"
   - "https://www.postgresql.org/docs/current/explicit-locking.html"
+concepts: [strong-consistency]
 reviewed: false
 ---

@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { site } from "@/config/site";
 import { QuizReportEmail } from "@/emails/QuizReportEmail";
+import { SimpleEmail } from "@/emails/SimpleEmail";
 import { getStore } from "@/lib/db";
 import { renderEmail } from "@/lib/email/render";
 import { getMailer } from "@/lib/email/send";
@@ -16,8 +17,9 @@ export const dynamic = "force-dynamic";
 
 interface Body {
   email?: string;
-  source?: "check" | "waitlist";
+  source?: "check" | "waitlist" | "roadmap";
   product?: string;
+  progress?: string;
   consent?: boolean;
   answers?: Record<string, string>;
   warmup?: Record<string, string>;
@@ -33,6 +35,41 @@ export async function POST(req: Request) {
   if (!isEmail(email)) return bad("Please enter a valid email.");
   const store = getStore();
   const utm = parseUtmCookie((await cookies()).get(UTM_COOKIE)?.value);
+
+  if (body?.source === "roadmap") {
+    // The link is built here from our own origin; only the encoded progress comes from the client.
+    const progress = (body.progress ?? "").slice(0, 8000);
+    if (!/^[A-Za-z0-9_-]+$/.test(progress)) return bad("Bad progress data.");
+    const link = `${site.url}/roadmap/system-design#p=${progress}`;
+    await store.upsertLead({
+      email,
+      source: "roadmap",
+      consent_marketing: false,
+      segment: { roadmap: "system-design" },
+      utm,
+    });
+    const { html, text } = await renderEmail(
+      SimpleEmail({
+        preview: "Your System Design roadmap progress",
+        heading: "Your roadmap progress, on any device",
+        paragraphs: [
+          "Open this link on your phone or laptop and your progress is merged in. It doesn't expire.",
+        ],
+        cta: { label: "Open my roadmap", url: link },
+      }),
+    );
+    await getMailer().send({
+      to: email,
+      subject: "Your System Design roadmap progress",
+      html,
+      text,
+      tags: [{ name: "type", value: "roadmap-progress" }],
+    });
+    return json({
+      ok: true,
+      message: "Sent. Open the link on any device to pick up where you left off.",
+    });
+  }
 
   if (body?.source === "waitlist") {
     const product = body.product?.slice(0, 40) ?? "unknown";
