@@ -120,8 +120,8 @@ old. `pnpm content:links` checks every cloud docs URL.
 
 ## Next steps
 
-1. Write interview content (free question, follow-ups, strong moves, self-check) for the 49
-   topics that only have a summary today; 13 are done.
+1. ~~Write interview content for every topic.~~ Done: all 62 topics have a free question with
+   follow-ups and strong moves, a locked question and a self-check.
 2. Author review of all 62 topics, then set `reviewed: true`. Until then production shows the map
    but no topic pages.
 3. Recheck `cloud-map.json` every quarter (validator warns after 120 days).
