@@ -1,0 +1,200 @@
+/* Print layout for the PDF editions. Page size and margins are set per edition by build-pdf. */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--card);
+}
+body {
+  font-family: var(--font-body);
+  color: var(--ink);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.page {
+  break-after: page;
+  position: relative;
+}
+.page:last-child {
+  break-after: auto;
+}
+.qp {
+  background: transparent;
+}
+.qp-rung,
+.qp-strong,
+.qp-move,
+.qp-signals,
+.qp-check {
+  break-inside: avoid;
+}
+.qp-title {
+  break-after: avoid;
+}
+
+.cover {
+  min-height: var(--page-h);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 8mm 0;
+  background-image:
+    linear-gradient(rgba(35, 64, 176, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(35, 64, 176, 0.07) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 20px;
+}
+.brand-mark {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--ink);
+  color: var(--marker);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+}
+.cover h1 {
+  font-family: var(--font-head);
+  font-size: 54px;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  font-weight: 800;
+  margin: 0 0 16px;
+}
+.marker {
+  background: linear-gradient(
+    transparent 58%,
+    var(--marker) 58%,
+    var(--marker) 92%,
+    transparent 92%
+  );
+  padding: 0 4px;
+}
+.cover p {
+  font-size: 18px;
+  color: var(--body);
+  max-width: 520px;
+  margin: 0;
+}
+.cover .facts {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+.chip {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  background: var(--card);
+  border: 1.5px solid var(--ink);
+}
+.cover .note {
+  font-family: var(--font-hand);
+  font-size: 26px;
+  color: var(--red);
+  transform: rotate(-2deg);
+  display: inline-block;
+}
+.mono {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.prose h2 {
+  font-family: var(--font-head);
+  font-size: 30px;
+  letter-spacing: -0.03em;
+  font-weight: 800;
+  margin: 0 0 14px;
+}
+.prose p,
+.prose li {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+.prose ol {
+  padding-left: 20px;
+}
+
+.toc-module {
+  break-inside: avoid;
+  margin-bottom: 14px;
+}
+.toc-module h3 {
+  font-family: var(--font-head);
+  font-size: 18px;
+  margin: 0 0 6px;
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+}
+.toc-module h3 span {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--faint);
+}
+.toc-row {
+  display: flex;
+  gap: 10px;
+  font-size: 13.5px;
+  padding: 3px 0;
+  border-top: 1px dashed var(--rule);
+}
+.toc-row .mono {
+  min-width: 52px;
+}
+
+.module-divider {
+  min-height: calc(var(--page-h) * 0.6);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
+.module-divider .big {
+  font-family: var(--font-head);
+  font-size: 72px;
+  font-weight: 800;
+  color: var(--rule);
+  line-height: 1;
+}
+.module-divider h2 {
+  font-family: var(--font-head);
+  font-size: 40px;
+  letter-spacing: -0.03em;
+  margin: 0;
+}
+
+/* Phone edition */
+.edition-phone .cover h1 {
+  font-size: 40px;
+}
+.edition-phone .prose p,
+.edition-phone .prose li {
+  font-size: 18px;
+}
+.edition-phone .toc-row {
+  font-size: 16px;
+}
+.edition-phone .module-divider .big {
+  font-size: 56px;
+}
+.edition-phone .module-divider h2 {
+  font-size: 32px;
+}

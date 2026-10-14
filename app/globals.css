@@ -1,0 +1,301 @@
+@import "tailwindcss";
+@import "../styles/tokens.css";
+@import "../styles/question-page.css";
+
+/* On the site, point the shared tokens at the next/font families. */
+:root {
+  --font-head: var(--nf-head), "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--nf-sans), "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--nf-mono), "IBM Plex Mono", ui-monospace, monospace;
+  --font-hand: var(--nf-hand), "Caveat", cursive;
+  --faint: #6b6455;
+  --fainter: #6b6455;
+}
+
+@theme {
+  --color-paper: #f5f1e6;
+  --color-card: #fffefa;
+  --color-ink: #1c1a16;
+  --color-ink-2: #2b2820;
+  --color-body: #3f3a30;
+  --color-muted: #5c5648;
+  --color-faint: #6b6455;
+  --color-rule: #dcd4c2;
+  --color-rule-2: #e2daca;
+  --color-chip: #cfc6b2;
+  --color-blue: #2340b0;
+  --color-blue-dark: #16297a;
+  --color-blue-wash: #e6ecfb;
+  --color-marker: #ffe36e;
+  --color-red: #c2412d;
+  --color-red-dark: #9a2f1f;
+  --color-red-wash: #fbe6e1;
+  --color-green: #2e7a4b;
+  --color-green-dark: #1f5c37;
+  --color-green-wash: #e3f1e7;
+  --color-amber-wash: #fff4c7;
+  --color-amber-dark: #7a5a00;
+  --color-note: #fff8d6;
+  --color-term: #14130f;
+
+  --font-head: var(--nf-head), "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--nf-sans), "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--nf-mono), "IBM Plex Mono", ui-monospace, monospace;
+  --font-hand: var(--nf-hand), "Caveat", cursive;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(rgba(35, 64, 176, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(35, 64, 176, 0.07) 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+@layer base {
+  a {
+    color: var(--blue);
+  }
+  a:hover {
+    color: var(--blue-dark);
+  }
+}
+
+:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 2px;
+}
+
+@layer components {
+  .marker {
+    background: linear-gradient(
+      transparent 58%,
+      var(--marker) 58%,
+      var(--marker) 92%,
+      transparent 92%
+    );
+    padding: 0 4px;
+  }
+  .hand {
+    font-family: var(--font-hand);
+    display: inline-block;
+  }
+  .label {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .keycap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 52px;
+    padding: 14px 22px;
+    border-radius: 12px;
+    background: var(--blue);
+    color: #fff;
+    font-weight: 600;
+    font-size: 17px;
+    text-decoration: none;
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.35);
+    transition:
+      transform 80ms ease,
+      box-shadow 80ms ease;
+    cursor: pointer;
+    border: none;
+  }
+  .keycap:hover {
+    color: #fff;
+    background: var(--blue-dark);
+  }
+  .keycap:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+  }
+  .keycap:disabled {
+    background: var(--rule);
+    color: var(--body);
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+  .keycap-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    padding: 14px 22px;
+    border-radius: 12px;
+    background: var(--card);
+    color: var(--ink);
+    border: 1.5px solid var(--ink);
+    font-weight: 600;
+    font-size: 16px;
+    text-decoration: none;
+    box-shadow: 0 4px 0 var(--ink);
+    cursor: pointer;
+  }
+  .keycap-ghost:hover {
+    color: var(--ink);
+  }
+  .keycap-ghost:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 var(--ink);
+  }
+  .card-ink {
+    background: var(--card);
+    border: 1.5px solid var(--ink);
+    border-radius: 16px;
+    box-shadow: 6px 6px 0 var(--ink);
+  }
+  .paper-sheet {
+    background: var(--card);
+    border: 1px solid var(--rule-2);
+    border-radius: 4px;
+    box-shadow:
+      0 1px 0 var(--rule),
+      0 18px 40px rgba(60, 48, 20, 0.16);
+  }
+  .chip {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    background: var(--card);
+    border: 1.5px solid var(--ink);
+  }
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .tag-failure {
+    background: var(--red-wash);
+    color: var(--red-dark);
+  }
+  .tag-tradeoff {
+    background: var(--blue-wash);
+    color: var(--blue);
+  }
+  .tag-ownership {
+    background: var(--amber-wash);
+    color: var(--amber-dark);
+  }
+  .tag-measurement {
+    background: var(--green-wash);
+    color: var(--green-dark);
+  }
+  .tag-technical {
+    background: #ece8f7;
+    color: #4a3a8c;
+  }
+  .qc {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 5px;
+    background: var(--blue-wash);
+    color: var(--blue);
+    white-space: nowrap;
+    line-height: 1.4;
+  }
+  .stamp {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--red);
+    border: 2px solid var(--red);
+    border-radius: 6px;
+    padding: 4px 8px;
+    transform: rotate(-4deg);
+    display: inline-block;
+  }
+  .h-display {
+    font-family: var(--font-head);
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1.03;
+  }
+  .h-section {
+    font-family: var(--font-head);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.08;
+    font-size: clamp(30px, 3.6vw, 44px);
+  }
+  .prose-legal h2 {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 22px;
+    margin: 28px 0 8px;
+  }
+  .prose-legal p,
+  .prose-legal li {
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--ink-2);
+  }
+  .prose-legal ul {
+    padding-left: 20px;
+    list-style: disc;
+  }
+  .prose-legal p {
+    margin: 0 0 12px;
+  }
+  .prose-article h2 {
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: 26px;
+    letter-spacing: -0.02em;
+    margin: 32px 0 10px;
+  }
+  .prose-article p,
+  .prose-article li {
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--ink-2);
+  }
+  .prose-article p {
+    margin: 0 0 14px;
+  }
+  .prose-article ul,
+  .prose-article ol {
+    padding-left: 22px;
+    margin: 0 0 14px;
+  }
+  .prose-article ul {
+    list-style: disc;
+  }
+  .prose-article ol {
+    list-style: decimal;
+  }
+  .prose-article code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    background: var(--blue-wash);
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  * {
+    transition: none !important;
+  }
+}

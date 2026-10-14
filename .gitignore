@@ -1,0 +1,14 @@
+node_modules
+.next
+out
+dist
+*.tsbuildinfo
+next-env.d.ts
+.env
+.env.local
+.env*.local
+.vercel
+.data
+# Competitor screenshots stay local; see reference/README.md
+reference/helpmeswitch/*.png
+public/previews/*-drafts/

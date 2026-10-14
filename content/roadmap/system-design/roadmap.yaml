@@ -1,0 +1,105 @@
+# The System Design roadmap. Sections run top to bottom; each `why` is the problem that leads
+# from the previous section into this one. Topic coverage follows the open-source System Design
+# Primer (CC BY 4.0); every word of explanation is our own.
+slug: system-design
+title: System Design
+subtitle: from first principles · every step answers the question before it
+credit: Topic coverage follows the open-source System Design Primer (CC BY 4.0). All explanations and questions are our own.
+sections:
+  - id: start
+    title: Start here
+    minimum: true
+    right: [design-round, clarify-requirements]
+  - id: numbers
+    title: Numbers that matter
+    why: "first: how big is this thing?"
+    minimum: true
+    left: [latency-vs-throughput, tail-latency]
+    right: [back-of-envelope, latency-numbers]
+  - id: scaling
+    title: Scaling out
+    why: "one server is full. now what?"
+    minimum: true
+    right: [performance-vs-scalability, scale-up-vs-out, stateless-services]
+  - id: availability-vs-consistency
+    title: Availability vs consistency
+    why: "more servers = more copies. can they disagree?"
+    minimum: true
+    left:
+      - group: "CAP, in one line"
+        lines: ["AP · stays up, may be stale", "CP · stays correct, may refuse"]
+        topics: [cap-pacelc]
+    right: [weak-consistency, eventual-consistency, strong-consistency]
+  - id: availability-patterns
+    title: Availability patterns
+    why: "a server will die. how do we stay up?"
+    minimum: false
+    left:
+      - group: "Two ways to survive a crash"
+        lines: ["Active–active · Active–passive", "Leader–follower · Multi-leader"]
+        topics: [failover, replication-patterns]
+    right:
+      - group: "Nines, in minutes"
+        lines: ["99.9%  → 8h 46m down a year", "99.99% → 52m 36s a year"]
+        topics: [availability-maths]
+  - id: dns
+    title: DNS
+    why: "users type a name. how do they find us?"
+    minimum: false
+    left: [dns-records]
+    right: [dns-lookup, dns-ttl]
+  - id: cdn
+    title: CDN
+    why: "far-away users are slow. can we move closer?"
+    minimum: false
+    left: [cdn-what]
+    right: [pull-cdn, push-cdn]
+  - id: load-balancers
+    title: Load balancers
+    why: "many servers. who gets this request?"
+    minimum: true
+    left: [horizontal-scaling]
+    right: [lb-vs-reverse-proxy, lb-algorithms, l4-vs-l7, health-checks]
+  - id: application-layer
+    title: Application layer
+    why: "one big app is hard to change. split it?"
+    minimum: false
+    left: [microservices, service-discovery]
+    right: [api-gateway]
+  - id: databases
+    title: Databases
+    why: "where does the data actually live?"
+    minimum: true
+    left:
+      - group: "NoSQL, by shape"
+        lines: []
+        topics: [key-value, document-store, wide-column, graph-db]
+    right: [sql-vs-nosql, read-replicas, sharding, federation, denormalisation]
+  - id: caching
+    title: Caching
+    why: "okay, can we make it faster?"
+    minimum: true
+    left: [cache-aside, write-through, write-behind, refresh-ahead]
+    right: [where-to-cache, cache-invalidation, cache-stampede]
+  - id: async
+    title: Doing work later
+    why: "some work shouldn't make the user wait."
+    minimum: true
+    left: [message-queues, task-queues, back-pressure]
+    right: [event-driven-jobs, scheduled-jobs, returning-results]
+  - id: communication
+    title: Talking between services
+    why: "how do the pieces talk to each other?"
+    minimum: true
+    left: [idempotency]
+    right: [http, tcp-vs-udp, rpc-vs-rest]
+  - id: security
+    title: Keeping it safe
+    why: "who is allowed to do what?"
+    minimum: false
+    right: [authentication, rate-limiting, encryption-in-transit]
+  - id: monitoring
+    title: Knowing it's broken
+    why: "it's live. how do we know it's healthy?"
+    minimum: false
+    right: [metrics-slos, logs, tracing]

@@ -1,0 +1,35 @@
+slug: backend
+title: Backend Switch Guide
+idPrefix: be
+version: 1.0.0
+modules:
+  - { slug: api-design, number: 1, title: API design }
+  - { slug: databases-and-transactions, number: 2, title: Databases and transactions }
+  - { slug: caching, number: 3, title: Caching }
+  - { slug: queues-and-async, number: 4, title: Queues and async }
+  - { slug: consistency-across-services, number: 5, title: Consistency across services }
+  - { slug: reliability-and-incidents, number: 6, title: Reliability and incidents }
+  - { slug: observability, number: 7, title: Observability }
+  - { slug: security, number: 8, title: Security }
+  - { slug: performance, number: 9, title: Performance }
+  - { slug: payments-and-idempotency, number: 10, title: Payments and idempotency }
+  - { slug: ownership-stories, number: 11, title: Ownership stories }
+  - { slug: design-shorts, number: 12, title: Design shorts }
+samples:
+  - be-pay-001
+  - be-perf-001
+  - be-queue-001
+  - be-db-002
+demo:
+  question: be-pay-001
+  followUpIndex: 1
+  options:
+    - text: "The client retried after a timeout, so the charge ran twice. I'd cap the retries."
+      grade: weak
+      verdict: "weak: true, but it treats the symptom, not the cause"
+    - text: "Look in the payment logs for two successful charges on the same order ID."
+      grade: okay
+      verdict: "okay: a good first move. Now name the cause."
+    - text: "A retry reached the gateway after the first call had already succeeded. I'd check whether we send an idempotency key."
+      grade: strong
+      verdict: "strong: names the gap and the fix"

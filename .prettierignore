@@ -1,0 +1,10 @@
+.next
+node_modules
+pnpm-lock.yaml
+reference
+dist
+public/previews
+content/stats.json
+.claude
+docs/mockups
+.mcp.json

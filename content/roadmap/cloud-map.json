@@ -1,0 +1,405 @@
+{
+  "lastVerified": "2026-10-13",
+  "note": "Service names and retirement dates from the October 2026 research brief. Re-check each provider's product page every quarter; CI checks the links.",
+  "concepts": {
+    "dns": {
+      "aws": {
+        "service": "Route 53",
+        "use_when": "Managed DNS with health-checked routing",
+        "docUrl": "https://aws.amazon.com/route53/",
+        "status": "active"
+      },
+      "gcp": {
+        "service": "Cloud DNS",
+        "use_when": "Managed public and private zones",
+        "docUrl": "https://cloud.google.com/dns",
+        "status": "active"
+      },
+      "azure": {
+        "service": "Azure DNS",
+        "use_when": "Host zones next to your Azure resources",
+        "docUrl": "https://azure.microsoft.com/en-us/products/dns",
+        "status": "active"
+      },
+      "gotcha": "DNS failover is only as fast as the TTL clients respect."
+    },
+    "cdn": {
+      "aws": {
+        "service": "CloudFront",
+        "use_when": "Global edge caching for static and dynamic content",
+        "docUrl": "https://aws.amazon.com/cloudfront/",
+        "status": "active"
+      },
+      "gcp": {
+        "service": "Cloud CDN",
+        "use_when": "Caching on Google's edge in front of a load balancer",
+        "docUrl": "https://cloud.google.com/cdn",
+        "status": "active"
+      },
+      "azure": {
+        "service": "Azure Front Door",
+        "use_when": "Edge caching plus global L7 routing",
+        "docUrl": "https://azure.microsoft.com/en-us/products/frontdoor",
+        "status": "active"
+      },
+      "gotcha": "Azure CDN (classic) and Front Door (classic) are retiring; new builds use Front Door Standard/Premium."
+    },
+    "load-balancer": {
+      "aws": {
+        "service": "Elastic Load Balancing",
+        "use_when": "ALB for L7 HTTP routing, NLB for L4 TCP/UDP",
+        "docUrl": "https://aws.amazon.com/elasticloadbalancing/",
+        "status": "active"
+      },
+      "gcp": {
+        "service": "Cloud Load Balancing",
+        "use_when": "Application LB (L7) or Network LB (L4)",
+        "docUrl": "https://cloud.google.com/load-balancing",
+        "status": "active"
+      },
+      "azure": {
+        "service": "Load Balancer / Application Gateway",
+        "use_when": "Load Balancer for L4, Application Gateway for L7",
+        "docUrl": "https://azure.microsoft.com/en-us/products/load-balancer",
+        "status": "active"
+      },
+      "gotcha": "Say L4 or L7 first, then name the product."
+    },
+    "api-gateway": {
+      "aws": {
+        "service": "Amazon API Gateway",
+        "use_when": "Managed front door with auth and throttling",
+        "docUrl": "https://aws.amazon.com/api-gateway/",
+        "status": "active"
+      },
+      "gcp": {
+        "service": "API Gateway / Apigee",
+        "use_when": "API Gateway for simple cases, Apigee for full API management",
+        "docUrl": "https://cloud.google.com/api-gateway",
+        "status": "active"
+      },
+      "azure": {
+        "service": "API Management",
+        "use_when": "Gateway, policies and developer portal",
+        "docUrl": "https://azure.microsoft.com/en-us/products/api-management",
+        "status": "active"
+      },
+      "gotcha": "Keep business logic out of the gateway."
+    },
+    "service-discovery": {
+      "aws": {
+        "service": "Cloud Map",
+        "use_when": "Registry of service instances by name",
+        "docUrl": "https://aws.amazon.com/cloud-map/",
+        "status": "active"
+      },
+      "gcp": {
+        "service": "Service Directory",
+        "use_when": "Registry for services across environments",
+        "docUrl": "https://cloud.google.com/service-directory",
+        "status": "active"
+      },
+      "azure": {
+        "service": "AKS service DNS",
+        "use_when": "Kubernetes services handle discovery inside a cluster",
+        "docUrl": "https://azure.microsoft.com/en-us/products/kubernetes-service",
+        "status": "active"
+      },
+      "gotcha": "On Kubernetes, the platform's own DNS is usually enough."
+    },
+    "cache": {
+      "aws": {
+        "service": "ElastiCache",
+        "use_when": "Valkey / Redis OSS / Memcached; MemoryDB if it must be durable",
+        "docUrl": "https://aws.amazon.com/elasticache/",
+        "status": "active"
+      },
+      "gcp": {
+        "service": "Memorystore",
+        "use_when": "Managed Valkey, Redis or Memcached",
+        "docUrl": "https://cloud.google.com/memorystore",
+        "status": "active"
+      },
+      "azure": {
+        "service": "Azure Managed Redis",
+        "use_when": "For new builds; Azure Cache for Redis tiers are retiring",
+        "docUrl": "https://azure.microsoft.com/en-us/products/managed-redis",
+        "status": "active"
+      },
+      "gotcha": "A managed cache is still one more thing that fails: say what the database sees when it does."
+    },
+    "queue": {
+      "aws": {
+        "service": "SQS",
+        "use_when": "Simple at-least-once queue; FIFO when order matters",
+        "docUrl": "https://aws.amazon.com/sqs/",
+        "status": "active"
+      },
+      "gcp": {
+        "service": "Cloud Tasks / Pub/Sub",
+        "use_when": "Cloud Tasks for targeted jobs, Pub/Sub for fan-out",
+        "docUrl": "https://cloud.google.com/tasks",
+        "status": "active"
+      },
+      "azure": {
+        "service": "Service Bus queues",
+        "use_when": "Queues with sessions and dead-lettering",
+        "docUrl": "https://azure.microsoft.com/en-us/products/service-bus",
+        "status": "active"
+      },
+      "gotcha": "SQS standard is at-least-once: design idempotent consumers."
+    },
+    "pubsub": {
+      "aws": {
+        "service": "SNS / EventBridge",
+        "use_when": "SNS for fan-out, EventBridge for event routing",
+        "docUrl": "https://aws.amazon.com/eventbridge/",
+        "status": "active"
+      },
+      "gcp": {
+        "service": "Pub/Sub / Eventarc",
+        "use_when": "Topics and subscriptions; Eventarc to route events",
+        "docUrl": "https://cloud.google.com/pubsub",
+        "status": "active"
+      },
+      "azure": {
+        "service": "Event Grid / Service Bus topics",
+        "use_when": "Event Grid for events, Service Bus topics for messages",
+        "docUrl": "https://azure.microsoft.com/en-us/products/event-grid",
+        "status": "active"
+      },
+      "gotcha": "Every subscriber must handle duplicates and out-of-order events."
+    },
+    "background-jobs": {
+      "aws": {
+        "service": "Lambda + SQS, Step Functions",
+        "use_when": "Functions for short jobs, Step Functions for workflows",
+        "docUrl": "https://aws.amazon.com/step-functions/",
+        "status": "active"
+      },
+      "gcp": {
+        "service": "Cloud Run jobs / Cloud Scheduler",
+        "use_when": "Container jobs on a schedule or trigger",
+        "docUrl": "https://cloud.google.com/run",
+        "status": "active"
+      },
+      "azure": {
+        "service": "Azure Functions / Container Apps jobs",
+        "use_when": "Functions for short jobs, Container Apps jobs for longer ones",
+        "docUrl": "https://azure.microsoft.com/en-us/products/functions",
+        "status": "active"
+      },
+      "gotcha": "Scheduled jobs must be safe to run twice."
+    },
+    "sql": {
+      "aws": {
+        "service": "RDS / Aurora",
+        "use_when": "Managed PostgreSQL and MySQL; Aurora for higher scale",
+        "docUrl": "https://aws.amazon.com/rds/",
+        "status": "active"
+      },
+      "gcp": {
+        "service": "Cloud SQL / AlloyDB",
+        "use_when": "Managed PostgreSQL and MySQL; AlloyDB for heavy PostgreSQL",
+        "docUrl": "https://cloud.google.com/sql",
+        "status": "active"
+      },
+      "azure": {
+        "service": "Azure Database for PostgreSQL",
+        "use_when": "Managed PostgreSQL (also Azure SQL Database)",
+        "docUrl": "https://azure.microsoft.com/en-us/products/postgresql",
+        "status": "active"
+      },
+      "gotcha": "Read replicas are asynchronous: expect lag."
+    },
+    "nosql": {
+      "aws": {
+        "service": "DynamoDB",
+        "use_when": "Key-value and document at any scale, single-digit ms",
+        "docUrl": "https://aws.amazon.com/dynamodb/",
+        "status": "active"
+      },
+      "gcp": {
+        "service": "Firestore",
+        "use_when": "Document database with real-time listeners",
+        "docUrl": "https://cloud.google.com/firestore",
+        "status": "active"
+      },
+      "azure": {
+        "service": "Cosmos DB",
+        "use_when": "Multi-model, globally distributed",
+        "docUrl": "https://azure.microsoft.com/en-us/products/cosmos-db",
+        "status": "active"
+      },
+      "gotcha": "Design keys from your access patterns before you pick the product."
+    },
+    "wide-column": {
+      "aws": {
+        "service": "Keyspaces",
+        "use_when": "Managed Cassandra-compatible",
+        "docUrl": "https://aws.amazon.com/keyspaces/",
+        "status": "active"
+      },
+      "gcp": {
+        "service": "Bigtable",
+        "use_when": "Huge write volumes, time series",
+        "docUrl": "https://cloud.google.com/bigtable",
+        "status": "active"
+      },
+      "azure": {
+        "service": "Cosmos DB for Apache Cassandra",
+        "use_when": "Cassandra API on Cosmos DB",
+        "docUrl": "https://azure.microsoft.com/en-us/products/cosmos-db",
+        "status": "active"
+      },
+      "gotcha": "Queries must follow the partition key."
+    },
+    "graph": {
+      "aws": {
+        "service": "Neptune",
+        "use_when": "Managed graph database",
+        "docUrl": "https://aws.amazon.com/neptune/",
+        "status": "active"
+      },
+      "gcp": {
+        "service": "Spanner Graph",
+        "use_when": "Graph queries on Spanner",
+        "docUrl": "https://cloud.google.com/spanner",
+        "status": "active"
+      },
+      "azure": {
+        "service": "Cosmos DB for Apache Gremlin",
+        "use_when": "Graph API on Cosmos DB",
+        "docUrl": "https://azure.microsoft.com/en-us/products/cosmos-db",
+        "status": "active"
+      },
+      "gotcha": "Graph stores rarely replace your main database."
+    },
+    "sharding": {
+      "aws": {
+        "service": "DynamoDB partitions",
+        "use_when": "Partitioning built in; you choose the key",
+        "docUrl": "https://aws.amazon.com/dynamodb/",
+        "status": "active"
+      },
+      "gcp": {
+        "service": "Spanner",
+        "use_when": "Horizontally scaled SQL with strong consistency",
+        "docUrl": "https://cloud.google.com/spanner",
+        "status": "active"
+      },
+      "azure": {
+        "service": "Cosmos DB partitioning",
+        "use_when": "Partition key chosen per container",
+        "docUrl": "https://azure.microsoft.com/en-us/products/cosmos-db",
+        "status": "active"
+      },
+      "gotcha": "Managed sharding still punishes a bad partition key."
+    },
+    "rate-limiting": {
+      "aws": {
+        "service": "API Gateway throttling / AWS WAF",
+        "use_when": "Per-key throttles; WAF rate-based rules at the edge",
+        "docUrl": "https://aws.amazon.com/waf/",
+        "status": "active"
+      },
+      "gcp": {
+        "service": "Cloud Armor",
+        "use_when": "Rate-based rules at the load balancer",
+        "docUrl": "https://cloud.google.com/security/products/armor",
+        "status": "active"
+      },
+      "azure": {
+        "service": "API Management policies",
+        "use_when": "rate-limit and quota policies per subscription",
+        "docUrl": "https://azure.microsoft.com/en-us/products/api-management",
+        "status": "active"
+      },
+      "gotcha": "Edge limits stop floods; per-user limits still belong in your API."
+    },
+    "auth": {
+      "aws": {
+        "service": "Cognito",
+        "use_when": "User sign-up, sign-in and tokens",
+        "docUrl": "https://aws.amazon.com/cognito/",
+        "status": "active"
+      },
+      "gcp": {
+        "service": "Identity Platform",
+        "use_when": "Customer identity with many sign-in methods",
+        "docUrl": "https://cloud.google.com/security/products/identity-platform",
+        "status": "active"
+      },
+      "azure": {
+        "service": "Microsoft Entra External ID",
+        "use_when": "Customer identity and access",
+        "docUrl": "https://www.microsoft.com/en-us/security/business/identity-access/microsoft-entra-external-id",
+        "status": "active"
+      },
+      "gotcha": "Authentication is who you are; you still check authorisation on every object."
+    },
+    "secrets": {
+      "aws": {
+        "service": "Secrets Manager / KMS",
+        "use_when": "Store secrets; manage encryption keys",
+        "docUrl": "https://aws.amazon.com/kms/",
+        "status": "active"
+      },
+      "gcp": {
+        "service": "Secret Manager / Cloud KMS",
+        "use_when": "Store secrets; manage keys",
+        "docUrl": "https://cloud.google.com/security/products/secret-manager",
+        "status": "active"
+      },
+      "azure": {
+        "service": "Key Vault",
+        "use_when": "Secrets, keys and certificates",
+        "docUrl": "https://azure.microsoft.com/en-us/products/key-vault",
+        "status": "active"
+      },
+      "gotcha": "Rotate secrets; never put them in code or logs."
+    },
+    "monitoring": {
+      "aws": {
+        "service": "CloudWatch",
+        "use_when": "Metrics, logs and alarms",
+        "docUrl": "https://aws.amazon.com/cloudwatch/",
+        "status": "active"
+      },
+      "gcp": {
+        "service": "Cloud Monitoring / Logging",
+        "use_when": "Metrics, dashboards and logs",
+        "docUrl": "https://cloud.google.com/monitoring",
+        "status": "active"
+      },
+      "azure": {
+        "service": "Azure Monitor",
+        "use_when": "Metrics, logs and alerts",
+        "docUrl": "https://azure.microsoft.com/en-us/products/monitor",
+        "status": "active"
+      },
+      "gotcha": "Alert on user-facing SLOs, not on every CPU spike."
+    },
+    "tracing": {
+      "aws": {
+        "service": "X-Ray",
+        "use_when": "Distributed tracing for AWS services",
+        "docUrl": "https://aws.amazon.com/xray/",
+        "status": "active"
+      },
+      "gcp": {
+        "service": "Cloud Trace",
+        "use_when": "Latency traces across services",
+        "docUrl": "https://cloud.google.com/trace",
+        "status": "active"
+      },
+      "azure": {
+        "service": "Application Insights",
+        "use_when": "Tracing and app performance in Azure Monitor",
+        "docUrl": "https://learn.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview",
+        "status": "active"
+      },
+      "gotcha": "OpenTelemetry keeps you portable across all three."
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "generatedAt": "2026-10-13T03:26:26.302Z",
+  "guides": {
+    "backend": {
+      "version": "1.0.0",
+      "reviewed": {
+        "questions": 0,
+        "followUps": 0,
+        "followUpsMin": 0,
+        "followUpsMax": 0,
+        "modules": 0,
+        "pages": null
+      },
+      "all": {
+        "questions": 24,
+        "followUps": 100,
+        "followUpsMin": 4,
+        "followUpsMax": 5,
+        "modules": 12,
+        "pages": {
+          "a4": 57,
+          "phone": 108
+        }
+      }
+    }
+  }
+}
